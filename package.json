@@ -1,0 +1,31 @@
+{
+  "name": "kasumi",
+  "version": "0.0.1",
+  "description": "KOOK TypeScript SDK",
+  "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hexona69/kasumi.git"
+  },
+  "keywords": [
+    "KOOK"
+  ],
+  "author": "Hexona",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Hexona69/kasumi/issues"
+  },
+  "homepage": "https://github.com/Hexona69/kasumi#readme",
+  "dependencies": {
+    "axios": "^1.3.2",
+    "bunyan": "^1.8.15",
+    "delay": "^5.0.0",
+    "uuid": "^9.0.0",
+    "ws": "^8.12.0"
+  },
+  "devDependencies": {
+    "@types/bunyan": "^1.8.8",
+    "@types/uuid": "^9.0.0",
+    "@types/ws": "^8.5.4"
+  }
+}
