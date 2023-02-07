@@ -1,6 +1,6 @@
-import { Axios, AxiosInstance } from "axios";
+import { AxiosInstance } from "axios";
 import Rest from "../../requestor";
-import { RawGatewayResponse } from "../../type";
+import { RawGatewayResponse } from "../template/type";
 
 export default class Gateway extends Rest {
     constructor(requestor: AxiosInstance) {

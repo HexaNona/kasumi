@@ -56,7 +56,23 @@ export interface Guild {
     default_channel_id: string,
     welcome_channel_id: string,
     roles: Role[],
-    channels: []
+    channels: Channel[]
+}
+
+export interface Channel extends Omit<BriefChannel, 'limit_amount'> {
+    guild_id: string,
+    topic: string,
+    slow_mode: number
+}
+
+export interface MultiPageResponse {
+    meta: {
+        page: number,
+        page_total: number,
+        page_size: number,
+        total: number
+    },
+    items: any[]
 }
 
 export interface Role {
@@ -103,10 +119,6 @@ export interface Quote {
     content: string,
     create_at: number,
     author: User
-}
-
-export interface RawGatewayResponse {
-    url: string
 }
 
 export namespace WebSocket {
@@ -333,82 +345,6 @@ export interface RawReaction {
     },
     count: number,
     me: boolean
-}
-
-
-export interface RawMessageItem {
-    id: string,
-    type: MessageType,
-    content: string,
-    mention: string[],
-    mention_all: boolean,
-    mention_roles: any[],
-    mention_here: boolean,
-    embeds: Array<RawEmbedding.BilibiliVideo>,
-    attachments: null | RawAttachment.File | RawAttachment.Video,
-    create_at: number,
-    update_at: number,
-    reactions: Array<RawReaction>,
-    author: {
-        id: string,
-        username: string,
-        online: boolean,
-        avatar: string
-    },
-    image_name: string,
-    read_status: boolean,
-    quote: null,
-    mention_info: {
-        mention_part: Array<RawMention.User>,
-        mention_role_part: Array<RawMention.Role>
-    }
-}
-
-export interface RawListResponse {
-    items: Array<RawMessageItem>
-}
-
-export interface RawViewResponse extends User {
-    os: string,
-    decorations_id_map: {
-        join_boice: number,
-        avatar_border: number,
-        background: number
-    }
-}
-
-export interface RawMeResponse extends User {
-    banner: string,
-    decorations_id_map: null,
-    bot_status: number,
-    tag_info?: {
-        color: string,
-        bg_color: string,
-        text: string
-    },
-    mobile_verified: boolean,
-    client_id: string,
-    mobile_prefix: string,
-    mobile: string,
-    privacy_game_activity: number,
-    privacy_music_activity: number,
-    enable_desktop_notification: boolean,
-    audio_setting: string,
-    auto_exit_audio_channel: boolean,
-    invited_count: number,
-    need_guide: boolean,
-    created_guild: boolean,
-    experience_improve: boolean,
-    friend_setting: {
-        all: boolean,
-    },
-    chat_setting: string,
-    accompaniment: boolean,
-    mobile_not_notify: boolean,
-    mobile_notify_setting: number,
-    new_join: any[],
-    i18n: boolean,
-    has_new_policy: boolean
 }
 
 export interface RawResponse {

@@ -1,6 +1,6 @@
-import { Axios, AxiosInstance } from "axios";
+import { AxiosInstance } from "axios";
 import Rest from "../../requestor";
-import { RawMeResponse, RawViewResponse } from "../../type";
+import { RawMeResponse, RawViewResponse } from "./type";
 
 export default class User extends Rest {
     constructor(requestor: AxiosInstance) {

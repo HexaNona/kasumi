@@ -17,9 +17,7 @@ export default class Rest {
         }
     }
     protected async get(endpoint: string, params?: any): Promise<any> {
-        const data: RawResponse = (await this.__requestor.get(endpoint, {
-            params
-        })).data;
+        const data: RawResponse = (await this.__requestor.get(endpoint, { params })).data;
         if (data.code == 0) return data.data;
         else throw new RestError(data.code, data.message);
     }

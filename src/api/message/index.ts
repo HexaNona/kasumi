@@ -1,8 +1,9 @@
 import { AxiosInstance } from "axios";
 import Rest from "../../requestor";
-import { MessageType, RawListResponse, RawMessageItem, User } from "../../type";
+import { MessageType, User } from "../../type";
 import { v4 as uuidv4 } from 'uuid';
 import { NonceDismatchError } from "../../error";
+import { RawMessageItem, RawListResponse } from "./type";
 
 export default class Message extends Rest {
     constructor(requestor: AxiosInstance) {
