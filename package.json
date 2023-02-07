@@ -1,6 +1,6 @@
 {
   "name": "kasumi",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "KOOK TypeScript SDK",
   "main": "dist/index.js",
   "repository": {
