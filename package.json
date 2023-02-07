@@ -1,5 +1,5 @@
 {
-  "name": "kasumi",
+  "name": "kasumi.js",
   "version": "0.0.2",
   "description": "KOOK TypeScript SDK",
   "main": "dist/index.js",
