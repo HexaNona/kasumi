@@ -12,6 +12,7 @@ export default class WS {
     private state: WebSocket.State;
     private sessionId: string = '';
     private sn: number = 0;
+    private messageBuffer: WebSocket.Signal.Event[] = [];
     private messageQueue: WebSocket.MessageQueue = { 0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] }
     constructor(client: Kasumi) {
         this.client = client;
@@ -78,9 +79,12 @@ export default class WS {
             this.logger.trace(data);
             switch (data.s) {
                 case WebSocket.SignalType.Event: {
-                    if (this.sn < data.sn)
-                        this.sn = data.sn;
-                    this.client.message.recievedMessage(data);
+                    this.messageBuffer.push(data);
+                    this.messageBuffer.sort((a, b) => { return a.sn - b.sn });
+                    while (this.sn == this.messageBuffer[0].sn + 1) {
+                        let buffer = this.messageBuffer.pop();
+                        if (buffer) this.client.message.recievedMessage(buffer);
+                    }
                     break;
                 }
                 case WebSocket.SignalType.Reconnect: {
