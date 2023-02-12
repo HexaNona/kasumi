@@ -72,7 +72,8 @@ export interface MultiPageResponse {
         page_size: number,
         total: number
     },
-    items: any[]
+    items: any[],
+    sort: any[]
 }
 
 export interface Role {
