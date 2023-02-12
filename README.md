@@ -11,5 +11,5 @@ It is probably not as stable or performant as other libraries out there, because
 ## TODO
 
 - [x] WebSocket connection mode
-- [ ] WebHook connection mode
-- [ ] Abstractize all KOOK's web APIs
+- [x] WebHook connection mode
+- [ ] Support all APIs
