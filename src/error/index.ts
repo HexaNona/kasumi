@@ -17,3 +17,15 @@ export class NonceDismatchError extends Error {
         super("Response nonce does not match request nonce")
     }
 }
+
+export class MethodNotImplementedError extends Error {
+    constructor() {
+        super("Method not implemented");
+    }
+}
+
+export class UnknowInputTypeError extends Error {
+    constructor(received: string, required: string) {
+        super(`Input requires "${required}", received "${received}" instead`);
+    }
+}

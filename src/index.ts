@@ -5,17 +5,31 @@ import { KasumiConfig } from "./type";
 import Message from "./message";
 import WebSocket from "./websocket";
 import WebHook from "./webhook";
+import Plugin from "./plugin"
+export { default as BaseMenu } from "./plugin/menu/baseMenu";
+export { default as BaseCommand, CommandFunction } from "./plugin/menu/baseCommand";
+export { default as BaseSession } from "./plugin/session";
 
 
 export default class Kasumi {
     rest: API;
-    message: Message = new Message(this);
+    message: Message;
+    plugin: Plugin;
     websocket?: WebSocket;
     webhook?: WebHook;
     logger: Logger;
+
+    /**
+     * Profile of the current bot
+     */
+    userId!: string;
+    username!: string;
+    identifyNum!: string;
+
     __token: string;
     __bunyan_log_level: Logger.LogLevel;
     __bunyan_error_level: Logger.LogLevel;
+    private __config: KasumiConfig;
     constructor(config: KasumiConfig) {
         switch (process.env.LOG_LEVEL?.toLowerCase()) {
             case 'verbose':
@@ -57,15 +71,29 @@ export default class Kasumi {
             }]
         });
 
-        this.__token = config.token;
+        this.__config = config;
+        this.__token = this.__config.token;
+
+        this.message = new Message(this);
+        this.plugin = new Plugin(this);
         this.rest = new API(this.__token);
 
-        if (config.type == 'websocket') {
+        this.message.on('allTextMessages', (event) => {
+            this.plugin.messageProcessing(event.content, event);
+        })
+    }
+    async connect() {
+        const profile = await this.rest.user.me();
+        this.userId = profile.id;
+        this.username = profile.username;
+        this.identifyNum = profile.identify_num;
+        this.logger.debug(`Logged in as ${this.username}#${this.identifyNum} (${this.userId})`);
+        if (this.__config.type == 'websocket') {
             this.websocket = new WebSocket(this);
         } else {
-            this.webhook = new WebHook(config, this);
+            this.webhook = new WebHook(this.__config, this);
         }
     }
-    on = this.message.on;
-    emit = this.message.emit;
+    // on = this.message.on;
+    // emit = this.message.emit;
 }
