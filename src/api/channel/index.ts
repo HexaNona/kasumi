@@ -1,6 +1,6 @@
-import User from "api/user";
+import User from "../user";
 import { AxiosInstance } from "axios";
-import { FullChannel } from "type";
+import { FullChannel } from "../../type";
 import Rest from "../../requestor";
 import { RawListResponse } from "./type";
 

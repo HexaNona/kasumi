@@ -353,3 +353,18 @@ export interface RawResponse {
     message: string,
     data: any
 }
+
+export interface WebSocketConfig {
+    type: 'websocket',
+    token: string
+}
+
+export interface WebHookConfig {
+    type: 'webhook',
+    port: number,
+    token: string,
+    verifyToken: string,
+    encryptKey: string
+}
+
+export type KasumiConfig = WebSocketConfig | WebHookConfig;

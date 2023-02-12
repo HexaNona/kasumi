@@ -1,18 +1,22 @@
 import Logger from "bunyan";
 
 import API from "./api";
+import { KasumiConfig } from "./type";
 import Message from "./message";
-import WS from "./websocket";
+import WebSocket from "./websocket";
+import WebHook from "./webhook";
 
 
 export default class Kasumi {
     rest: API;
     message: Message = new Message(this);
-    websocket?: WS;
+    websocket?: WebSocket;
+    webhook?: WebHook;
     logger: Logger;
+    __token: string;
     __bunyan_log_level: Logger.LogLevel;
     __bunyan_error_level: Logger.LogLevel;
-    constructor(token: string) {
+    constructor(config: KasumiConfig) {
         switch (process.env.LOG_LEVEL?.toLowerCase()) {
             case 'verbose':
             case 'more':
@@ -52,8 +56,15 @@ export default class Kasumi {
                 level: this.__bunyan_error_level
             }]
         });
-        this.rest = new API(token);
-        this.websocket = new WS(this);
+
+        this.__token = config.token;
+        this.rest = new API(this.__token);
+
+        if (config.type == 'websocket') {
+            this.websocket = new WebSocket(this);
+        } else {
+            this.webhook = new WebHook(config, this);
+        }
     }
     on = this.message.on;
     emit = this.message.emit;
