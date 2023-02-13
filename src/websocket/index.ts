@@ -42,6 +42,9 @@ export default class WebSocket {
         if (lastItem) return <WebSocketType.MessageTypes[T]>lastItem;
         else return this.getNextItemFromQueue(type, timeout, lastTimestamp);
     }
+
+    private __interval?: NodeJS.Timer;
+
     private async connectWebSocketType(resume: boolean = false) {
         this.state = WebSocketType.State.ConnectGateway;
         let gateway = (await this.client.rest.gateway.index()).url;
@@ -55,21 +58,27 @@ export default class WebSocket {
             this.logger.debug('WebSocketType connection established');
             this.state = WebSocketType.State.Initialization;
 
-            setInterval(async () => {
+            this.__interval = setInterval(async () => {
                 this.Socket?.send(Buffer.from(JSON.stringify({
                     s: 2,
                     sn: this.sn
                 })))
-                await this.getNextItemFromQueue(WebSocketType.SignalType.Pong, 6 * 1000);
+                await this.getNextItemFromQueue(WebSocketType.SignalType.Pong, 6 * 1000).catch((e) => {
+                    if (e instanceof TimeoutError) {
+                        this.state = WebSocketType.State.NeedsRestart;
+                        this.logger.warn("PING timed out, retrying");
+                    } else throw e;
+                })
             }, 30 * 1000)
 
             this.getNextItemFromQueue(WebSocketType.SignalType.Hello, 6 * 1000).then(async (helloPackage) => {
-                this.logger.debug('Recieved Hello');
+                this.logger.debug('Recieved HELLO');
                 this.state = WebSocketType.State.RecievingMessage;
                 this.sessionId = helloPackage.d.session_id;
             }).catch((e) => {
                 if (e instanceof TimeoutError) {
                     this.state = WebSocketType.State.NeedsRestart;
+                    this.logger.warn("Cannot recieve HELLO package, retrying");
                     return;
                 } else throw e;
             });
@@ -112,6 +121,9 @@ export default class WebSocket {
             if (this.state == WebSocketType.State.NeedsRestart) {
                 this.logger.info('WebSocketType needs to reconnect');
                 this.Socket?.removeAllListeners();
+                clearInterval(this.__interval);
+                this.Socket = undefined;
+                this.__interval = undefined;
                 this.connectWebSocketType(true);
             }
         }, 500)

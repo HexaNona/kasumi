@@ -9,6 +9,7 @@ import Plugin from "./plugin"
 export { default as BaseMenu } from "./plugin/menu/baseMenu";
 export { default as BaseCommand, CommandFunction } from "./plugin/menu/baseCommand";
 export { default as BaseSession } from "./plugin/session";
+export { default as Card } from './card';
 
 
 export default class Kasumi {

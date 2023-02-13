@@ -1,6 +1,7 @@
 import { PlainTextMessageEvent, MarkdownMessageEvent } from "../message/type";
 import Kasumi from "..";
-import { MessageType } from "../../dist/type";
+import { MessageType } from "../type";
+import Card from "../card";
 
 export default class BaseSession {
     args: string[];
@@ -29,6 +30,15 @@ export default class BaseSession {
             temporary ? this.userId : undefined
         )
     }
+    private async __sendCard(content: Card[], quote: boolean = false, temporary: boolean = false) {
+        this.client.rest.message.create(
+            MessageType.CardMessage,
+            this.channelId,
+            JSON.stringify(content.map(v => v.toObject())),
+            quote ? this.messageId : undefined,
+            temporary ? this.userId : undefined
+        )
+    }
     async send(content: string) {
         return this.__sendText(content);
     }
@@ -40,5 +50,17 @@ export default class BaseSession {
     }
     async replyTemp(content: string) {
         return this.__sendText(content, true, true);
+    }
+    async sendCard(content: Card[]) {
+        return this.__sendCard(content);
+    }
+    async sendTempCard(content: Card[]) {
+        return this.__sendCard(content, false, true);
+    }
+    async replyCard(content: Card[]) {
+        return this.__sendCard(content, true);
+    }
+    async replyTempCard(content: Card[]) {
+        return this.__sendCard(content, true, true);
     }
 }
