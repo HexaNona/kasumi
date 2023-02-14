@@ -1,14 +1,14 @@
 import BaseCommand from "./baseCommand";
 import Logger from "bunyan";
-import Kasumi from "../..";
+import Kasumi, { Card } from "../..";
 import BaseSession from "../../plugin/session";
 import { PlainTextMessageEvent, MarkdownMessageEvent } from "../../message/type";
+import { UnknowInputTypeError } from "../../error";
 
 export default class BaseMenu {
     name: string = 'default';
 
     prefix: string = '/';
-    trigger: string = 'default';
 
     client!: Kasumi;
     logger!: Logger;
@@ -31,6 +31,7 @@ export default class BaseMenu {
         }
     }
     addCommand(command: BaseCommand) {
+        this.logger.debug(`Loading command: ${command.name}`);
         command.logger = new Logger({
             name: `kasumi.plugin.menu.${this.name}.${command.name}`,
             streams: [{
@@ -43,17 +44,50 @@ export default class BaseMenu {
         });
         this.__commands[command.name] = command;
     }
+    addAlias(command: BaseCommand, ...aliases: string[]) {
+        if (command instanceof BaseCommand) {
+            if (!this.__commands[command.name]) this.addCommand(command);
+            for (const alias of aliases) {
+                this.__commands[alias] = command;
+            }
+        } else throw new UnknowInputTypeError(typeof command, 'BaseMenu | BaseCommand');
+    }
+    private __get_command_list() {
+        return Object.keys(this.__commands)
+    }
     messageProcessing(content: string, event: PlainTextMessageEvent | MarkdownMessageEvent) {
-        const commands = Object.values(this.__commands).filter(v => content.startsWith(v.trigger));
+        let splitContent = content ? content.split(' ') : [];
+        const commands = Object.keys(this.__commands).filter(k => splitContent[0] == k);
+        console.log(content, splitContent, commands);
         if (commands.length) {
-            for (const command of commands) {
-                content = content.replace(command.trigger, '').trim();
-                let args = content.split(' ');
-                this.__commands[command.trigger].exec(args, event, this.client);
+            for (const key of commands) {
+                const command = this.__commands[key];
+                if (command) {
+                    let processedContent = content.replace(key, '').trim();
+                    let args = processedContent ? processedContent.split(' ') : [];
+                    command.exec(args, event, this.client);
+                }
             }
         } else {
             const session = new BaseSession([], event, this.client);
-            session.reply('Command not found!' + Object.keys(this.__commands).join(','));
+            const card = new Card()
+                .addTitle("命令未找到")
+                .addDivider()
+                .addText("(font)可用命令(font)[success]");
+            const list = this.__get_command_list();
+            for (const commandName of list) {
+                const command = this.__commands[commandName];
+                if (command && commandName == command.name) {
+                    let text = "";
+                    if (command.usage) text += `\`\`\`plain\n${command.usage}\n\`\`\``;
+                    else text += `\`\`\`plain\n${this.prefix.charAt(0)}${this.name} ${command.name}\n\`\`\``;
+                    if (command.description) text += '\n' + command.description;
+                    else text += '\n' + '(font)无介绍(font)[secondary]';
+                    card.addText(text);
+                }
+            }
+            console.log(card.toString());
+            session.reply(card)
         }
     }
 }

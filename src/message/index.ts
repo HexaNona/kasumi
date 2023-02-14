@@ -1,8 +1,8 @@
 import Logger from "bunyan";
 import { EventEmitter } from "events";
 import Kasumi from "../";
-import { WebSocket, MessageType, GuildType } from "../type";
-import RawEmisions, { AudioMessageEvent, CardMessageEvent, FileMessageEvent, ImageMessageEvent, MarkdownMessageEvent, PlainTextMessageEvent, SystemMessageEvent, VideoMessageEvent } from "./type";
+import { WebSocket, MessageType } from "../type";
+import RawEmisions, { AudioMessageEvent, ButtonClickedEvent, CardMessageEvent, FileMessageEvent, ImageMessageEvent, MarkdownMessageEvent, PlainTextMessageEvent, SystemMessageEvent, VideoMessageEvent } from "./type";
 
 export interface Message extends EventEmitter {
     on<T extends keyof RawEmisions>(event: T, listener: RawEmisions[T]): this;
@@ -12,6 +12,10 @@ export interface Message extends EventEmitter {
 export class Message extends EventEmitter implements Message {
     private client: Kasumi;
     logger: Logger;
+
+    private __is_button_clicked_event(event: WebSocket.SystemMessageEvent): event is WebSocket.ButtonClickedEvent {
+        return event.extra.type == "message_btn_click";
+    }
     constructor(client: Kasumi) {
         super();
         this.client = client;
@@ -32,8 +36,13 @@ export class Message extends EventEmitter implements Message {
         let event;
         switch (data.type) {
             case MessageType.SystemMessage: {
-                event = new SystemMessageEvent(data as any, this.client);
-                this.emit('systemMessages', event);
+                if (this.__is_button_clicked_event(data)) {
+                    event = new ButtonClickedEvent(data, this.client);
+                    this.emit('buttonClicked', event)
+                } else {
+                    event = new SystemMessageEvent(data, this.client);
+                    this.emit('systemMessages', event);
+                }
                 break;
             }
             case MessageType.TextMessage: {
@@ -79,7 +88,10 @@ export class Message extends EventEmitter implements Message {
                 this.logger.warn(data);
             }
         }
-        this.emit('allMessages', event);
+        switch (data.type) {
+            case MessageType.SystemMessage: break;
+            default: this.emit('allMessages', event);
+        }
     }
 }
 

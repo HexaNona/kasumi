@@ -1,9 +1,9 @@
 import { Card as CardType, Modules, Size, Theme } from "./type";
 
 export default class Card {
-    private __theme: Theme = 'info';
-    private __size: Size = 'lg';
-    private __modules: Modules[] = [];
+    __theme: Theme = 'info';
+    __size: Size = 'lg';
+    __modules: Modules[] = [];
     constructor(card?: CardType) {
         if (card) {
             this.setTheme(card.theme).setSize(card.size);
@@ -30,6 +30,47 @@ export default class Card {
             text: {
                 type: 'kmarkdown',
                 content
+            }
+        });
+    }
+    addTextWithImage(content: string, imageUrl: string, size: Size = 'lg', circle: boolean = false) {
+        return this.addModule({
+            type: 'section',
+            text: {
+                type: 'kmarkdown',
+                content
+            },
+            accessory: {
+                type: 'image',
+                src: imageUrl,
+                size,
+                circle
+            }
+        });
+    }
+    addTextWithButton(content: string, button: {
+        position: 'left' | 'right'
+        content: string,
+        theme: Theme,
+        value: string,
+        click?: "link" | "return-val";
+    }) {
+        return this.addModule({
+            type: 'section',
+            text: {
+                type: 'kmarkdown',
+                content
+            },
+            mode: button.position,
+            accessory: {
+                type: 'button',
+                text: {
+                    type: 'kmarkdown',
+                    content: button.content
+                },
+                theme: button.theme,
+                value: button.value,
+                click: button.click ? button.click : ""
             }
         });
     }

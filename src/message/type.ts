@@ -13,12 +13,12 @@ export default interface RawEmisions {
     markdownMessages(event: MarkdownMessageEvent): void;
     allTextMessages(event: PlainTextMessageEvent | MarkdownMessageEvent): void;
     cardMessages(event: CardMessageEvent): void;
+    buttonClicked(event: ButtonClickedEvent): void;
 }
 class BaseMessageEvent {
     messageType: MessageType;
     channelType: GuildType;
     messageId: string;
-    authorId: string;
     timestamp: number;
     content: string;
     rawEvent: WebSocket.MessageEvent
@@ -27,7 +27,6 @@ class BaseMessageEvent {
         this.messageType = rawEvent.type
         this.channelType = rawEvent.channel_type;
         this.messageId = rawEvent.msg_id;
-        this.authorId = rawEvent.author_id;
         this.content = rawEvent.content;
         this.timestamp = parseInt(rawEvent.msg_timestamp);
         this.client = client;
@@ -46,10 +45,27 @@ export class SystemMessageEvent extends BaseMessageEvent {
     }
 }
 
+export class ButtonClickedEvent extends SystemMessageEvent {
+    value: string;
+    targetMsgId: string;
+    channelId: string;
+    authorId: string;
+    author: User;
+    constructor(rawEvent: WebSocket.ButtonClickedEvent, client: Kasumi) {
+        super(rawEvent, client);
+        this.value = rawEvent.extra.body.value;
+        this.targetMsgId = rawEvent.extra.body.msg_id;
+        this.authorId = rawEvent.extra.body.user_id;
+        this.author = rawEvent.extra.body.user_info;
+        this.channelId = rawEvent.extra.body.target_id;
+    }
+}
+
 class UserMessageEvent extends BaseMessageEvent {
     channelType: Exclude<GuildType, 'BOARDCAST'>;
     channelId: string;
     author: User;
+    authorId: string;
     guildId?: string;
     mention?: any[];
     mentionRoles?: any[];
@@ -59,20 +75,20 @@ class UserMessageEvent extends BaseMessageEvent {
         return object.channel_type == 'GROUP';
     }
     public async delete() {
-        return this.client.rest.message.delete(this.messageId);
+        return this.client.API.message.delete(this.messageId);
     }
     public async reply(content: string, tempUpdateTargetUser?: string) {
-        if (this.channelType == 'GROUP') return this.client.rest.message.create(this.messageType, this.channelId, content, this.messageId, tempUpdateTargetUser);
+        if (this.channelType == 'GROUP') return this.client.API.message.create(this.messageType, this.channelId, content, this.messageId, tempUpdateTargetUser);
         else if (this.channelType == 'PERSON') return;
     }
     public async reactionUserList(emojiId: string) {
-        return this.client.rest.message.reactionUserList(this.messageId, emojiId);
+        return this.client.API.message.reactionUserList(this.messageId, emojiId);
     }
     public async addReaction(emojiId: string) {
-        return this.client.rest.message.addReaction(this.messageId, emojiId);
+        return this.client.API.message.addReaction(this.messageId, emojiId);
     }
     public async deleteReaction(emojiId: string, userId?: string) {
-        return this.client.rest.message.deleteReaction(this.messageId, emojiId, userId);
+        return this.client.API.message.deleteReaction(this.messageId, emojiId, userId);
     }
     constructor(rawEvent: WebSocket.NormalMessageEvent<WebSocket.NormalMessageType, GuildType>, client: Kasumi) {
         super(rawEvent, client);
@@ -83,6 +99,7 @@ class UserMessageEvent extends BaseMessageEvent {
             this.isMentionHere = rawEvent.extra.mention_here;
             this.mentionRoles = rawEvent.extra.mention_roles;
         }
+        this.authorId = rawEvent.author_id;
         this.channelType = rawEvent.channel_type
         this.channelId = rawEvent.target_id;
         this.author = rawEvent.extra.author;

@@ -1,24 +1,25 @@
-import { AxiosInstance } from "axios";
+import { RestError } from "../../error";
 import Rest from "../../requestor";
 import { RawMeResponse, RawViewResponse } from "./type";
 
-export default class User extends Rest {
-    constructor(requestor: AxiosInstance) {
-        super(requestor);
+export default class User {
+    rest: Rest;
+    constructor(rest: Rest) {
+        this.rest = rest;
     }
 
     async me(): Promise<RawMeResponse> {
-        return this.get('/user/me');
+        return this.rest.get('/user/me'); // revert mark
     }
 
     async view(userId: string, guildId?: string): Promise<RawViewResponse> {
-        return this.get('/user/view', {
+        return this.rest.get('/user/view', {
             user_id: userId,
             guild_id: guildId
-        });
+        }); // revert mark
     }
 
     async offline(): Promise<void> {
-        this.get('/user/offline');
+        return this.rest.get('/user/offline'); // revert mark
     }
 }

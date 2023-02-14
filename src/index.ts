@@ -11,9 +11,11 @@ export { default as BaseCommand, CommandFunction } from "./plugin/menu/baseComma
 export { default as BaseSession } from "./plugin/session";
 export { default as Card } from './card';
 
+export * from './message/type'
+
 
 export default class Kasumi {
-    rest: API;
+    API: API;
     message: Message;
     plugin: Plugin;
     websocket?: WebSocket;
@@ -77,14 +79,14 @@ export default class Kasumi {
 
         this.message = new Message(this);
         this.plugin = new Plugin(this);
-        this.rest = new API(this.__token);
+        this.API = new API(this.__token);
 
         this.message.on('allTextMessages', (event) => {
             this.plugin.messageProcessing(event.content, event);
         })
     }
     async connect() {
-        const profile = await this.rest.user.me();
+        const profile = await this.API.user.me();
         this.userId = profile.id;
         this.username = profile.username;
         this.identifyNum = profile.identify_num;

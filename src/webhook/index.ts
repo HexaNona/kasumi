@@ -40,7 +40,6 @@ export default class WebHook {
                     const event: WebHookType.Events = JSON.parse(decrypt);
                     if (event.d.verify_token == config.verifyToken) {
                         if (this.__isChallengeEvent(event)) {
-                            console.log('chan')
                             res.send({
                                 challenge: event.d.challenge
                             });
@@ -58,14 +57,15 @@ export default class WebHook {
                     } else {
                         this.logger.warn('Verify token dismatch!');
                         this.logger.warn(event);
-                        res.status(204).send();
+                        res.status(401).send();
                     }
                 } catch (e) {
+                    res.status(500).send();
                     this.logger.error(e);
                 }
             } else {
                 this.logger.warn('Recieved unencrypted request')
-                res.status(204).send();
+                res.status(401).send();
             }
         })
         this.http.listen(config.port, () => {

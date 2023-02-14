@@ -1,10 +1,11 @@
-import { AxiosInstance } from "axios";
+import { RestError } from "../../error";
 import Rest from "../../requestor";
 import { RawGatewayResponse } from "../template/type";
 
-export default class Gateway extends Rest {
-    constructor(requestor: AxiosInstance) {
-        super(requestor);
+export default class Gateway {
+    rest: Rest;
+    constructor(rest: Rest) {
+        this.rest = rest;
     }
     /**
      * Get the WebSocket gateway URL
@@ -13,6 +14,6 @@ export default class Gateway extends Rest {
      * Default value is `1`
      */
     public async index(compress: 0 | 1 = 0): Promise<RawGatewayResponse> {
-        return this.get('/gateway/index', { compress })
+        return this.rest.get('/gateway/index', { compress }); // revert mark
     }
 }

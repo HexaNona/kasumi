@@ -286,6 +286,71 @@ export namespace WebSocket {
             body: any
         }
     }
+
+    export interface UserConnectToVoiceChannelEvent extends SystemMessageEvent {
+        channel_type: "GROUP",
+        extra: {
+            type: 'joined_channel',
+            body: {
+                user_id: string,
+                channel_id: string,
+                joined_at: number
+            }
+        }
+    }
+    export interface UserDisconnectFromVoiceChannelEvent extends SystemMessageEvent {
+        channel_type: "GROUP",
+        extra: {
+            type: "exited_channel",
+            body: {
+                user_id: string,
+                channel_id: string,
+                exited_at: number
+            }
+        }
+    }
+    export interface UserProfileUpdateEvent extends SystemMessageEvent {
+        channel_type: "PERSON",
+        extra: {
+            type: "user_updated",
+            body: {
+                user_id: string,
+                username: string,
+                avatar: string
+            }
+        }
+    }
+    export interface SelfJoinedGuildEvent extends SystemMessageEvent {
+        channel_type: "PERSON",
+        extra: {
+            type: "self_joined_guild",
+            body: {
+                guild_id: string
+            }
+        }
+    }
+    export interface SelfExitedGuildEvent extends SystemMessageEvent {
+        channel_type: "PERSON",
+        extra: {
+            type: "self_exited_guild",
+            body: {
+                guild_id: string
+            }
+        }
+    }
+    export interface ButtonClickedEvent extends SystemMessageEvent {
+        channel_type: "PERSON",
+        extra: {
+            type: "message_btn_click",
+            body: {
+                value: string,
+                msg_id: string,
+                user_id: string,
+                target_id: string,
+                user_info: User
+            }
+        }
+    }
 }
 
 

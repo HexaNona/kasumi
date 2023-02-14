@@ -1,22 +1,23 @@
-import { AxiosInstance } from "axios";
+import { RestError } from "../../error";
 import Rest from "../../requestor";
 import { RawListResponse, RawUserListResponse, RawViewResponse } from "./type";
 
-export default class Guild extends Rest {
-    constructor(requestor: AxiosInstance) {
-        super(requestor);
+export default class Guild {
+    rest: Rest;
+    constructor(rest: Rest) {
+        this.rest = rest;
     }
 
     async *list(page: number = 1, pageSize: number = 50): AsyncGenerator<RawListResponse, void, void> {
-        let data: RawListResponse = await this.get('/guild/list', { page, page_size: pageSize });
+        let data: RawListResponse = await this.rest.get('/guild/list', { page, page_size: pageSize }); // revert mark
         yield data;
         for (let currentPage = page + 1; currentPage <= data.meta.page_total; ++currentPage) {
-            yield await this.get('/guild/list', { page, page_size: pageSize });
+            yield await this.rest.get('/guild/list', { page, page_size: pageSize }); // revert mark
         }
     }
 
     async view(guildId: string): Promise<RawViewResponse> {
-        return this.get('/guild/list', { guild_id: guildId });
+        return this.rest.get('/guild/list', { guild_id: guildId }); // revert mark
     }
 
     private readonly __desc_asc_map = {
@@ -39,7 +40,7 @@ export default class Guild extends Rest {
         pageSize: number,
         userId?: number
     }): AsyncGenerator<RawUserListResponse, void, void> {
-        let data: RawUserListResponse = await this.get('/guild/list', {
+        let data: RawUserListResponse = await this.rest.get('/guild/list', {
             guild_id: guildId,
             channel_id: channelId,
             search,
@@ -50,10 +51,10 @@ export default class Guild extends Rest {
             page,
             page_size: pageSize,
             filter_user_id: userId
-        });
+        }); // revert mark
         yield data;
         for (let currentPage = page + 1; currentPage <= data.meta.page_total; ++currentPage) {
-            yield await this.get('/guild/list', {
+            yield await this.rest.get('/guild/list', {
                 guild_id: guildId,
                 channel_id: channelId,
                 search,
@@ -64,28 +65,28 @@ export default class Guild extends Rest {
                 page,
                 page_size: pageSize,
                 filter_user_id: userId
-            });
+            }); // revert mark
         }
     }
 
     async nickname(guildId: string, nickname?: string, userId?: string): Promise<void> {
-        return this.post('/guild/nickname', {
+        return this.rest.post('/guild/nickname', {
             guild_id: guildId,
             nickname,
             user_id: userId
-        });
+        }); // revert mark
     }
 
     async leave(guildId: string): Promise<void> {
-        return this.post('/guild/leave', {
+        return this.rest.post('/guild/leave', {
             guild_id: guildId
-        });
+        }); // revert mark
     }
 
     async kick(guildId: string, userId: string): Promise<void> {
-        return this.post('/guild/kickout', {
+        return this.rest.post('/guild/kickout', {
             guild_id: guildId,
             target_id: userId
-        });
+        }); // revert mark
     }
 }

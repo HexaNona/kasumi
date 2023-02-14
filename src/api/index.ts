@@ -1,31 +1,26 @@
 import Rest from "../requestor";
 import Channel from "./channel";
+import Game from "./game";
 import Gateway from "./gateway";
 import Guild from "./guild";
 import Message from "./message";
 import User from "./user";
 
-export default class API extends Rest {
+export default class API {
+    public rest: Rest;
     public channel: Channel;
+    public game: Game;
     public gateway: Gateway;
     public guild: Guild;
     public message: Message;
     public user: User;
     constructor(token: string) {
-        super(token);
-        this.channel = new Channel(this.__requestor);
-        this.gateway = new Gateway(this.__requestor);
-        this.guild = new Guild(this.__requestor);
-        this.message = new Message(this.__requestor);
-        this.user = new User(this.__requestor);
-    }
-    public get(endpoint: string, params?: any): Promise<any> {
-        return super.get(endpoint, params);
-    }
-    public post(endpoint: string, params?: any): Promise<any> {
-        return super.post(endpoint, params);
-    }
-    public put(endpoint: string, params?: any): Promise<any> {
-        return super.put(endpoint, params);
+        this.rest = new Rest(token);
+        this.channel = new Channel(this.rest);
+        this.game = new Game(this.rest);
+        this.gateway = new Gateway(this.rest);
+        this.guild = new Guild(this.rest);
+        this.message = new Message(this.rest);
+        this.user = new User(this.rest);
     }
 }

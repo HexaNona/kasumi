@@ -47,7 +47,7 @@ export default class WebSocket {
 
     private async connectWebSocketType(resume: boolean = false) {
         this.state = WebSocketType.State.ConnectGateway;
-        let gateway = (await this.client.rest.gateway.index()).url;
+        let gateway = (await this.client.API.gateway.index()).url;
         if (resume && this.sessionId) this.Socket = new ws(`${gateway}?compress=0&resume=1&sessionId=${this.sessionId}&sn=${this.sn}`);
         else {
             this.sn = 0;
@@ -68,8 +68,8 @@ export default class WebSocket {
                         this.state = WebSocketType.State.NeedsRestart;
                         this.logger.warn("PING timed out, retrying");
                     } else throw e;
-                })
-            }, 30 * 1000)
+                });
+            }, 30 * 1000);
 
             this.getNextItemFromQueue(WebSocketType.SignalType.Hello, 6 * 1000).then(async (helloPackage) => {
                 this.logger.debug('Recieved HELLO');

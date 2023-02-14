@@ -1,66 +1,73 @@
-import { PlainTextMessageEvent, MarkdownMessageEvent } from "../message/type";
+import { PlainTextMessageEvent, MarkdownMessageEvent, ButtonClickedEvent } from "../message/type";
 import Kasumi from "..";
-import { MessageType } from "../type";
+import { GuildType, MessageType } from "../type";
 import Card from "../card";
+import { User } from "../type";
+import { RestError } from "../error";
 
 export default class BaseSession {
     args: string[];
-    event: PlainTextMessageEvent | MarkdownMessageEvent
+    event: PlainTextMessageEvent | MarkdownMessageEvent | ButtonClickedEvent
     client: Kasumi;
 
+    guildId?: string;
     channelId: string;
     messageId: string;
-    userId: string;
+    authorId: string;
     content: string;
-    constructor(args: string[], event: PlainTextMessageEvent | MarkdownMessageEvent, client: Kasumi) {
+    author: User;
+
+    channelType: GuildType;
+    constructor(args: string[], event: PlainTextMessageEvent | MarkdownMessageEvent | ButtonClickedEvent, client: Kasumi) {
         this.args = args;
         this.event = event;
         this.client = client;
         this.channelId = event.channelId;
-        this.userId = event.authorId;
+        this.authorId = event.authorId;
         this.messageId = event.messageId;
         this.content = event.content;
+        this.author = event.author;
+        this.guildId = event.guildId;
+        this.channelType = event.channelType;
     }
-    private async __sendText(content: string, quote: boolean = false, temporary: boolean = false) {
-        this.client.rest.message.create(
-            MessageType.MarkdownMessage,
+    private async __send(content: string | Card | Card[], quote: boolean = false, temporary: boolean = false) {
+        let messageType;
+        if (content instanceof Card || content instanceof Array<Card>) messageType = MessageType.CardMessage;
+        else messageType = MessageType.MarkdownMessage;
+        return this.client.API.message.create(
+            messageType,
             this.channelId,
             content,
             quote ? this.messageId : undefined,
-            temporary ? this.userId : undefined
+            temporary ? this.authorId : undefined
+        );
+    }
+    async update(messageId: string, content: string | Card | Card[], reply: boolean = false) {
+        return this.client.API.message.update(
+            messageId,
+            content,
+            reply ? this.messageId : undefined
         )
     }
-    private async __sendCard(content: Card[], quote: boolean = false, temporary: boolean = false) {
-        this.client.rest.message.create(
-            MessageType.CardMessage,
-            this.channelId,
-            JSON.stringify(content.map(v => v.toObject())),
-            quote ? this.messageId : undefined,
-            temporary ? this.userId : undefined
+    async updateTemp(messageId: string, content: string | Card | Card[], reply: boolean = false) {
+        return this.client.API.message.update(
+            messageId,
+            content,
+            reply ? this.messageId : undefined,
+            this.authorId
         )
     }
-    async send(content: string) {
-        return this.__sendText(content);
+
+    async send(content: string | Card | Card[]) {
+        return this.__send(content);
     }
-    async sendTemp(content: string) {
-        return this.__sendText(content, false, true);
+    async sendTemp(content: string | Card | Card[]) {
+        return this.__send(content, false, true);
     }
-    async reply(content: string) {
-        return this.__sendText(content, true);
+    async reply(content: string | Card | Card[]) {
+        return this.__send(content, true);
     }
-    async replyTemp(content: string) {
-        return this.__sendText(content, true, true);
-    }
-    async sendCard(content: Card[]) {
-        return this.__sendCard(content);
-    }
-    async sendTempCard(content: Card[]) {
-        return this.__sendCard(content, false, true);
-    }
-    async replyCard(content: Card[]) {
-        return this.__sendCard(content, true);
-    }
-    async replyTempCard(content: Card[]) {
-        return this.__sendCard(content, true, true);
+    async replyTemp(content: string | Card | Card[]) {
+        return this.__send(content, true, true);
     }
 }
