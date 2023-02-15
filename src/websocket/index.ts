@@ -123,9 +123,12 @@ export default class WebSocket {
     }
 
     private reconnectWebSocket() {
-        this.Socket?.removeAllListeners();
+        if (this.Socket) {
+            const socket = this.Socket;
+            this.Socket = undefined;
+            socket?.close();
+        }
         clearInterval(this.__interval);
-        this.Socket = undefined;
         this.__interval = undefined;
         // this.connectWebSocketType(true);
         this.connectWebSocketType();
