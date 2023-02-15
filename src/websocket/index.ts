@@ -72,9 +72,15 @@ export default class WebSocket {
             }, 30 * 1000);
 
             this.getNextItemFromQueue(WebSocketType.SignalType.Hello, 6 * 1000).then(async (helloPackage) => {
-                this.logger.debug('Recieved HELLO');
-                this.state = WebSocketType.State.RecievingMessage;
-                this.sessionId = helloPackage.d.session_id;
+                if (helloPackage.d.code == 0) {
+                    this.logger.debug('Recieved HELLO');
+                    this.state = WebSocketType.State.RecievingMessage;
+                    this.sessionId = helloPackage.d.session_id;
+                } else {
+                    this.logger.warn('HELLO not successful');
+                    this.logger.warn(`Recieving code ${helloPackage.d.code}`);
+                    this.state = WebSocketType.State.NeedsRestart;
+                }
             }).catch((e) => {
                 if (e instanceof TimeoutError) {
                     this.state = WebSocketType.State.NeedsRestart;
