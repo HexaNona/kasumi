@@ -78,7 +78,7 @@ export default class WebSocket {
             }).catch((e) => {
                 if (e instanceof TimeoutError) {
                     this.state = WebSocketType.State.NeedsRestart;
-                    this.logger.warn("Cannot recieve HELLO package, retrying");
+                    this.logger.warn(`Cannot recieve HELLO package. ${e.message}, retrying`);
                     return;
                 } else throw e;
             });
@@ -115,16 +115,21 @@ export default class WebSocket {
             }
         });
     }
-    private async ensureWebSocketTypeConnection() {
+
+    private reconnectWebSocket() {
+        this.Socket?.removeAllListeners();
+        clearInterval(this.__interval);
+        this.Socket = undefined;
+        this.__interval = undefined;
+        // this.connectWebSocketType(true);
+        this.connectWebSocketType();
+    }
+    private ensureWebSocketTypeConnection() {
         this.connectWebSocketType();
         setInterval(async () => {
             if (this.state == WebSocketType.State.NeedsRestart) {
-                this.logger.info('WebSocketType needs to reconnect');
-                this.Socket?.removeAllListeners();
-                clearInterval(this.__interval);
-                this.Socket = undefined;
-                this.__interval = undefined;
-                this.connectWebSocketType(true);
+                this.logger.info('WebSocket needs to reconnect');
+                this.reconnectWebSocket();
             }
         }, 500)
     }
