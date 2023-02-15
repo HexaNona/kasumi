@@ -58,7 +58,6 @@ export default class BaseMenu {
     messageProcessing(content: string, event: PlainTextMessageEvent | MarkdownMessageEvent) {
         let splitContent = content ? content.split(' ') : [];
         const commands = Object.keys(this.__commands).filter(k => splitContent[0] == k);
-        console.log(content, splitContent, commands);
         if (commands.length) {
             for (const key of commands) {
                 const command = this.__commands[key];
@@ -86,7 +85,6 @@ export default class BaseMenu {
                     card.addText(text);
                 }
             }
-            console.log(card.toString());
             session.reply(card)
         }
     }
