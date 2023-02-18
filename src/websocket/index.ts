@@ -96,13 +96,15 @@ export default class WebSocket {
                 case WebSocketType.SignalType.Event: {
                     this.messageBuffer.push(data);
                     this.messageBuffer.sort((a, b) => { return a.sn - b.sn });
+                    while (this.messageBuffer[0] && this.messageBuffer[0].sn < this.sn) this.messageBuffer.shift();
                     while (this.messageBuffer[0] && this.sn + 1 == this.messageBuffer[0].sn) {
-                        let buffer = this.messageBuffer.pop();
+                        let buffer = this.messageBuffer.shift();
                         if (buffer) {
                             this.client.message.recievedMessage(buffer);
                             this.sn = buffer.sn;
                             if (this.sn >= 65536) this.sn = 0;
                         }
+                        while (this.messageBuffer[0] && this.messageBuffer[0].sn < this.sn) this.messageBuffer.shift();
                     }
                     break;
                 }
