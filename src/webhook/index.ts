@@ -46,10 +46,9 @@ export default class WebHook {
                         } else {
                             res.send();
 
-                            this.logger.trace({
-                                message: `Recieved message "${event.d.content}" from ${event.d.author_id}, ID = ${event.d.msg_id}`,
-                                currentSN: this.sn,
-                                messageSN: event.sn
+                            this.logger.trace(`Recieved message "${event.d.content}" from ${event.d.author_id}, ID = ${event.d.msg_id}`, {
+                                cur_sn: this.sn,
+                                msg_sn: event.sn
                             });
                             this.messageBuffer.push(event);
                             this.messageBuffer.sort((a, b) => { return a.sn - b.sn });
