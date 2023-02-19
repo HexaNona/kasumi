@@ -45,7 +45,13 @@ export default class WebHook {
                             });
                         } else {
                             res.send();
-                            if (this.sn < event.sn) this.messageBuffer.push(event);
+
+                            this.logger.trace({
+                                message: `Recieved message "${event.d.content}" from ${event.d.author_id}, ID = ${event.d.msg_id}`,
+                                currentSN: this.sn,
+                                messageSN: event.sn
+                            });
+                            this.messageBuffer.push(event);
                             this.messageBuffer.sort((a, b) => { return a.sn - b.sn });
                             while (this.messageBuffer[0] && this.messageBuffer[0].sn < this.sn) this.messageBuffer.shift();
                             while (this.messageBuffer[0] && this.sn + 1 == this.messageBuffer[0].sn) {
@@ -57,6 +63,7 @@ export default class WebHook {
                                 }
                                 while (this.messageBuffer[0] && this.messageBuffer[0].sn < this.sn) this.messageBuffer.shift();
                             }
+                            this.logger.trace(`${this.messageBuffer.length} more message(s) in buffer`);
                         }
                     } else {
                         this.logger.warn('Verify token dismatch!');

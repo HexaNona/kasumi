@@ -94,6 +94,11 @@ export default class WebSocket {
             this.logger.trace(data);
             switch (data.s) {
                 case WebSocketType.SignalType.Event: {
+                    this.logger.trace({
+                        message: `Recieved message "${data.d.content}" from ${data.d.author_id}, ID = ${data.d.msg_id}`,
+                        currentSN: this.sn,
+                        messageSN: data.sn
+                    });
                     this.messageBuffer.push(data);
                     this.messageBuffer.sort((a, b) => { return a.sn - b.sn });
                     while (this.messageBuffer[0] && this.messageBuffer[0].sn < this.sn) this.messageBuffer.shift();
@@ -106,6 +111,7 @@ export default class WebSocket {
                         }
                         while (this.messageBuffer[0] && this.messageBuffer[0].sn < this.sn) this.messageBuffer.shift();
                     }
+                    this.logger.trace(`${this.messageBuffer.length} more message(s) in buffer`);
                     break;
                 }
                 case WebSocketType.SignalType.Reconnect: {
