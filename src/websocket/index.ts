@@ -100,7 +100,7 @@ export default class WebSocket {
                     });
                     this.messageBuffer.push(data);
                     this.messageBuffer.sort((a, b) => { return a.sn - b.sn });
-                    while (this.messageBuffer[0] && this.messageBuffer[0].sn < this.sn) this.messageBuffer.shift();
+                    while (this.messageBuffer[0] && this.messageBuffer[0].sn <= this.sn) this.messageBuffer.shift();
                     while (this.messageBuffer[0] && this.sn + 1 == this.messageBuffer[0].sn) {
                         let buffer = this.messageBuffer.shift();
                         if (buffer) {
