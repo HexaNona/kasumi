@@ -55,7 +55,7 @@ export default class WebSocket {
             this.Socket = new ws(gateway + '?compress=0');
         }
         this.Socket.on('open', async () => {
-            this.logger.debug('WebSocketType connection established');
+            this.logger.debug('WebSocket connection established');
             this.state = WebSocketType.State.Initialization;
 
             this.__interval = setInterval(async () => {
@@ -119,7 +119,7 @@ export default class WebSocket {
                     break;
                 }
                 case WebSocketType.SignalType.ResumeACK: {
-                    this.logger.info("Resumed WebSocketType connection");
+                    this.logger.info("Resumed WebSocket connection");
                     this.sessionId = data.d.session_id;
                     break;
                 }
