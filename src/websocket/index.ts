@@ -55,7 +55,7 @@ export default class WebSocket {
             this.Socket = new ws(gateway + '?compress=0');
         }
         this.Socket.on('open', async () => {
-            this.logger.debug('WebSocketType connection established');
+            this.logger.debug('WebSocket connection established');
             this.state = WebSocketType.State.Initialization;
 
             this.__interval = setInterval(async () => {
@@ -91,19 +91,26 @@ export default class WebSocket {
         })
         this.Socket.on('message', async (buffer: Buffer) => {
             const data: WebSocketType.Signals = JSON.parse(buffer.toString());
-            this.logger.trace(data);
+            // this.logger.trace(data);
             switch (data.s) {
                 case WebSocketType.SignalType.Event: {
+                    this.logger.trace(`Recieved message "${data.d.content}" from ${data.d.author_id}, ID = ${data.d.msg_id}`, {
+                        cur_sn: this.sn,
+                        msg_sn: data.sn
+                    });
                     this.messageBuffer.push(data);
                     this.messageBuffer.sort((a, b) => { return a.sn - b.sn });
+                    while (this.messageBuffer[0] && this.messageBuffer[0].sn <= this.sn) this.messageBuffer.shift();
                     while (this.messageBuffer[0] && this.sn + 1 == this.messageBuffer[0].sn) {
-                        let buffer = this.messageBuffer.pop();
+                        let buffer = this.messageBuffer.shift();
                         if (buffer) {
                             this.client.message.recievedMessage(buffer);
                             this.sn = buffer.sn;
                             if (this.sn >= 65536) this.sn = 0;
                         }
+                        while (this.messageBuffer[0] && this.messageBuffer[0].sn < this.sn) this.messageBuffer.shift();
                     }
+                    this.logger.trace(`${this.messageBuffer.length} more message(s) in buffer`);
                     break;
                 }
                 case WebSocketType.SignalType.Reconnect: {
@@ -111,7 +118,7 @@ export default class WebSocket {
                     break;
                 }
                 case WebSocketType.SignalType.ResumeACK: {
-                    this.logger.info("Resumed WebSocketType connection");
+                    this.logger.info("Resumed WebSocket connection");
                     this.sessionId = data.d.session_id;
                     break;
                 }
