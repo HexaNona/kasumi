@@ -111,6 +111,7 @@ export default class WebSocket {
                         while (this.messageBuffer[0] && this.messageBuffer[0].sn < this.sn) this.messageBuffer.shift();
                     }
                     this.logger.trace(`${this.messageBuffer.length} more message(s) in buffer`);
+                    this.logger.trace(this.messageBuffer.map(v => v.sn));
                     break;
                 }
                 case WebSocketType.SignalType.Reconnect: {
