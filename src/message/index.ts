@@ -2,7 +2,7 @@ import Logger from "bunyan";
 import { EventEmitter } from "events";
 import Kasumi from "../";
 import { WebSocket, MessageType } from "../type";
-import RawEmisions, { AudioMessageEvent, ButtonClickedEvent, CardMessageEvent, FileMessageEvent, ImageMessageEvent, MarkdownMessageEvent, PlainTextMessageEvent, SystemMessageEvent, VideoMessageEvent } from "./type";
+import RawEmisions, { ActionMessageEvent, AudioMessageEvent, ButtonClickedEvent, CardMessageEvent, FileMessageEvent, ImageMessageEvent, MarkdownMessageEvent, PlainTextMessageEvent, SystemMessageEvent, VideoMessageEvent } from "./type";
 
 export interface Message extends EventEmitter {
     on<T extends keyof RawEmisions>(event: T, listener: RawEmisions[T]): this;
@@ -80,6 +80,11 @@ export class Message extends EventEmitter implements Message {
             case MessageType.CardMessage: {
                 event = new CardMessageEvent(data as any, this.client)
                 this.emit('cardMessages', event);
+                break;
+            }
+            case MessageType.ActionMessage: {
+                event = new ActionMessageEvent(data as any, this.client)
+                this.emit('actionMessages', event);
                 break;
             }
             default: {

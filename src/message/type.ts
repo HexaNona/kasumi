@@ -14,6 +14,7 @@ export default interface RawEmisions {
     allTextMessages(event: PlainTextMessageEvent | MarkdownMessageEvent): void;
     cardMessages(event: CardMessageEvent): void;
     buttonClicked(event: ButtonClickedEvent): void;
+    actionMessages(event: ActionMessageEvent): void;
 }
 class BaseMessageEvent {
     messageType: MessageType;
@@ -154,6 +155,13 @@ export class FileMessageEvent extends UserMessageEvent {
 export class CardMessageEvent extends UserMessageEvent {
     messageType = MessageType.CardMessage;
     constructor(rawEvent: WebSocket.NormalMessageEvent<MessageType.CardMessage, GuildType>, client: Kasumi) {
+        super(rawEvent, client);
+    }
+}
+
+export class ActionMessageEvent extends UserMessageEvent {
+    messageType = MessageType.ActionMessage;
+    constructor(rawEvent: WebSocket.NormalMessageEvent<MessageType.ActionMessage, GuildType>, client: Kasumi) {
         super(rawEvent, client);
     }
 }

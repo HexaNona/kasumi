@@ -6,6 +6,7 @@ export enum MessageType {
     AudioMessage = 8,
     MarkdownMessage = 9,
     CardMessage = 10,
+    ActionMessage = 12,
     SystemMessage = 255
 }
 
@@ -207,7 +208,7 @@ export namespace WebSocket {
         type: MessageType,
         target_id: string,
         author_id: string,
-        content: string,
+        content: any,
         msg_id: string,
         msg_timestamp: string,
         nonce: string,
@@ -260,6 +261,15 @@ export namespace WebSocket {
             type: MessageType.CardMessage,
             author: User
         }
+        12: {
+            type: MessageType.ActionMessage,
+            author: User,
+            kmakrdown: {
+                mention: string[],
+                mention_part: Array<RawMention.User>,
+                item_part: Items[]
+            }
+        }
     }
     export type NormalMessageType = Exclude<MessageType, MessageType.SystemMessage>;
     interface MessageEventChannelTypeExtra<T extends NormalMessageType> {
@@ -275,12 +285,57 @@ export namespace WebSocket {
     }
     export interface NormalMessageEvent<T extends NormalMessageType, K extends GuildType> extends MessageEvent {
         channel_type: K,
+        content: T extends MessageType.ActionMessage ? {
+            type: 'item',
+            data: {
+                user_id: string,
+                target_id: string,
+                item_id: string
+            }
+        } : string,
         type: T,
         extra: MessageEventChannelTypeExtra<T>[K]
     }
-
+    export type Items = PokeItem;
+    export interface PokeItem {
+        id: number,
+        name: string,
+        desc: string,
+        cd: number,
+        categories: string[],
+        label: number,
+        label_name: string,
+        quality: number,
+        icon: string,
+        icon_thumb: string,
+        icon_expired: string,
+        quality_resouce: {
+            color: string,
+            small: string,
+            big: string
+        },
+        resources: {
+            type: 'ImageAnimation',
+            preview_expired: string,
+            webp: string,
+            pag: string,
+            gif: string,
+            time: number,
+            width: number,
+            height: number,
+            percent: number
+        },
+        msg_scenarios: {
+            ABA: string,
+            ABB: string,
+            ABC: string,
+            AAA: string,
+            AAB: string
+        }
+    }
     export interface SystemMessageEvent extends MessageEvent {
         type: MessageType.SystemMessage,
+        content: string,
         extra: {
             type: string,
             body: any
