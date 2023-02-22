@@ -19,6 +19,8 @@ export default class BaseCommand {
         throw new MethodNotImplementedError();
     }
     async exec(args: string[], event: PlainTextMessageEvent | MarkdownMessageEvent | ButtonClickedEvent, client: Kasumi): Promise<void> {
-        return this.func(new BaseSession(args, event, client));
+        return this.func(new BaseSession(args, event, client)).catch((e) => {
+            this.logger.error(e);
+        })
     }
 }
