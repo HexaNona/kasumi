@@ -1,6 +1,8 @@
 {
     "conventionalCommits.scopes": [
         "session",
-        "pkg"
+        "pkg",
+        "requester",
+        "API"
     ]
 }
