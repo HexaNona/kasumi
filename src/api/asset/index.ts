@@ -2,7 +2,7 @@ import Rest from "../../requestor";
 import { RawAssetCreateResponse } from "./type";
 import FormData from "form-data";
 
-export default class Gateway {
+export default class Asset {
     rest: Rest;
     constructor(rest: Rest) {
         this.rest = rest;
