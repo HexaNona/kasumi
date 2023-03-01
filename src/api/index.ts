@@ -1,4 +1,5 @@
 import Rest from "../requestor";
+import Asset from "./asset";
 import Channel from "./channel";
 import Game from "./game";
 import Gateway from "./gateway";
@@ -8,6 +9,8 @@ import User from "./user";
 
 export default class API {
     public rest: Rest;
+
+    public asset: Asset;
     public channel: Channel;
     public game: Game;
     public gateway: Gateway;
@@ -16,6 +19,8 @@ export default class API {
     public user: User;
     constructor(token: string) {
         this.rest = new Rest(token);
+
+        this.asset = new Asset(this.rest);
         this.channel = new Channel(this.rest);
         this.game = new Game(this.rest);
         this.gateway = new Gateway(this.rest);
