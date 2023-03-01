@@ -3,6 +3,7 @@
         "session",
         "pkg",
         "requester",
-        "API"
+        "API",
+        "command"
     ]
 }

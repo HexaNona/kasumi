@@ -18,9 +18,17 @@ export default class BaseCommand {
     func: CommandFunction<BaseSession, any> = async (session: BaseSession) => {
         throw new MethodNotImplementedError();
     }
-    async exec(args: string[], event: PlainTextMessageEvent | MarkdownMessageEvent | ButtonClickedEvent, client: Kasumi): Promise<void> {
-        return this.func(new BaseSession(args, event, client)).catch((e) => {
-            this.logger.error(e);
-        })
+    async exec(session: BaseSession): Promise<void>;
+    async exec(args: string[], event: PlainTextMessageEvent | MarkdownMessageEvent | ButtonClickedEvent, client: Kasumi): Promise<void>;
+    async exec(sessionOrArgs: BaseSession | string[], event?: PlainTextMessageEvent | MarkdownMessageEvent | ButtonClickedEvent, client?: Kasumi) {
+        if (sessionOrArgs instanceof BaseSession) {
+            return this.func(sessionOrArgs).catch((e) => {
+                this.logger.error(e);
+            })
+        } else if (event && client) {
+            return this.func(new BaseSession(sessionOrArgs, event, client)).catch((e) => {
+                this.logger.error(e);
+            })
+        } else return this.logger.warn("Executed command with wrong arguments");
     }
 }
