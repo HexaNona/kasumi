@@ -7,6 +7,7 @@ import { UnknowInputTypeError } from "../../error";
 
 export default class BaseMenu {
     name: string = 'default';
+    description?: string
 
     prefix: string = '/';
 

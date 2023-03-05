@@ -1,6 +1,6 @@
 import Logger from "bunyan";
 import { UnknowInputTypeError } from "../error";
-import Kasumi from "..";
+import Kasumi, { BaseSession, Card } from "..";
 import BaseCommand from "./menu/baseCommand";
 import BaseMenu from "./menu/baseMenu";
 import { MarkdownMessageEvent, PlainTextMessageEvent } from "../message/type";
@@ -86,7 +86,43 @@ export default class Plugin {
             }
         } else throw new UnknowInputTypeError(typeof command, 'BaseMenu | BaseCommand');
     }
+    private __get_menu_list() {
+        return Object.keys(this.__menus);
+    }
+    private __get_command_list() {
+        return Object.keys(this.__commands);
+    }
     messageProcessing(content: string, event: PlainTextMessageEvent | MarkdownMessageEvent) {
+        if (content.trim() == `(met)${this.client.userId}(met)`) { // Message is "@Bot"
+            const session = new BaseSession([], event, this.client);
+            const card = new Card()
+                .addTitle("命令列表")
+                .addDivider();
+            const menuList = this.__get_menu_list();
+            for (const menuName of menuList) {
+                const menu = this.__menus[menuName];
+                if (menu && menuName == menu.name) {
+                    let text = "";
+                    text += `\`\`\`plain\n${this.prefix.charAt(0)}${menu.name}\n\`\`\``;
+                    if (menu.description) text += '\n' + menu.description;
+                    else text += '\n' + `(font)发送 ${this.prefix.charAt(0)}${menu.name} 查看更多信息(font)[secondary]`;
+                    card.addText(text);
+                }
+            }
+            const commandList = this.__get_command_list();
+            for (const commandName of commandList) {
+                const command = this.__commands[commandName];
+                if (command && commandName == command.name) {
+                    let text = "";
+                    if (command.usage) text += `\`\`\`plain\n${command.usage}\n\`\`\``;
+                    else text += `\`\`\`plain\n${this.prefix.charAt(0)}${command.name}\n\`\`\``;
+                    if (command.description) text += '\n' + command.description;
+                    else text += '\n' + '(font)无介绍(font)[secondary]';
+                    card.addText(text);
+                }
+            }
+            session.reply(card)
+        }
         let splitContent = content ? content.split(' ') : [];
         const commands = Object.keys(this.__commands).filter(k => {
             let prefixIdx;
