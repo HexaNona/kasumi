@@ -130,6 +130,6 @@ export default class Card {
         };
     }
     toString(): string {
-        return JSON.stringify(this.toObject());
+        return JSON.stringify([this.toObject()]);
     }
 }
