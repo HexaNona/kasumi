@@ -45,7 +45,6 @@ export default class WebHook {
                             });
                         } else {
                             res.send();
-
                             this.logger.trace(`Recieved message "${event.d.content}" from ${event.d.author_id}, ID = ${event.d.msg_id}`, {
                                 cur_sn: this.sn,
                                 msg_sn: event.sn

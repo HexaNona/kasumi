@@ -6,6 +6,7 @@ import Message from "./message";
 import WebSocket from "./websocket";
 import WebHook from "./webhook";
 import Plugin from "./plugin"
+import WebSocketSource from "./webhook-botroot";
 export { default as BaseMenu } from "./plugin/menu/baseMenu";
 export { default as BaseCommand, CommandFunction } from "./plugin/menu/baseCommand";
 export { default as BaseSession } from "./plugin/session";
@@ -19,6 +20,7 @@ export default class Kasumi {
     message: Message;
     plugin: Plugin;
     websocket?: WebSocket;
+    websocketBotRoot?: WebSocketSource;
     webhook?: WebHook;
     logger: Logger;
 
@@ -90,9 +92,12 @@ export default class Kasumi {
         this.userId = profile.id;
         this.username = profile.username;
         this.identifyNum = profile.identify_num;
-        this.logger.debug(`Logged in as ${this.username}#${this.identifyNum} (${this.userId})`);
+        this.logger.info(`Logged in as ${this.username}#${this.identifyNum} (${this.userId})`);
         if (this.__config.type == 'websocket') {
-            this.websocket = new WebSocket(this);
+            if (this.__config.vendor == 'botroot') {
+                this.websocketBotRoot = new WebSocketSource(this);
+                this.websocketBotRoot.connect();
+            } else this.websocket = new WebSocket(this);
         } else {
             this.webhook = new WebHook(this.__config, this);
         }

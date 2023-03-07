@@ -16,7 +16,7 @@ export default interface RawEmisions {
     buttonClicked(event: ButtonClickedEvent): void;
     actionMessages(event: ActionMessageEvent): void;
 }
-class BaseMessageEvent {
+export class BaseMessageEvent {
     messageType: MessageType;
     channelType: GuildType;
     messageId: string;

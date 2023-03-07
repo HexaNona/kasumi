@@ -476,6 +476,7 @@ export interface RawResponse {
 
 export interface WebSocketConfig {
     type: 'websocket',
+    vendor?: 'botroot' | 'hexona'
     token: string
 }
 
