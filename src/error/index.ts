@@ -1,7 +1,7 @@
 export class RestError extends Error {
     code: number;
-    constructor(code: number, message: string) {
-        super(message);
+    constructor(code: number, message: string, method: string, endpoint: string) {
+        super(`${method} ${endpoint} ${message}`);
         this.code = code;
     }
 }

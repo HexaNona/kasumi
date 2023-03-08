@@ -1,3 +1,4 @@
+import Logger from "bunyan";
 import Rest from "../requestor";
 import Asset from "./asset";
 import Channel from "./channel";
@@ -17,8 +18,8 @@ export default class API {
     public guild: Guild;
     public message: Message;
     public user: User;
-    constructor(token: string) {
-        this.rest = new Rest(token);
+    constructor(token: string, logger: Logger) {
+        this.rest = new Rest(token, logger);
 
         this.asset = new Asset(this.rest);
         this.channel = new Channel(this.rest);

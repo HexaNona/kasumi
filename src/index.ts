@@ -65,8 +65,22 @@ export default class Kasumi {
             default:
                 this.__bunyan_error_level = Logger.WARN;
         }
-        this.logger = new Logger({
-            name: 'kasumi',
+        this.logger = this.getLogger('kasumi');
+
+        this.__config = config;
+        this.__token = this.__config.token;
+
+        this.message = new Message(this);
+        this.plugin = new Plugin(this);
+        this.API = new API(this.__token, this.getLogger('requestor'));
+
+        this.message.on('allTextMessages', (event) => {
+            this.plugin.messageProcessing(event.content, event);
+        })
+    }
+    getLogger(name: string) {
+        return new Logger({
+            name: name,
             streams: [{
                 stream: process.stdout,
                 level: this.__bunyan_log_level
@@ -75,17 +89,6 @@ export default class Kasumi {
                 level: this.__bunyan_error_level
             }]
         });
-
-        this.__config = config;
-        this.__token = this.__config.token;
-
-        this.message = new Message(this);
-        this.plugin = new Plugin(this);
-        this.API = new API(this.__token);
-
-        this.message.on('allTextMessages', (event) => {
-            this.plugin.messageProcessing(event.content, event);
-        })
     }
     async connect() {
         const profile = await this.API.user.me();

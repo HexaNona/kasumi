@@ -1,4 +1,3 @@
-import { RestError } from "../../error";
 import Rest from "../../requestor";
 import { MessageType, User } from "../../type";
 import { v4 as uuidv4 } from 'uuid';
@@ -72,8 +71,9 @@ export default class Message {
             temp_target_id: tempMessageTargetUser,
             nonce
         }).then((data) => {
-            if (data.nonce == nonce) return data;
-            else throw new NonceDismatchError();
+            if (data)
+                if (data.nonce == nonce) return data;
+                else throw new NonceDismatchError();
         }); // revert mark
     }
 
