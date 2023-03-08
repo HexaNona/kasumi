@@ -4,6 +4,7 @@
  * Released under the MIT License
  */
 
+import Logger from 'bunyan'
 import { EventEmitter } from 'events'
 import { cloneDeep } from 'lodash'
 import Kasumi from '../'
@@ -18,10 +19,12 @@ export interface MessageSource extends EventEmitter {
 }
 
 export class MessageSource extends EventEmitter implements MessageSource {
+    logger: Logger;
     protected botInstance: Kasumi;
     constructor(botInstance: Kasumi) {
         super()
-        this.botInstance = botInstance
+        this.botInstance = botInstance;
+        this.logger = this.botInstance.getLogger('websocket-botroot');
     }
     async connect(): Promise<boolean> {
         return false
@@ -53,7 +56,7 @@ export class MessageSource extends EventEmitter implements MessageSource {
     protected eventProcess(packet: KHEventPacket): void {
         if (packet.s == 0) {
             const event = packet.d;
-            this.botInstance.logger.trace(`Recieved message "${event.content}" from ${event.author_id}, ID = ${event.msg_id}`, {
+            this.logger.trace(`Recieved message "${event.content}" from ${event.author_id}, ID = ${event.msg_id}`, {
                 cur_sn: this.sn,
                 msg_sn: event.sn
             });

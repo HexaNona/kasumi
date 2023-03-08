@@ -76,7 +76,7 @@ export default class WebSocketSource extends MessageSource {
                 this.onEventArrive(packet as KHEventPacket)
                 break
             case KHOpcode.PING:
-                this.botInstance.logger.warn('Receive Wrong Direction Packet!')
+                this.logger.warn('Receive Wrong Direction Packet!')
                 break
             case KHOpcode.PONG:
                 if (this.heartbeatTimeout) {
@@ -93,13 +93,13 @@ export default class WebSocketSource extends MessageSource {
             case KHOpcode.RESUME_ACK:
                 break
             default:
-                this.botInstance.logger.info(packet)
+                this.logger.info(packet)
                 break
         }
     }
 
     private onOpen() {
-        this.botInstance.logger.info("WebSocket (BotRoot) connection open");
+        this.logger.info("WebSocket (BotRoot) connection open");
         this.nextStage()
     }
 
@@ -213,7 +213,7 @@ export default class WebSocketSource extends MessageSource {
                 this.stage = 4
                 break
             case 4:
-                this.botInstance.logger.error('Wrong next Stage')
+                this.logger.error('Wrong next Stage')
                 break
             case 5:
                 this.retryTimes = 0
@@ -231,7 +231,7 @@ export default class WebSocketSource extends MessageSource {
                 break
             case 1:
                 if (this.retryTimes > 3) {
-                    this.botInstance.logger.warn('getGateWay Fail over three times, retrying', error)
+                    this.logger.warn('getGateWay Fail over three times, retrying', error)
                 }
                 await wait(getRetryDelay(2, this.retryTimes, 1, 60))
                 this.getGateWay()
@@ -241,7 +241,7 @@ export default class WebSocketSource extends MessageSource {
                     await wait(getRetryDelay(2, this.retryTimes, 1, 60))
                     this.connectSocket()
                 } else {
-                    this.botInstance.logger.warn(
+                    this.logger.warn(
                         'connect to gateway fail over three times, retrying',
                         error
                     )
@@ -251,7 +251,7 @@ export default class WebSocketSource extends MessageSource {
                 break
             case 3:
                 this.stage = 0
-                this.botInstance.logger.warn(error)
+                this.logger.warn(error)
                 this.nextStage()
                 break
             case 4:
@@ -272,7 +272,7 @@ export default class WebSocketSource extends MessageSource {
                     clearTimeout(this.heartbeatTimeout)
                     this.heartbeatTimeout = undefined
                 }
-                this.botInstance.logger.warn('connection closed, reconnecting')
+                this.logger.warn('connection closed, reconnecting')
                 this.stage = 0
                 this.nextStage()
                 break
@@ -282,7 +282,7 @@ export default class WebSocketSource extends MessageSource {
                     await wait(getRetryDelay(2, this.retryTimes, 1, 60))
                     this.heartbeat()
                 } else {
-                    this.botInstance.logger.warn('heartbeat without reponse over three times', error)
+                    this.logger.warn('heartbeat without reponse over three times', error)
                     try {
                         this.safeCloseSocket()
                     } catch (error) {
@@ -309,7 +309,7 @@ export default class WebSocketSource extends MessageSource {
             case 7:
                 break
             default:
-                this.botInstance.logger.warn('should not run to here', error)
+                this.logger.warn('should not run to here', error)
                 break
         }
     }
@@ -332,7 +332,7 @@ export default class WebSocketSource extends MessageSource {
             case 40101:
             case 40102:
             case 40103:
-                this.botInstance.logger.warn(`Receive ${packet.d.code}, Back to Stage 1`)
+                this.logger.warn(`Receive ${packet.d.code}, Back to Stage 1`)
                 this.safeCloseSocket()
                 if (this.helloTimeout) {
                     clearTimeout(this.helloTimeout)
@@ -342,7 +342,7 @@ export default class WebSocketSource extends MessageSource {
                 this.nextStage()
                 break
             default:
-                this.botInstance.logger.warn(`Receive ${packet.d.code}, Ignored`)
+                this.logger.warn(`Receive ${packet.d.code}, Ignored`)
                 break
         }
     }
@@ -366,13 +366,13 @@ export default class WebSocketSource extends MessageSource {
         this.sessionId = undefined
         this.buffer = []
         this.nextStage()
-        this.botInstance.logger.warn('Receive Reconnect Packet : ' + JSON.stringify(packet.d))
+        this.logger.warn('Receive Reconnect Packet : ' + JSON.stringify(packet.d))
     }
 
     private startHeartbeat() {
         if (this.heartbeatInterval) {
             clearInterval(this.heartbeatInterval)
-            this.botInstance.logger.warn('Exist Heartbeat Interval , may happen something unexpected')
+            this.logger.warn('Exist Heartbeat Interval , may happen something unexpected')
         }
         this.heartbeatInterval = setInterval(this.heartbeat.bind(this), 30 * 1000)
     }
@@ -404,7 +404,7 @@ export default class WebSocketSource extends MessageSource {
         if (this.socket && this.socket.readyState === this.socket.OPEN) {
             this.retry()
         } else {
-            this.botInstance.logger.warn('should not run to here')
+            this.logger.warn('should not run to here')
         }
     }
 

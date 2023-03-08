@@ -33,16 +33,7 @@ export default class BaseMenu {
     }
     addCommand(command: BaseCommand) {
         this.logger.debug(`Loading command: ${command.name}`);
-        command.logger = new Logger({
-            name: `kasumi.plugin.menu.${this.name}.${command.name}`,
-            streams: [{
-                stream: process.stdout,
-                level: this.client.__bunyan_log_level
-            }, {
-                stream: process.stderr,
-                level: this.client.__bunyan_error_level
-            }]
-        });
+        command.logger = this.client.getLogger('plugin', 'menu', this.name, command.name);
         this.__commands[command.name] = command;
     }
     addAlias(command: BaseCommand, ...aliases: string[]) {

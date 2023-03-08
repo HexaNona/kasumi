@@ -19,16 +19,7 @@ export class Message extends EventEmitter implements Message {
     constructor(client: Kasumi) {
         super();
         this.client = client;
-        this.logger = new Logger({
-            name: 'kasumi.event',
-            streams: [{
-                stream: process.stdout,
-                level: this.client.__bunyan_log_level
-            }, {
-                stream: process.stderr,
-                level: this.client.__bunyan_error_level
-            }]
-        });
+        this.logger = this.client.getLogger('event');
     }
     recievedMessage(e: WebSocket.Signal.Event) {
         const data = e.d;

@@ -16,16 +16,7 @@ export default class WebSocket {
     private messageQueue: WebSocketType.MessageQueue = { 0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] }
     constructor(client: Kasumi) {
         this.client = client;
-        this.logger = new Logger({
-            name: 'kasumi.websocket',
-            streams: [{
-                stream: process.stdout,
-                level: this.client.__bunyan_log_level
-            }, {
-                stream: process.stderr,
-                level: this.client.__bunyan_error_level
-            }]
-        });
+        this.logger = this.client.getLogger('websocket');
         this.state = WebSocketType.State.Initialization;
         this.ensureWebSocketTypeConnection();
     }

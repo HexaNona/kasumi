@@ -11,16 +11,7 @@ export default class Plugin {
     private prefix: string = './';
     constructor(client: Kasumi, ...commands: Array<BaseMenu | BaseCommand>) {
         this.client = client;
-        this.logger = new Logger({
-            name: 'kasumi.plugin',
-            streams: [{
-                stream: process.stdout,
-                level: this.client.__bunyan_log_level
-            }, {
-                stream: process.stderr,
-                level: this.client.__bunyan_error_level
-            }]
-        });
+        this.logger = this.client.getLogger('plugin');
         this.load(...commands);
     }
     load(...commands: Array<BaseMenu | BaseCommand>) {
@@ -40,16 +31,7 @@ export default class Plugin {
     addMenu(menu: BaseMenu) {
         this.logger.debug(`Loading menu: ${menu.name}`);
         menu.client = this.client;
-        menu.logger = new Logger({
-            name: `kasumi.plugin.menu.${menu.name}`,
-            streams: [{
-                stream: process.stdout,
-                level: this.client.__bunyan_log_level
-            }, {
-                stream: process.stderr,
-                level: this.client.__bunyan_error_level
-            }]
-        });
+        menu.logger = this.client.getLogger('plugin', 'menu', menu.name);
         menu.init();
         this.__menus[menu.name] = menu;
     }
@@ -58,16 +40,7 @@ export default class Plugin {
     } = {};
     addCommand(command: BaseCommand) {
         this.logger.debug(`Loading command: ${command.name}`);
-        command.logger = new Logger({
-            name: `kasumi.plugin.command.${command.name}`,
-            streams: [{
-                stream: process.stdout,
-                level: this.client.__bunyan_log_level
-            }, {
-                stream: process.stderr,
-                level: this.client.__bunyan_error_level
-            }]
-        });
+        command.logger = this.client.getLogger('plugin', 'command', command.name);
         this.__commands[command.name] = command;
     }
     setPrefix(prefix: string) {

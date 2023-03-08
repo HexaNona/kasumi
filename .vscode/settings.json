@@ -4,6 +4,7 @@
         "pkg",
         "requester",
         "API",
-        "command"
+        "command",
+        "logger"
     ]
 }

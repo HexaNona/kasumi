@@ -14,16 +14,7 @@ export default class WebHook {
     private messageBuffer: Array<Exclude<WebHookType.Events, WebHookType.ChallengeEvent>> = [];
     constructor(config: WebHookConfig, client: Kasumi) {
         this.client = client;
-        this.logger = new Logger({
-            name: 'kasumi.webhook',
-            streams: [{
-                stream: process.stdout,
-                level: this.client.__bunyan_log_level
-            }, {
-                stream: process.stderr,
-                level: this.client.__bunyan_error_level
-            }]
-        });
+        this.logger = this.client.getLogger('webhook');
         this.http = express();
         this.http.use(bodyParser.json());
         this.http.post('/', (req, res) => {

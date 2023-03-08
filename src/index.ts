@@ -65,7 +65,7 @@ export default class Kasumi {
             default:
                 this.__bunyan_error_level = Logger.WARN;
         }
-        this.logger = this.getLogger('kasumi');
+        this.logger = this.getLogger();
 
         this.__config = config;
         this.__token = this.__config.token;
@@ -78,9 +78,9 @@ export default class Kasumi {
             this.plugin.messageProcessing(event.content, event);
         })
     }
-    getLogger(name: string) {
+    getLogger(...name: string[]) {
         return new Logger({
-            name: name,
+            name: `${['kasumi', ...name].join('.')}`,
             streams: [{
                 stream: process.stdout,
                 level: this.__bunyan_log_level
