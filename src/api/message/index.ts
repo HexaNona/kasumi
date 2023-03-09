@@ -32,7 +32,9 @@ export default class Message {
             pin: pinned,
             flag: mode,
             page_size: pageSize
-        }); // revert mark
+        }).catch((e) => {
+            this.rest.logger.error(e);
+        });
     }
 
     /**
@@ -40,10 +42,13 @@ export default class Message {
      * @param messageId ID of the requesting message
      * @returns The requested message item
      */
-    public async view(messageId: string): Promise<RawMessageItem> {
+    public async view(messageId: string): Promise<RawMessageItem | undefined> {
         return this.rest.get('/message/view', {
             msg_id: messageId
-        }); // revert mark
+        }).catch((e) => {
+            this.rest.logger.error(e);
+            return undefined;
+        });
     }
 
     public async create(
@@ -56,7 +61,7 @@ export default class Message {
         msg_id: string,
         msg_timestamp: number,
         nonce: string
-    }> {
+    } | undefined> {
         if (content instanceof Card) {
             content = JSON.stringify([content.toObject()]);
         } else if (content instanceof Array<Card>) {
@@ -73,8 +78,14 @@ export default class Message {
         }).then((data) => {
             if (data)
                 if (data.nonce == nonce) return data;
-                else throw new NonceDismatchError();
-        }); // revert mark
+                else {
+                    this.rest.logger.error(new NonceDismatchError());
+                    return undefined;
+                }
+        }).catch((e) => {
+            this.rest.logger.error(e);
+            return undefined;
+        });
     }
 
     public async update(
@@ -93,27 +104,36 @@ export default class Message {
             content,
             quote,
             temp_target_id: tempUpdateTargetUser
-        }); // revert mark
+        }).catch((e) => {
+            this.rest.logger.error(e);
+        });
     }
 
     public async delete(messageId: string): Promise<void> {
         return this.rest.post('/message/delete', {
             msg_id: messageId
-        }); // revert mark
+        }).catch((e) => {
+            this.rest.logger.error(e);
+        });
     }
 
-    public async reactionUserList(messageId: string, emojiId: string): Promise<User[]> {
+    public async reactionUserList(messageId: string, emojiId: string): Promise<User[] | undefined> {
         return this.rest.get('/message/reaction-list', {
             msg_id: messageId,
             emoji: emojiId
-        }); // revert mark
+        }).catch((e) => {
+            this.rest.logger.error(e);
+            return undefined;
+        });
     }
 
     public async addReaction(messageId: string, emojiId: string): Promise<void> {
         return this.rest.get('/message/add-reaction', {
             msg_id: messageId,
             emoji: emojiId
-        }); // revert mark
+        }).catch((e) => {
+            this.rest.logger.error(e);
+        });
     }
 
     public async deleteReaction(messageId: string, emojiId: string, userId?: string): Promise<void> {
@@ -121,6 +141,8 @@ export default class Message {
             msg_id: messageId,
             emoji: emojiId,
             user_id: userId
-        }); // revert mark
+        }).catch((e) => {
+            this.rest.logger.error(e);
+        });
     }
 }

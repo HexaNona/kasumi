@@ -12,6 +12,8 @@ export { default as BaseCommand, CommandFunction } from "./plugin/menu/baseComma
 export { default as BaseSession } from "./plugin/session";
 export { default as Card } from './card';
 
+import { retry } from "./util";
+
 export * from './message/type'
 
 
@@ -91,7 +93,7 @@ export default class Kasumi {
         });
     }
     async connect() {
-        const profile = await this.API.user.me();
+        let profile = await retry(this.API.user.me);
         this.userId = profile.id;
         this.username = profile.username;
         this.identifyNum = profile.identify_num;

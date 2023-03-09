@@ -8,18 +8,26 @@ export default class User {
         this.rest = rest;
     }
 
-    async me(): Promise<RawMeResponse> {
-        return this.rest.get('/user/me'); // revert mark
+    async me(): Promise<RawMeResponse | undefined> {
+        return this.rest.get('/user/me').catch((e) => {
+            this.rest.logger.error(e);
+            return undefined;
+        });
     }
 
-    async view(userId: string, guildId?: string): Promise<RawViewResponse> {
+    async view(userId: string, guildId?: string): Promise<RawViewResponse | undefined> {
         return this.rest.get('/user/view', {
             user_id: userId,
             guild_id: guildId
-        }); // revert mark
+        }).catch((e) => {
+            this.rest.logger.error(e);
+            return undefined;
+        });
     }
 
     async offline(): Promise<void> {
-        return this.rest.get('/user/offline'); // revert mark
+        return this.rest.get('/user/offline').catch((e) => {
+            this.rest.logger.error(e);
+        });
     }
 }

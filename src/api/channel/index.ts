@@ -18,13 +18,16 @@ export default class Channel {
         NM: 2,
         HQ: 3
     }
-    async *list(page: number = 1, pageSize: number = 50, guildId: string, type: 'text' | 'voice') {
+    async *list(page: number = 1, pageSize: number = 50, guildId: string, type: 'text' | 'voice'): AsyncGenerator<RawListResponse, void, void> {
         const data: RawListResponse = await this.rest.get('/channel/list', {
             page,
             page_size: pageSize,
             guild_id: guildId,
             type: this.__channel_type_map[type]
-        }); // revert mark
+        }).catch((e) => {
+            this.rest.logger.error(e);
+            return undefined;
+        });
         yield data;
         for (let currentPage = page; currentPage <= data.meta.page_total; ++currentPage) {
             yield this.rest.get('/channel/list', {
@@ -32,12 +35,18 @@ export default class Channel {
                 page_size: pageSize,
                 guild_id: guildId,
                 type: this.__channel_type_map[type]
-            }); // revert mark
+            }).catch((e) => {
+                this.rest.logger.error(e);
+                return undefined;
+            });
         }
     }
 
-    async view(targetId: string): Promise<FullChannel> {
-        return this.rest.get('/channel/view', { target_id: targetId }); // revert mark
+    async view(targetId: string): Promise<FullChannel | undefined> {
+        return this.rest.get('/channel/view', { target_id: targetId }).catch((e) => {
+            this.rest.logger.error(e);
+            return undefined;
+        });
     }
 
     async __create({ guildId, name, parentCategoryId, channelDetail, isCategory }: {
@@ -52,7 +61,7 @@ export default class Channel {
             voiceQuality: 'LQ' | 'NM' | 'HQ'
         },
         isCategory?: boolean
-    }): Promise<FullChannel> {
+    }): Promise<FullChannel | undefined> {
         return this.rest.post('/channel/create', {
             guildId,
             name,
@@ -61,13 +70,16 @@ export default class Channel {
             limit_amount: channelDetail?.type == 'voice' ? channelDetail.memberLimit : undefined,
             voice_quality: channelDetail?.type == 'voice' ? this.__voice_quality_map[channelDetail.voiceQuality] : undefined,
             is_category: isCategory
-        }); // revert mark
+        }).catch((e) => {
+            this.rest.logger.error(e);
+            return undefined;
+        });
     }
 
     async createTextChannel(guildId: string, name: string, parentCategoryId?: string) {
         return this.__create({
             guildId, name, parentCategoryId
-        }); // revert mark
+        });
     }
     async createVoiceChannel(
         guildId: string,
@@ -83,10 +95,12 @@ export default class Channel {
                 memberLimit,
                 voiceQuality
             }
-        }); // revert mark
+        });
     }
     async createCategory(guildId: string, name: string) {
-        return this.__create({ guildId, name, isCategory: true }); // revert mark
+        return this.__create({ guildId, name, isCategory: true }).catch((e) => {
+            this.rest.logger.error(e);
+        });
     }
 
     async update(
@@ -94,26 +108,36 @@ export default class Channel {
         name?: string,
         topic?: string,
         slowMode?: 0 | 5000 | 10000 | 15000 | 30000 | 60000 | 120000 | 300000 | 600000 | 900000 | 1800000 | 3600000 | 7200000 | 21600000
-    ): Promise<FullChannel> {
+    ): Promise<FullChannel | undefined> {
         return this.rest.post('/channel/update', {
             channel_id: channelId,
             name,
             topic,
             slow_mode: slowMode
-        }); // revert mark
+        }).catch((e) => {
+            this.rest.logger.error(e);
+            return undefined;
+        });
     }
 
     async delete(channelId: string): Promise<void> {
-        return this.rest.post('/channel/delete', { channel_id: channelId }); // revert mark
+        return this.rest.post('/channel/delete', { channel_id: channelId }).catch((e) => {
+            this.rest.logger.error(e);
+        });
     }
 
-    async voiceChannelUserList(channelId: string): Promise<User[]> {
-        return this.rest.get('/channel/user-list', { channel_id: channelId }); // revert mark
+    async voiceChannelUserList(channelId: string): Promise<User[] | undefined> {
+        return this.rest.get('/channel/user-list', { channel_id: channelId }).catch((e) => {
+            this.rest.logger.error(e);
+            return undefined;
+        });
     }
     async voiceChannelMoveUser(channelId: string, userIds: string[]): Promise<void> {
         return this.rest.post('/channel/move-user', {
             target_id: channelId,
             user_ids: userIds
-        }); // revert mark
+        }).catch((e) => {
+            this.rest.logger.error(e);
+        });
     }
 }

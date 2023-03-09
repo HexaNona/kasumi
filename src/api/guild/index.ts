@@ -8,16 +8,25 @@ export default class Guild {
         this.rest = rest;
     }
 
-    async *list(page: number = 1, pageSize: number = 50): AsyncGenerator<RawListResponse, void, void> {
-        let data: RawListResponse = await this.rest.get('/guild/list', { page, page_size: pageSize }); // revert mark
+    async *list(page: number = 1, pageSize: number = 50): AsyncGenerator<RawListResponse | undefined, void, void> {
+        let data: RawListResponse = await this.rest.get('/guild/list', { page, page_size: pageSize }).catch((e) => {
+            this.rest.logger.error(e);
+            return undefined;
+        });
         yield data;
         for (let currentPage = page + 1; currentPage <= data.meta.page_total; ++currentPage) {
-            yield await this.rest.get('/guild/list', { page, page_size: pageSize }); // revert mark
+            yield await this.rest.get('/guild/list', { page, page_size: pageSize }).catch((e) => {
+                this.rest.logger.error(e);
+                return undefined;
+            });
         }
     }
 
-    async view(guildId: string): Promise<RawViewResponse> {
-        return this.rest.get('/guild/list', { guild_id: guildId }); // revert mark
+    async view(guildId: string): Promise<RawViewResponse | undefined> {
+        return this.rest.get('/guild/list', { guild_id: guildId }).catch((e) => {
+            this.rest.logger.error(e);
+            return undefined;
+        });
     }
 
     private readonly __desc_asc_map = {
@@ -39,7 +48,7 @@ export default class Guild {
         page: number,
         pageSize: number,
         userId?: number
-    }): AsyncGenerator<RawUserListResponse, void, void> {
+    }): AsyncGenerator<RawUserListResponse | undefined, void, void> {
         let data: RawUserListResponse = await this.rest.get('/guild/list', {
             guild_id: guildId,
             channel_id: channelId,
@@ -51,7 +60,10 @@ export default class Guild {
             page,
             page_size: pageSize,
             filter_user_id: userId
-        }); // revert mark
+        }).catch((e) => {
+            this.rest.logger.error(e);
+            return undefined;
+        });
         yield data;
         for (let currentPage = page + 1; currentPage <= data.meta.page_total; ++currentPage) {
             yield await this.rest.get('/guild/list', {
@@ -65,7 +77,10 @@ export default class Guild {
                 page,
                 page_size: pageSize,
                 filter_user_id: userId
-            }); // revert mark
+            }).catch((e) => {
+                this.rest.logger.error(e);
+                return undefined;
+            });
         }
     }
 
@@ -74,19 +89,25 @@ export default class Guild {
             guild_id: guildId,
             nickname,
             user_id: userId
-        }); // revert mark
+        }).catch((e) => {
+            this.rest.logger.error(e);
+        });
     }
 
     async leave(guildId: string): Promise<void> {
         return this.rest.post('/guild/leave', {
             guild_id: guildId
-        }); // revert mark
+        }).catch((e) => {
+            this.rest.logger.error(e);
+        });
     }
 
     async kick(guildId: string, userId: string): Promise<void> {
         return this.rest.post('/guild/kickout', {
             guild_id: guildId,
             target_id: userId
-        }); // revert mark
+        }).catch((e) => {
+            this.rest.logger.error(e);
+        });
     }
 }

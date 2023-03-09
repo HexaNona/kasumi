@@ -4,6 +4,7 @@ import { WebSocket as WebSocketType } from '../type'
 import delay from 'delay';
 import { TimeoutError } from '../error';
 import Kasumi from '../';
+import { retry } from '../util';
 
 export default class WebSocket {
     public logger: Logger;
@@ -38,7 +39,7 @@ export default class WebSocket {
 
     private async connectWebSocketType(resume: boolean = false) {
         this.state = WebSocketType.State.ConnectGateway;
-        let gateway = (await this.client.API.gateway.index()).url;
+        let gateway = (await retry(this.client.API.gateway.index)).url;
         if (resume && this.sessionId) this.Socket = new ws(`${gateway}?compress=0&resume=1&sessionId=${this.sessionId}&sn=${this.sn}`);
         else {
             this.sn = 0;

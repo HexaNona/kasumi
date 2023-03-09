@@ -13,7 +13,10 @@ export default class Gateway {
      * where `1` stands for yes and `0` stands for `0`.
      * Default value is `1`
      */
-    public async index(compress: 0 | 1 = 0): Promise<RawGatewayResponse> {
-        return this.rest.get('/gateway/index', { compress }); // revert mark
+    public async index(compress: 0 | 1 = 0): Promise<RawGatewayResponse | undefined> {
+        return this.rest.get('/gateway/index', { compress }).catch((e) => {
+            this.rest.logger.error(e);
+            return undefined;
+        });
     }
 }

@@ -12,6 +12,8 @@ export default class Game {
             singer,
             music_name: musicName,
             data_type: dataType
-        }); // revert mark
+        }).catch((e) => {
+            this.rest.logger.error(e);
+        });
     }
 }
