@@ -93,7 +93,7 @@ export default class Kasumi {
         });
     }
     async connect() {
-        let profile = await retry(this.API.user.me);
+        let profile = await retry(() => this.API.user.me());
         this.userId = profile.id;
         this.username = profile.username;
         this.identifyNum = profile.identify_num;
