@@ -49,7 +49,7 @@ export default class Channel {
         });
     }
 
-    async __create({ guildId, name, parentCategoryId, channelDetail, isCategory }: {
+    private async __create({ guildId, name, parentCategoryId, channelDetail, isCategory }: {
         guildId: string,
         name: string,
         parentCategoryId?: string,
