@@ -2,7 +2,7 @@ import Rest from "../../requestor";
 import { RestError } from "../../error";
 
 export default class Game {
-    rest: Rest;
+    private rest: Rest;
     constructor(rest: Rest) {
         this.rest = rest;
     }

@@ -3,7 +3,7 @@ import Rest from "../../requestor";
 import { RawMeResponse, RawViewResponse } from "./type";
 
 export default class User {
-    rest: Rest;
+    private rest: Rest;
     constructor(rest: Rest) {
         this.rest = rest;
     }

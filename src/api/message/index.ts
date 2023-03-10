@@ -6,7 +6,7 @@ import { RawMessageItem, RawListResponse } from "./type";
 import Card from "../../card";
 
 export default class Message {
-    rest: Rest;
+    private rest: Rest;
     constructor(rest: Rest) {
         this.rest = rest;
     }

@@ -3,7 +3,7 @@ import Rest from "../../requestor";
 import { RawListResponse, RawUserListResponse, RawViewResponse } from "./type";
 
 export default class Guild {
-    rest: Rest;
+    private rest: Rest;
     constructor(rest: Rest) {
         this.rest = rest;
     }

@@ -3,7 +3,7 @@ import Rest from "../../requestor";
 import { RawGatewayResponse } from "../template/type";
 
 export default class Gateway {
-    rest: Rest;
+    private rest: Rest;
     constructor(rest: Rest) {
         this.rest = rest;
     }

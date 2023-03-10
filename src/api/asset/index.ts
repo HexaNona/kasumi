@@ -3,7 +3,7 @@ import { RawAssetCreateResponse } from "./type";
 import FormData from "form-data";
 
 export default class Asset {
-    rest: Rest;
+    private rest: Rest;
     constructor(rest: Rest) {
         this.rest = rest;
     }
