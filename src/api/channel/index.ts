@@ -2,11 +2,14 @@ import User from "../user";
 import { FullChannel } from "../../type";
 import Rest from "../../requestor";
 import { RawListResponse } from "./type";
+import ChannelUser from "./user";
 
 export default class Channel {
-    rest: Rest;
+    private rest: Rest;
+    user: ChannelUser;
     constructor(rest: Rest) {
         this.rest = rest;
+        this.user = new ChannelUser(rest);
     }
     private __channel_type_map = {
         text: 1,
