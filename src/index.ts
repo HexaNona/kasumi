@@ -29,9 +29,12 @@ export default class Kasumi {
     /**
      * Profile of the current bot
      */
-    userId!: string;
-    username!: string;
-    identifyNum!: string;
+    me!: {
+        userId: string,
+        username: string,
+        identifyNum: string,
+        avatar: string
+    }
 
     __token: string;
     __bunyan_log_level: Logger.LogLevel;
@@ -94,10 +97,11 @@ export default class Kasumi {
     }
     async connect() {
         let profile = await retry(() => this.API.user.me());
-        this.userId = profile.id;
-        this.username = profile.username;
-        this.identifyNum = profile.identify_num;
-        this.logger.info(`Logged in as ${this.username}#${this.identifyNum} (${this.userId})`);
+        this.me.userId = profile.id;
+        this.me.username = profile.username;
+        this.me.identifyNum = profile.identify_num;
+        this.me.avatar = profile.avatar;
+        this.logger.info(`Logged in as ${this.me.username}#${this.me.identifyNum} (${this.me.userId})`);
         if (this.__config.type == 'websocket') {
             if (this.__config.vendor == 'botroot') {
                 this.websocketBotRoot = new WebSocketSource(this);

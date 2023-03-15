@@ -66,7 +66,7 @@ export default class Plugin {
         return Object.keys(this.__commands);
     }
     messageProcessing(content: string, event: PlainTextMessageEvent | MarkdownMessageEvent) {
-        if (content.trim() == `(met)${this.client.userId}(met)`) { // Message is "@Bot"
+        if (content.trim() == `(met)${this.client.me.userId}(met)`) { // Message is "@Bot"
             const session = new BaseSession([], event, this.client);
             const card = new Card()
                 .addTitle("命令列表")
