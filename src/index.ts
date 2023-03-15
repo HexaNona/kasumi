@@ -29,12 +29,17 @@ export default class Kasumi {
     /**
      * Profile of the current bot
      */
-    me!: {
+    me: {
         userId: string,
         username: string,
         identifyNum: string,
         avatar: string
-    }
+    } = {
+            userId: '',
+            username: '',
+            identifyNum: '',
+            avatar: ''
+        }
 
     __token: string;
     __bunyan_log_level: Logger.LogLevel;
