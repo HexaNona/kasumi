@@ -8,6 +8,7 @@ import { WebHook as WebHookType } from './type';
 
 export default class WebHook {
     public logger: Logger;
+    private isInitialization = true;
     private client: Kasumi;
     private http: Express;
     private sn: number = 0;
@@ -20,14 +21,14 @@ export default class WebHook {
         this.http.post('/', (req, res) => {
             const body: { encrypt: string } = req.body;
             if (body.encrypt) {
-                const base64Content = body.encrypt;
-                const base64Decode = Buffer.from(base64Content, 'base64').toString('utf8');
-                const iv = base64Decode.substring(0, 16);
-                const encrypt = base64Decode.substring(16);
-                const encryptKey = config.encryptKey.padEnd(32, '\0');
-                const decipher = crypto.createDecipheriv('aes-256-cbc', encryptKey, iv);
-                const decrypt = decipher.update(encrypt, 'base64', 'utf8') + decipher.final('utf8');
                 try {
+                    const base64Content = body.encrypt;
+                    const base64Decode = Buffer.from(base64Content, 'base64').toString('utf8');
+                    const iv = base64Decode.substring(0, 16);
+                    const encrypt = base64Decode.substring(16);
+                    const encryptKey = config.encryptKey.padEnd(32, '\0');
+                    const decipher = crypto.createDecipheriv('aes-256-cbc', encryptKey, iv);
+                    const decrypt = decipher.update(encrypt, 'base64', 'utf8') + decipher.final('utf8');
                     const event: WebHookType.Events = JSON.parse(decrypt);
                     if (event.d.verify_token == config.verifyToken) {
                         if (this.__isChallengeEvent(event)) {
@@ -40,6 +41,10 @@ export default class WebHook {
                                 cur_sn: this.sn,
                                 msg_sn: event.sn
                             });
+                            if (this.isInitialization) {
+                                this.sn = event.sn;
+                                this.isInitialization = false;
+                            }
                             this.messageBuffer.push(event);
                             this.messageBuffer.sort((a, b) => { return a.sn - b.sn });
                             while (this.messageBuffer[0] && this.messageBuffer[0].sn <= this.sn) this.messageBuffer.shift();
@@ -69,7 +74,7 @@ export default class WebHook {
             }
         })
         this.http.listen(config.port, () => {
-            this.logger.debug(`WebHook HTTP server starts listening on port ${config.port}`);
+            this.logger.info(`Kasumi starts listening on port ${config.port}`);
         });
     }
 
