@@ -6,7 +6,7 @@ import Message from "./message";
 import WebSocket from "./websocket";
 import WebHook from "./webhook";
 import Plugin from "./plugin"
-import WebSocketSource from "./webhook-botroot";
+import WebSocketSource from "./websocket-botroot";
 export { default as BaseMenu } from "./plugin/menu/baseMenu";
 export { default as BaseCommand, CommandFunction } from "./plugin/menu/baseCommand";
 export { default as BaseSession } from "./plugin/session";

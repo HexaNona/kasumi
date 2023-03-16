@@ -6,7 +6,7 @@
 
 
 import WebSocket from 'ws'
-import Kasumi from '../'
+import Kasumi from '..'
 import { inflate, InputType } from 'zlib'
 import {
     KHEventPacket,
