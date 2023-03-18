@@ -53,7 +53,7 @@ export default class WebHook {
                                 if (buffer) {
                                     this.client.message.recievedMessage(buffer);
                                     this.sn = buffer.sn;
-                                    if (this.sn >= 65536) this.sn = 0;
+                                    if (this.sn >= 65535) this.sn = 0;
                                 }
                                 while (this.messageBuffer[0] && this.messageBuffer[0].sn < this.sn) this.messageBuffer.shift();
                             }
