@@ -128,7 +128,7 @@ export default class Message {
     }
 
     public async addReaction(messageId: string, emojiId: string): Promise<void> {
-        return this.rest.get('/message/add-reaction', {
+        return this.rest.post('/message/add-reaction', {
             msg_id: messageId,
             emoji: emojiId
         }).catch((e) => {
@@ -137,7 +137,7 @@ export default class Message {
     }
 
     public async deleteReaction(messageId: string, emojiId: string, userId?: string): Promise<void> {
-        return this.rest.get('/message/delete-reaction', {
+        return this.rest.post('/message/delete-reaction', {
             msg_id: messageId,
             emoji: emojiId,
             user_id: userId

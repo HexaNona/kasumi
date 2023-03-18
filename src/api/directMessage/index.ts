@@ -112,7 +112,7 @@ export default class DirectMessage {
     }
 
     public async addReaction(messageId: string, emojiId: string): Promise<void> {
-        return this.rest.get('/direct-message/add-reaction', {
+        return this.rest.post('/direct-message/add-reaction', {
             msg_id: messageId,
             emoji: emojiId
         }).catch((e) => {
@@ -121,7 +121,7 @@ export default class DirectMessage {
     }
 
     public async deleteReaction(messageId: string, emojiId: string, userId?: string): Promise<void> {
-        return this.rest.get('/direct-message/delete-reaction', {
+        return this.rest.post('/direct-message/delete-reaction', {
             msg_id: messageId,
             emoji: emojiId,
             user_id: userId
