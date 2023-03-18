@@ -33,26 +33,43 @@ export default class Card {
             }
         });
     }
-    addTextWithImage(content: string, imageUrl: string, size: Size = 'lg', circle: boolean = false) {
+    addTextWithImage(content: string, {
+        position = 'left',
+        url,
+        size = 'lg',
+        circle = false
+    }: {
+        position: "left" | "right",
+        url: string,
+        size: Size,
+        circle: boolean
+    }) {
         return this.addModule({
             type: 'section',
             text: {
                 type: 'kmarkdown',
                 content
             },
+            mode: position,
             accessory: {
                 type: 'image',
-                src: imageUrl,
-                size,
-                circle
+                src: url,
+                size: size,
+                circle: circle
             }
         });
     }
-    addTextWithButton(content: string, button: {
+    addTextWithButton(content: string, {
+        position = 'right',
+        theme = 'primary',
+        buttonContent,
+        value,
+        click
+    }: {
         position: 'left' | 'right'
-        content: string,
+        buttonContent: string,
         theme: Theme,
-        value: string,
+        value?: string,
         click?: "link" | "return-val";
     }) {
         return this.addModule({
@@ -61,16 +78,16 @@ export default class Card {
                 type: 'kmarkdown',
                 content
             },
-            mode: button.position,
+            mode: position,
             accessory: {
                 type: 'button',
                 text: {
                     type: 'kmarkdown',
-                    content: button.content
+                    content: buttonContent
                 },
-                theme: button.theme,
-                value: button.value,
-                click: button.click ? button.click : ""
+                theme: theme,
+                value: value,
+                click: click ? click : undefined
             }
         });
     }

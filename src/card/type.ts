@@ -12,8 +12,7 @@ export type CardMessage = Array<Card>
 export type Modules =
     Modules.Text |
     Modules.MultiRowText |
-    Modules.TextWithButton |
-    Modules.TextWithImage |
+    Modules.TextWithAccessory |
     Modules.Image |
     Modules.MultiImage |
     Modules.Title |
@@ -38,13 +37,9 @@ export namespace Modules {
             fields: Parts.Text[];
         }
     }
-    export interface TextWithButton extends Text {
+    export interface TextWithAccessory extends Text {
         mode: "left" | "right";
-        accessory: Parts.Button;
-    }
-    export interface TextWithImage extends Text {
-        mode: "right";
-        accessory: Parts.Accessory.Image;
+        accessory: Parts.Button | Parts.Accessory.Image;
     }
     export interface Image {
         type: "container";
@@ -116,8 +111,8 @@ export namespace Parts {
     export interface Button {
         type: "button";
         theme: Theme;
-        value: string;
-        click: "" | "link" | "return-val";
+        value?: string;
+        click?: "" | "link" | "return-val";
         text: Parts.Text;
     }
     export namespace Accessory {
