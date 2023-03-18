@@ -39,10 +39,10 @@ export default class Card {
         size = 'lg',
         circle = false
     }: {
-        position: "left" | "right",
+        position?: "left" | "right",
         url: string,
-        size: Size,
-        circle: boolean
+        size?: Size,
+        circle?: boolean
     }) {
         return this.addModule({
             type: 'section',
@@ -66,9 +66,9 @@ export default class Card {
         value,
         click
     }: {
-        position: 'left' | 'right'
+        position?: 'left' | 'right'
         buttonContent: string,
-        theme: Theme,
+        theme?: Theme,
         value?: string,
         click?: "link" | "return-val";
     }) {
