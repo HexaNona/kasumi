@@ -1,13 +1,23 @@
-import { RestError } from "../../error";
 import Rest from "../../requestor";
+import GuildMute from "./guildMute";
 import { RawListResponse, RawUserListResponse, RawViewResponse } from "./type";
 
+/**
+ * APIs related to guild
+ */
 export default class Guild {
     private rest: Rest;
+    mute: GuildMute;
     constructor(rest: Rest) {
         this.rest = rest;
+        this.mute = new GuildMute(rest);
     }
 
+    /**
+     * Get a list of guilds of the bot
+     * @param page Page number
+     * @param pageSize Page size, maximum is 50
+     */
     async *list(page: number = 1, pageSize: number = 50): AsyncGenerator<RawListResponse | undefined, void, void> {
         let data: RawListResponse = await this.rest.get('/guild/list', { page, page_size: pageSize }).catch((e) => {
             this.rest.logger.error(e);
@@ -22,6 +32,11 @@ export default class Guild {
         }
     }
 
+    /**
+     * View guild detail
+     * @param guildId Guild ID
+     * @returns Details of a guild
+     */
     async view(guildId: string): Promise<RawViewResponse | undefined> {
         return this.rest.get('/guild/list', { guild_id: guildId }).catch((e) => {
             this.rest.logger.error(e);
@@ -37,16 +52,52 @@ export default class Guild {
         if (input) return this.__desc_asc_map[input];
         else return undefined;
     }
+
+    /**
+     * Get a list of users in the guild or channel
+     */
     async *userList({ guildId, channelId, search, roleId, mobileVerified, lastSeen, joinTime, page = 1, pageSize = 50, userId }: {
+        /**
+         * Guild ID
+         */
         guildId: string,
+        /**
+         * Channel Id
+         */
         channelId?: string,
+        /**
+         * Keyword to search for a user
+         */
         search?: string,
+        /**
+         * Role ID
+         */
         roleId?: number,
+        /**
+         * To get only verified users or unverified users
+         * 
+         * do not provide = both
+         */
         mobileVerified?: boolean,
+        /**
+         * Sort by last seen time
+         */
         lastSeen?: 'desc' | 'asc',
+        /**
+         * Sort by join time
+         */
         joinTime?: 'desc' | 'asc',
+        /**
+         * Page number
+         */
         page: number,
+        /**
+         * Page size
+         */
         pageSize: number,
+        /**
+         * User ID
+         */
         userId?: number
     }): AsyncGenerator<RawUserListResponse | undefined, void, void> {
         let data: RawUserListResponse = await this.rest.get('/guild/list', {
@@ -84,6 +135,12 @@ export default class Guild {
         }
     }
 
+    /**
+     * Set a user's nickname
+     * @param guildId Guild ID
+     * @param nickname The new nickname. Set to undefined to remove nickname
+     * @param userId User ID
+     */
     async nickname(guildId: string, nickname?: string, userId?: string): Promise<void> {
         return this.rest.post('/guild/nickname', {
             guild_id: guildId,
@@ -94,6 +151,10 @@ export default class Guild {
         });
     }
 
+    /**
+     * Leave a guild
+     * @param guildId Guild ID 
+     */
     async leave(guildId: string): Promise<void> {
         return this.rest.post('/guild/leave', {
             guild_id: guildId
@@ -102,6 +163,11 @@ export default class Guild {
         });
     }
 
+    /**
+     * Kick a user out of a guild
+     * @param guildId Guild ID
+     * @param userId User ID
+     */
     async kick(guildId: string, userId: string): Promise<void> {
         return this.rest.post('/guild/kickout', {
             guild_id: guildId,
