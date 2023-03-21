@@ -1,5 +1,5 @@
 import Rest from "../../requestor";
-import GuildMute from "./guildMute";
+import GuildMute from "./mute";
 import { RawGuildListResponse, RawGuildUserListResponse, RawGuildViewResponse } from "./type";
 
 /**
