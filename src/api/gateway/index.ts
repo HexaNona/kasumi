@@ -10,7 +10,7 @@ export default class Gateway {
     /**
      * Get the WebSocket gateway URL
      * @param compress Whether or not to recieve compressed data,
-     * where `1` stands for yes and `0` stands for `0`.
+     * where `1` stands for yes and `0` stands for no.
      * Default value is `1`
      */
     public async index(compress: 0 | 1 = 0): Promise<RawGatewayResponse | undefined> {
