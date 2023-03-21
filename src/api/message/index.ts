@@ -1,8 +1,8 @@
 import Rest from "../../requestor";
-import { MessageType } from "../../type";
+import { MessageType, Message as MessageInterface, User } from "../../type";
 import { v4 as uuidv4 } from 'uuid';
 import { NonceDismatchError } from "../../error";
-import { RawMessageListResponse, RawMessageReactionUserList, RawMessageViewResponse } from "./type";
+import { RawMessageListResponse } from "./type";
 import Card from "../../card";
 
 export default class Message {
@@ -42,7 +42,7 @@ export default class Message {
      * @param messageId ID of the requesting message
      * @returns The requested message item
      */
-    public async view(messageId: string): Promise<RawMessageViewResponse | undefined> {
+    public async view(messageId: string): Promise<MessageInterface | undefined> {
         return this.rest.get('/message/view', {
             msg_id: messageId
         }).catch((e) => {
@@ -117,7 +117,7 @@ export default class Message {
         });
     }
 
-    public async reactionUserList(messageId: string, emojiId: string): Promise<RawMessageReactionUserList | undefined> {
+    public async reactionUserList(messageId: string, emojiId: string): Promise<User[] | undefined> {
         return this.rest.get('/message/reaction-list', {
             msg_id: messageId,
             emoji: emojiId
