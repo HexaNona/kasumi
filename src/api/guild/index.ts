@@ -18,18 +18,8 @@ export default class Guild {
      * @param page Page number
      * @param pageSize Page size, maximum is 50
      */
-    async *list(page: number = 1, pageSize: number = 50): AsyncGenerator<RawGuildListResponse | undefined, void, void> {
-        let data: RawGuildListResponse = await this.rest.get('/guild/list', { page, page_size: pageSize }).catch((e) => {
-            this.rest.logger.error(e);
-            return undefined;
-        });
-        yield data;
-        for (let currentPage = page + 1; currentPage <= data.meta.page_total; ++currentPage) {
-            yield await this.rest.get('/guild/list', { page, page_size: pageSize }).catch((e) => {
-                this.rest.logger.error(e);
-                return undefined;
-            });
-        }
+    async *list(page: number = 1, pageSize: number = 50) {
+        return this.rest.multiPageRequest<RawGuildListResponse>('/guild/list', page, pageSize);
     }
 
     /**
@@ -99,8 +89,8 @@ export default class Guild {
          * User ID
          */
         userId?: number
-    }): AsyncGenerator<RawGuildUserListResponse | undefined, void, void> {
-        let data: RawGuildUserListResponse = await this.rest.get('/guild/list', {
+    }) {
+        return this.rest.multiPageRequest<RawGuildUserListResponse>('/guild/list', page, pageSize, {
             guild_id: guildId,
             channel_id: channelId,
             search,
@@ -108,31 +98,8 @@ export default class Guild {
             mobile_verified: mobileVerified ? (mobileVerified == true ? 1 : 0) : undefined,
             active_time: this.__get_desc_asc_map(lastSeen),
             joined_at: this.__get_desc_asc_map(joinTime),
-            page,
-            page_size: pageSize,
             filter_user_id: userId
-        }).catch((e) => {
-            this.rest.logger.error(e);
-            return undefined;
-        });
-        yield data;
-        for (let currentPage = page + 1; currentPage <= data.meta.page_total; ++currentPage) {
-            yield await this.rest.get('/guild/list', {
-                guild_id: guildId,
-                channel_id: channelId,
-                search,
-                role_id: roleId,
-                mobile_verified: mobileVerified ? (mobileVerified == true ? 1 : 0) : undefined,
-                active_time: this.__get_desc_asc_map(lastSeen),
-                joined_at: this.__get_desc_asc_map(joinTime),
-                page,
-                page_size: pageSize,
-                filter_user_id: userId
-            }).catch((e) => {
-                this.rest.logger.error(e);
-                return undefined;
-            });
-        }
+        })
     }
 
     /**

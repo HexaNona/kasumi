@@ -1,4 +1,5 @@
 import Logger from "bunyan";
+import { MultiPageResponse } from "../type";
 import Rest from "../requestor";
 import Asset from "./asset";
 import Channel from "./channel";

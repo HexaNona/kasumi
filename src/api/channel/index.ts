@@ -20,28 +20,11 @@ export default class Channel {
         NM: 2,
         HQ: 3
     }
-    async *list(guildId: string, type: 'text' | 'voice', page: number = 1, pageSize: number = 50): AsyncGenerator<RawChannelListResponse, void, void> {
-        const data: RawChannelListResponse = await this.rest.get('/channel/list', {
-            page,
-            page_size: pageSize,
+    async *list(guildId: string, type: 'text' | 'voice', page: number = 1, pageSize: number = 50) {
+        return this.rest.multiPageRequest<RawChannelListResponse>('/channel/list', page, pageSize, {
             guild_id: guildId,
             type: this.__channel_type_map[type]
-        }).catch((e) => {
-            this.rest.logger.error(e);
-            return undefined;
-        });
-        yield data;
-        for (let currentPage = page; currentPage <= data.meta.page_total; ++currentPage) {
-            yield this.rest.get('/channel/list', {
-                page,
-                page_size: pageSize,
-                guild_id: guildId,
-                type: this.__channel_type_map[type]
-            }).catch((e) => {
-                this.rest.logger.error(e);
-                return undefined;
-            });
-        }
+        })
     }
 
     async view(targetId: string): Promise<FullChannel | undefined> {
