@@ -1,6 +1,6 @@
 import Rest from "../../requestor";
 import GuildMute from "./guildMute";
-import { RawListResponse, RawUserListResponse, RawViewResponse } from "./type";
+import { RawGuildListResponse, RawGuildUserListResponse, RawGuildViewResponse } from "./type";
 
 /**
  * APIs related to guild
@@ -18,8 +18,8 @@ export default class Guild {
      * @param page Page number
      * @param pageSize Page size, maximum is 50
      */
-    async *list(page: number = 1, pageSize: number = 50): AsyncGenerator<RawListResponse | undefined, void, void> {
-        let data: RawListResponse = await this.rest.get('/guild/list', { page, page_size: pageSize }).catch((e) => {
+    async *list(page: number = 1, pageSize: number = 50): AsyncGenerator<RawGuildListResponse | undefined, void, void> {
+        let data: RawGuildListResponse = await this.rest.get('/guild/list', { page, page_size: pageSize }).catch((e) => {
             this.rest.logger.error(e);
             return undefined;
         });
@@ -37,7 +37,7 @@ export default class Guild {
      * @param guildId Guild ID
      * @returns Details of a guild
      */
-    async view(guildId: string): Promise<RawViewResponse | undefined> {
+    async view(guildId: string): Promise<RawGuildViewResponse | undefined> {
         return this.rest.get('/guild/list', { guild_id: guildId }).catch((e) => {
             this.rest.logger.error(e);
             return undefined;
@@ -99,8 +99,8 @@ export default class Guild {
          * User ID
          */
         userId?: number
-    }): AsyncGenerator<RawUserListResponse | undefined, void, void> {
-        let data: RawUserListResponse = await this.rest.get('/guild/list', {
+    }): AsyncGenerator<RawGuildUserListResponse | undefined, void, void> {
+        let data: RawGuildUserListResponse = await this.rest.get('/guild/list', {
             guild_id: guildId,
             channel_id: channelId,
             search,

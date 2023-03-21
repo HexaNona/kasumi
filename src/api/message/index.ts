@@ -1,8 +1,8 @@
 import Rest from "../../requestor";
-import { MessageType, User } from "../../type";
+import { MessageType } from "../../type";
 import { v4 as uuidv4 } from 'uuid';
 import { NonceDismatchError } from "../../error";
-import { RawMessageItem, RawListResponse } from "./type";
+import { RawMessageListResponse, RawMessageReactionUserList, RawMessageViewResponse } from "./type";
 import Card from "../../card";
 
 export default class Message {
@@ -25,7 +25,7 @@ export default class Message {
         pinned?: 0 | 1,
         messageId?: string,
         mode?: 'before' | 'around' | 'after'
-    ): Promise<RawListResponse> {
+    ): Promise<RawMessageListResponse> {
         return this.rest.get('/message/list', {
             target_id: channelId,
             msg_id: messageId,
@@ -42,7 +42,7 @@ export default class Message {
      * @param messageId ID of the requesting message
      * @returns The requested message item
      */
-    public async view(messageId: string): Promise<RawMessageItem | undefined> {
+    public async view(messageId: string): Promise<RawMessageViewResponse | undefined> {
         return this.rest.get('/message/view', {
             msg_id: messageId
         }).catch((e) => {
@@ -117,7 +117,7 @@ export default class Message {
         });
     }
 
-    public async reactionUserList(messageId: string, emojiId: string): Promise<User[] | undefined> {
+    public async reactionUserList(messageId: string, emojiId: string): Promise<RawMessageReactionUserList | undefined> {
         return this.rest.get('/message/reaction-list', {
             msg_id: messageId,
             emoji: emojiId

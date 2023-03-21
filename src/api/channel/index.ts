@@ -1,7 +1,7 @@
 import User from "../user";
 import { FullChannel } from "../../type";
 import Rest from "../../requestor";
-import { RawListResponse } from "./type";
+import { RawChannelListResponse } from "./type";
 import ChannelUser from "./user";
 
 export default class Channel {
@@ -20,8 +20,8 @@ export default class Channel {
         NM: 2,
         HQ: 3
     }
-    async *list(guildId: string, type: 'text' | 'voice', page: number = 1, pageSize: number = 50): AsyncGenerator<RawListResponse, void, void> {
-        const data: RawListResponse = await this.rest.get('/channel/list', {
+    async *list(guildId: string, type: 'text' | 'voice', page: number = 1, pageSize: number = 50): AsyncGenerator<RawChannelListResponse, void, void> {
+        const data: RawChannelListResponse = await this.rest.get('/channel/list', {
             page,
             page_size: pageSize,
             guild_id: guildId,

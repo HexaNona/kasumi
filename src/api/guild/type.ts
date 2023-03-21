@@ -1,7 +1,7 @@
 import { Guild, MultiPageResponse, NotificationSetting, Role, User } from "../../type";
 
 
-export interface RawListResponseItem {
+export interface RawGuildListResponseItem {
     id: string,
     name: string,
     topic: string,
@@ -17,18 +17,16 @@ export interface RawListResponseItem {
     level: number
 }
 
-export interface RawListResponse extends MultiPageResponse {
-    items: RawListResponseItem[],
+export interface RawGuildListResponse extends MultiPageResponse<RawGuildListResponseItem> {
     sort: {
         id: number
     }
 }
 
-export interface RawViewResponse extends Guild { }
+export type RawGuildViewResponse = Guild;
 
-export interface RawUserListResponse extends MultiPageResponse {
+export interface RawGuildUserListResponse extends MultiPageResponse<User> {
     user_count: number,
     online_count: number,
-    offline_count: number,
-    items: User[]
+    offline_count: number
 }

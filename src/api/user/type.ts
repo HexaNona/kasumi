@@ -1,7 +1,6 @@
-import { RawMessageItem } from "../message/type"
 import { User } from "../../type"
 
-export interface RawViewResponse extends User {
+export interface RawUserViewResponse extends User {
     os: string,
     decorations_id_map: {
         join_boice: number,
@@ -10,7 +9,7 @@ export interface RawViewResponse extends User {
     }
 }
 
-export interface RawMeResponse extends User {
+export interface RawUserMeResponse extends User {
     banner: string,
     decorations_id_map: null,
     bot_status: number,

@@ -1,6 +1,5 @@
-import { RestError } from "../../error";
 import Rest from "../../requestor";
-import { RawMeResponse, RawViewResponse } from "./type";
+import { RawUserMeResponse, RawUserViewResponse } from "./type";
 
 export default class User {
     private rest: Rest;
@@ -8,14 +7,14 @@ export default class User {
         this.rest = rest;
     }
 
-    async me(): Promise<RawMeResponse | undefined> {
+    async me(): Promise<RawUserMeResponse | undefined> {
         return this.rest.get('/user/me').catch((e) => {
             this.rest.logger.error(e);
             return undefined;
         });
     }
 
-    async view(userId: string, guildId?: string): Promise<RawViewResponse | undefined> {
+    async view(userId: string, guildId?: string): Promise<RawUserViewResponse | undefined> {
         return this.rest.get('/user/view', {
             user_id: userId,
             guild_id: guildId

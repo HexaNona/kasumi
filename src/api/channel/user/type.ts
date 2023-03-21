@@ -1,6 +1,4 @@
 import { FullChannel, MultiPageResponse } from "../../../type";
 
 
-export interface RawJoinedChannelResponse extends MultiPageResponse {
-    items: FullChannel[]
-}
+export type RawJoinedChannelResponse = MultiPageResponse<FullChannel>
