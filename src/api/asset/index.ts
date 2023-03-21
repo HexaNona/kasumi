@@ -7,6 +7,13 @@ export default class Asset {
     constructor(rest: Rest) {
         this.rest = rest;
     }
+
+    /**
+     * Upload file to KOOK
+     * @param buffer ArrayBuffer of the file
+     * @param config Other FormData configs
+     * @returns File URL
+     */
     async create(buffer: Buffer, config?: FormData.AppendOptions): Promise<RawAssetCreateResponse | undefined> {
         const form = new FormData();
         form.append('file', buffer, {
