@@ -1,4 +1,5 @@
 import Rest from "../../requestor";
+import GuildBoost from "./boost";
 import GuildMute from "./mute";
 import { RawGuildListResponse, RawGuildUserListResponse, RawGuildViewResponse } from "./type";
 
@@ -7,9 +8,11 @@ import { RawGuildListResponse, RawGuildUserListResponse, RawGuildViewResponse } 
  */
 export default class Guild {
     private rest: Rest;
+    boost: GuildBoost;
     mute: GuildMute;
     constructor(rest: Rest) {
         this.rest = rest;
+        this.boost = new GuildBoost(rest);
         this.mute = new GuildMute(rest);
     }
 
