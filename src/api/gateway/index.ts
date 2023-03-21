@@ -1,6 +1,5 @@
-import { RestError } from "../../error";
 import Rest from "../../requestor";
-import { RawGatewayResponse } from "../template/type";
+import { RawGatewayResponse } from "./type";
 
 export default class Gateway {
     private rest: Rest;
