@@ -72,6 +72,17 @@ export interface Message {
     }
 }
 
+export interface Game {
+    id: number,
+    name: string,
+    type: number,
+    options: string,
+    kmhook_admin: boolean,
+    process_name: string[],
+    product_name: string[],
+    icon: string
+}
+
 export interface Guild {
     id: string,
     name: string,
