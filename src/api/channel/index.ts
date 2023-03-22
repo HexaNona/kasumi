@@ -3,13 +3,19 @@ import { FullChannel } from "../../type";
 import Rest from "../../requestor";
 import { RawChannelListResponse } from "./type";
 import ChannelUser from "./user";
+import ChannelRole from "./role";
 
+/**
+ * APIs related to channels
+ */
 export default class Channel {
     private rest: Rest;
     user: ChannelUser;
+    permission: ChannelRole;
     constructor(rest: Rest) {
         this.rest = rest;
         this.user = new ChannelUser(rest);
+        this.permission = new ChannelRole(rest);
     }
     private __channel_type_map = {
         text: 1,
@@ -20,6 +26,14 @@ export default class Channel {
         NM: 2,
         HQ: 3
     }
+
+    /**
+     * Get the channel list of a guild
+     * @param guildId Guild ID
+     * @param type Channel type
+     * @param page Page number
+     * @param pageSize Page size
+     */
     async *list(guildId: string, type: 'text' | 'voice', page: number = 1, pageSize: number = 50) {
         return this.rest.multiPageRequest<RawChannelListResponse>('/channel/list', page, pageSize, {
             guild_id: guildId,
@@ -27,8 +41,13 @@ export default class Channel {
         })
     }
 
-    async view(targetId: string): Promise<FullChannel | undefined> {
-        return this.rest.get('/channel/view', { target_id: targetId }).catch((e) => {
+    /**
+     * Get details of a channel
+     * @param channelId Channel ID
+     * @returns Channel details
+     */
+    async view(channelId: string): Promise<FullChannel | undefined> {
+        return this.rest.get('/channel/view', { target_id: channelId }).catch((e) => {
             this.rest.logger.error(e);
             return undefined;
         });
@@ -61,11 +80,29 @@ export default class Channel {
         });
     }
 
+    /**
+     * Create a text channel
+     * @param guildId Guild ID
+     * @param name Channel name
+     * @param parentCategoryId Parent category ID
+     * @returns Channel details
+     */
     async createTextChannel(guildId: string, name: string, parentCategoryId?: string) {
         return this.__create({
             guildId, name, parentCategoryId
         });
     }
+
+    /**
+     * Create a voice channel
+     * @param guildId Guild ID
+     * @param name Channel name
+     * @param memberLimit Limit of how many users can connect to the channel at the same time.
+     * @param voiceQuality Voice channel quality
+     * LQ = 18kbps NM = 48kbps HQ = 96kbps
+     * @param parentCategoryId Parent category ID
+     * @returns Channel details
+     */
     async createVoiceChannel(
         guildId: string,
         name: string,
@@ -82,12 +119,27 @@ export default class Channel {
             }
         });
     }
+
+    /**
+     * Create a category
+     * @param guildId Guild ID
+     * @param name Category name
+     * @returns Category details
+     */
     async createCategory(guildId: string, name: string) {
         return this.__create({ guildId, name, isCategory: true }).catch((e) => {
             this.rest.logger.error(e);
         });
     }
 
+    /**
+     * Update channel details
+     * @param channelId Channel ID
+     * @param name Channel name
+     * @param topic Channel description
+     * @param slowMode Slow mode cooldown time
+     * @returns Channel details
+     */
     async update(
         channelId: string,
         name?: string,
@@ -105,18 +157,33 @@ export default class Channel {
         });
     }
 
+    /**
+     * Delete a channel
+     * @param channelId Channel ID
+     */
     async delete(channelId: string): Promise<void> {
         return this.rest.post('/channel/delete', { channel_id: channelId }).catch((e) => {
             this.rest.logger.error(e);
         });
     }
 
+    /**
+     * Get user list in a voice channel
+     * @param channelId Channel ID
+     * @returns Array of user in the channel
+     */
     async voiceChannelUserList(channelId: string): Promise<User[] | undefined> {
         return this.rest.get('/channel/user-list', { channel_id: channelId }).catch((e) => {
             this.rest.logger.error(e);
             return undefined;
         });
     }
+
+    /**
+     * Move user(s) to a voice channel
+     * @param channelId Destination channel ID
+     * @param userIds Array of IDs of users to be moved
+     */
     async voiceChannelMoveUser(channelId: string, userIds: string[]): Promise<void> {
         return this.rest.post('/channel/move-user', {
             target_id: channelId,
