@@ -1,9 +1,6 @@
 import Rest from "../../../requestor";
 import { RawJoinedChannelResponse } from "./type";
 
-/**
- * APIs related to users and voice channels
- */
 export default class ChannelUser {
     private rest: Rest;
     constructor(rest: Rest) {

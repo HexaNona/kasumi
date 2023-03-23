@@ -2,9 +2,6 @@ import { RequestResponse } from "../../../type";
 import Rest from "../../../requestor";
 import { RawListResponse } from "./type";
 
-/**
- * APIs related to mute and deafen in a voice channel
- */
 export default class GuildMute {
     private rest: Rest;
     constructor(rest: Rest) {

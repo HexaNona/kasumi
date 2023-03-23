@@ -4,9 +4,6 @@ import GuildMute from "./mute";
 import { RequestResponse } from "../../type";
 import { RawGuildListResponse, RawGuildUserListResponse, RawGuildViewResponse } from "./type";
 
-/**
- * APIs related to guild
- */
 export default class Guild {
     private rest: Rest;
     boost: GuildBoost;

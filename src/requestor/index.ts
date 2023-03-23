@@ -19,7 +19,7 @@ export default class Rest {
         }
         this.logger = logger;
     }
-    async get(endpoint: string, params?: any, config?: AxiosRequestConfig): Promise<RequestResponse> {
+    async get<T = any>(endpoint: string, params?: any, config?: AxiosRequestConfig): Promise<RequestResponse<T>> {
         let data: RawResponse, err: Error;
         try {
             data = (await this.__this.get(endpoint, { params, ...config })).data as RawResponse;
@@ -33,7 +33,7 @@ export default class Rest {
             return { err };
         }
     }
-    async post(endpoint: string, body?: any, config?: AxiosRequestConfig): Promise<RequestResponse> {
+    async post<T = any>(endpoint: string, body?: any, config?: AxiosRequestConfig): Promise<RequestResponse<T>> {
         let data: RawResponse, err: Error;
         try {
             data = (await this.__this.post(endpoint, body, config)).data as RawResponse;

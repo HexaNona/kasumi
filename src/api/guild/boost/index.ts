@@ -1,9 +1,6 @@
 import Rest from "../../../requestor";
 import { RawGuildBoostHistoryResponse } from "./type";
 
-/**
- * APIs related to mute and deafen in a voice channel
- */
 export default class GuildBoost {
     private rest: Rest;
     constructor(rest: Rest) {

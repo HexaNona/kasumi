@@ -5,9 +5,6 @@ import { RawChannelListResponse } from "./type";
 import ChannelUser from "./user";
 import ChannelRole from "./role";
 
-/**
- * APIs related to channels
- */
 export default class Channel {
     private rest: Rest;
     user: ChannelUser;

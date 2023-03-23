@@ -2,9 +2,6 @@ import { RequestResponse } from "../../../type";
 import Rest from "../../../requestor";
 import { RawChannelRoleResponse, RawChannelRoleIndexResponse } from "./type";
 
-/**
- * APIs to set role/user based premission for a channel
- */
 export default class ChannelRole {
     private rest: Rest;
     constructor(rest: Rest) {
