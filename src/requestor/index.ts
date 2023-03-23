@@ -47,7 +47,7 @@ export default class Rest {
             return { err };
         }
     }
-    async * multiPageRequest<T extends MultiPageResponse<any>>(endpoint: string, page: number, pageSize: number, params?: any) {
+    async *multiPageRequest<T extends MultiPageResponse<any>>(endpoint: string, page: number, pageSize: number, params?: any) {
         let res = (await this.get(endpoint, {
             page, page_size: pageSize,
             ...params

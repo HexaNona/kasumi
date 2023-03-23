@@ -31,7 +31,7 @@ export default class Channel {
      * @param page Page number
      * @param pageSize Page size
      */
-    async *list(guildId: string, type: 'text' | 'voice', page: number = 1, pageSize: number = 50) {
+    list(guildId: string, type: 'text' | 'voice', page: number = 1, pageSize: number = 50) {
         return this.rest.multiPageRequest<RawChannelListResponse>('/channel/list', page, pageSize, {
             guild_id: guildId,
             type: this.__channel_type_map[type]

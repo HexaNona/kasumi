@@ -1,4 +1,4 @@
-import { MultiPageResponse, RequestResponse } from "../../type";
+import { MultiPageResponse, RequestResponse, Game as GameType } from "../../type";
 import Rest from "../../requestor";
 
 export default class Game {
@@ -13,8 +13,8 @@ export default class Game {
      * @param page Page number
      * @param pageSize Page size
      */
-    async *list(type?: 'user' | 'system' | 'all', page = 1, pageSize = 50) {
-        return this.rest.multiPageRequest<MultiPageResponse<Game>>('/game', page, pageSize, {
+    list(type?: 'user' | 'system' | 'all', page = 1, pageSize = 50) {
+        return this.rest.multiPageRequest<MultiPageResponse<GameType>>('/game', page, pageSize, {
             type: type == 'user' ? 1 : (type == 'system' ? 2 : 0),
         })
     }
@@ -25,7 +25,7 @@ export default class Game {
      * @param icon Icon URL of the game
      * @returns Game detail
      */
-    async create(name: string, icon: string): Promise<RequestResponse<Game>> {
+    async create(name: string, icon: string): Promise<RequestResponse<GameType>> {
         return this.rest.post('/game/create', { name, icon });
     }
 
@@ -36,7 +36,7 @@ export default class Game {
      * @param icon New icon of the game
      * @returns Updated game detail
      */
-    async update(id: number, name?: string, icon?: string): Promise<RequestResponse<Game>> {
+    async update(id: number, name?: string, icon?: string): Promise<RequestResponse<GameType>> {
         return this.rest.post('/game/update', { id, name, icon });
     }
 

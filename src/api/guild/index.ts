@@ -19,7 +19,7 @@ export default class Guild {
      * @param page Page number
      * @param pageSize Page size, maximum is 50
      */
-    async *list(page: number = 1, pageSize: number = 50) {
+    list(page: number = 1, pageSize: number = 50) {
         return this.rest.multiPageRequest<RawGuildListResponse>('/guild/list', page, pageSize);
     }
 
@@ -44,7 +44,7 @@ export default class Guild {
     /**
      * Get a list of users in the guild or channel
      */
-    async *userList({ guildId, channelId, search, roleId, mobileVerified, lastSeen, joinTime, page = 1, pageSize = 50, userId }: {
+    userList({ guildId, channelId, search, roleId, mobileVerified, lastSeen, joinTime, page = 1, pageSize = 50, userId }: {
         /**
          * Guild ID
          */
