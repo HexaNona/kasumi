@@ -1,5 +1,5 @@
-import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
-import { MultiPageResponse, RawResponse } from "../type";
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from "axios";
+import { MultiPageResponse, RawResponse, RequestResponse } from "../type";
 import { RestError } from "../error";
 import Logger from "bunyan";
 
@@ -19,37 +19,47 @@ export default class Rest {
         }
         this.logger = logger;
     }
-    async get(endpoint: string, params?: any, config?: AxiosRequestConfig): Promise<any> {
-        const data: RawResponse = (await this.__this.get(endpoint, { params, ...config })).data;
-        if (data.code == 0) return data.data;
-        else throw new RestError(data.code, data.message, 'GET', endpoint);
+    async get(endpoint: string, params?: any, config?: AxiosRequestConfig): Promise<RequestResponse> {
+        let data: RawResponse, err: Error;
+        try {
+            data = (await this.__this.get(endpoint, { params, ...config })).data as RawResponse;
+            if (data.code == 0) return { data: data.data };
+            else throw new RestError(data.code, data.message, 'GET', endpoint);
+        } catch (e) {
+            if (axios.isAxiosError(e))
+                if (e.response) err = new RestError(e.response.data.code, e.response.data.message, 'POST', endpoint);
+                else err = new RestError(parseInt(e.code || '-1'), '', 'POST', endpoint);
+            else err = e as any;
+            return { err };
+        }
     }
-    async post(endpoint: string, body?: any, config?: AxiosRequestConfig): Promise<any> {
-        const data: RawResponse = (await this.__this.post(endpoint, body, config)).data;
-        if (data.code == 0) return data.data;
-        else throw new RestError(data.code, data.message, 'POST', endpoint);
+    async post(endpoint: string, body?: any, config?: AxiosRequestConfig): Promise<RequestResponse> {
+        let data: RawResponse, err: Error;
+        try {
+            data = (await this.__this.post(endpoint, body, config)).data as RawResponse;
+            if (data.code == 0) return { data: data.data };
+            else throw new RestError(data.code, data.message, 'POST', endpoint);
+        } catch (e) {
+            if (axios.isAxiosError(e))
+                if (e.response) err = new RestError(e.response.data.code, e.response.data.message, 'POST', endpoint);
+                else err = new RestError(parseInt(e.code || '-1'), '', 'POST', endpoint);
+            else err = e as any;
+            return { err };
+        }
     }
-    async put(endpoint: string, body?: any, config?: AxiosRequestConfig): Promise<any> {
-        const data: RawResponse = (await this.__this.put(endpoint, body, config)).data;
-        if (data.code == 0) return data.data;
-        else throw new RestError(data.code, data.message, 'PUT', endpoint);
-    }
-    async *multiPageRequest<T extends MultiPageResponse<any>>(endpoint: string, page: number, pageSize: number, params?: any) {
-        let data = await (this.get(endpoint, {
+    async * multiPageRequest<T extends MultiPageResponse<any>>(endpoint: string, page: number, pageSize: number, params?: any) {
+        let res = (await this.get(endpoint, {
             page, page_size: pageSize,
             ...params
-        }) as Promise<T>).catch((e) => {
-            this.logger.error(e);
-            return undefined;
-        });
-        yield data;
-        if (!data) return;
+        })) as RequestResponse<T>;
+        let { err, data } = res;
+        yield res;
+        if (!data || err) return;
         for (let currentPage = page + 1; currentPage <= data.meta.page_total; ++currentPage) {
-            data = await this.get(endpoint, { page: currentPage, page_size: pageSize }).catch((e) => {
-                this.logger.error(e);
-                return undefined;
-            });
-            if (!data) return;
+            res = await this.get(endpoint, { page: currentPage, page_size: pageSize });
+            yield res;
+            let { err, data } = res;
+            if (!data || err) return;
         }
     }
 }

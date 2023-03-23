@@ -1,4 +1,4 @@
-import { MultiPageResponse } from "../../type";
+import { MultiPageResponse, RequestResponse } from "../../type";
 import Rest from "../../requestor";
 
 export default class Game {
@@ -25,7 +25,7 @@ export default class Game {
      * @param icon Icon URL of the game
      * @returns Game detail
      */
-    async create(name: string, icon: string): Promise<Game> {
+    async create(name: string, icon: string): Promise<RequestResponse<Game>> {
         return this.rest.post('/game/create', { name, icon });
     }
 
@@ -36,7 +36,7 @@ export default class Game {
      * @param icon New icon of the game
      * @returns Updated game detail
      */
-    async update(id: number, name?: string, icon?: string): Promise<Game> {
+    async update(id: number, name?: string, icon?: string): Promise<RequestResponse<Game>> {
         return this.rest.post('/game/update', { id, name, icon });
     }
 
@@ -44,7 +44,7 @@ export default class Game {
      * Delete a game entry
      * @param id ID of the game
      */
-    async delete(id: number): Promise<void> {
+    async delete(id: number): Promise<RequestResponse<void>> {
         return this.rest.post('/game/delete', { id });
     }
 
@@ -52,14 +52,14 @@ export default class Game {
      * Start a game activity
      * @param id ID of the game
      */
-    async startGameActivity(id: number): Promise<void> {
+    async startGameActivity(id: number): Promise<RequestResponse<void>> {
         return this.rest.post('/game/activity', { id, data_type: 1 });
     }
 
     /**
      * Stop a game activity
      */
-    async stopGameActivity(): Promise<void> {
+    async stopGameActivity(): Promise<RequestResponse<void>> {
         return this.rest.post('/game/delete-activity', { data_type: 1 });
     }
 
@@ -68,7 +68,7 @@ export default class Game {
      * @param singer Artist(s) of the music
      * @param title Title of the music
      */
-    async startMusicActivity(artist: string, title: string): Promise<void> {
+    async startMusicActivity(artist: string, title: string): Promise<RequestResponse<void>> {
         return this.rest.post('/game/activity', {
             singer: artist,
             music_name: title,
@@ -79,7 +79,7 @@ export default class Game {
     /**
      * Stop a music activity
      */
-    async stopMusicActivity(): Promise<void> {
+    async stopMusicActivity(): Promise<RequestResponse<void>> {
         return this.rest.post('/game/delete-activity', { data_type: 2 });
     }
 
@@ -90,13 +90,11 @@ export default class Game {
      * @param dataType
      * @deprecated
      */
-    async activity(singer: string, musicName: string, dataType: 1 | 2 = 2): Promise<void> {
+    async activity(singer: string, musicName: string, dataType: 1 | 2 = 2): Promise<RequestResponse<void>> {
         return this.rest.post('/game/activity', {
             singer,
             music_name: musicName,
             data_type: dataType
-        }).catch((e) => {
-            this.rest.logger.error(e);
-        });
+        })
     }
 }

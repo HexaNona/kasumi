@@ -1,6 +1,7 @@
 import Rest from "../../requestor";
 import GuildBoost from "./boost";
 import GuildMute from "./mute";
+import { RequestResponse } from "../../type";
 import { RawGuildListResponse, RawGuildUserListResponse, RawGuildViewResponse } from "./type";
 
 /**
@@ -30,11 +31,8 @@ export default class Guild {
      * @param guildId Guild ID
      * @returns Details of a guild
      */
-    async view(guildId: string): Promise<RawGuildViewResponse | undefined> {
-        return this.rest.get('/guild/list', { guild_id: guildId }).catch((e) => {
-            this.rest.logger.error(e);
-            return undefined;
-        });
+    async view(guildId: string): Promise<RequestResponse<RawGuildViewResponse>> {
+        return this.rest.get('/guild/list', { guild_id: guildId })
     }
 
     private readonly __desc_asc_map = {
@@ -111,13 +109,11 @@ export default class Guild {
      * @param nickname The new nickname. Set to undefined to remove nickname
      * @param userId User ID
      */
-    async nickname(guildId: string, nickname?: string, userId?: string): Promise<void> {
+    async nickname(guildId: string, nickname?: string, userId?: string): Promise<RequestResponse<void>> {
         return this.rest.post('/guild/nickname', {
             guild_id: guildId,
             nickname,
             user_id: userId
-        }).catch((e) => {
-            this.rest.logger.error(e);
         });
     }
 
@@ -125,12 +121,10 @@ export default class Guild {
      * Leave a guild
      * @param guildId Guild ID 
      */
-    async leave(guildId: string): Promise<void> {
+    async leave(guildId: string): Promise<RequestResponse<void>> {
         return this.rest.post('/guild/leave', {
             guild_id: guildId
-        }).catch((e) => {
-            this.rest.logger.error(e);
-        });
+        })
     }
 
     /**
@@ -138,12 +132,10 @@ export default class Guild {
      * @param guildId Guild ID
      * @param userId User ID
      */
-    async kick(guildId: string, userId: string): Promise<void> {
+    async kick(guildId: string, userId: string): Promise<RequestResponse<void>> {
         return this.rest.post('/guild/kickout', {
             guild_id: guildId,
             target_id: userId
-        }).catch((e) => {
-            this.rest.logger.error(e);
-        });
+        })
     }
 }

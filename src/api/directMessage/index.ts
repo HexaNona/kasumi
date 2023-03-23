@@ -1,5 +1,5 @@
 import Rest from "../../requestor";
-import { MessageType, User } from "../../type";
+import { MessageType, RequestResponse, User } from "../../type";
 import { v4 as uuidv4 } from 'uuid';
 import { NonceDismatchError } from "../../error";
 import { RawListResponse } from "./type";
@@ -25,16 +25,14 @@ export default class DirectMessage {
         pageSize?: number,
         messageId?: string,
         mode?: 'before' | 'around' | 'after'
-    ): Promise<RawListResponse> {
+    ): Promise<RequestResponse<RawListResponse>> {
         return this.rest.get('/direct-message/list', {
             target_id: channelId,
             msg_id: messageId,
             flag: mode,
             page: page,
             page_size: pageSize
-        }).catch((e) => {
-            this.rest.logger.error(e);
-        });
+        })
     }
 
     public async create(
@@ -43,11 +41,11 @@ export default class DirectMessage {
         content: string | Card | Card[],
         quote?: string,
         chatCode?: string
-    ): Promise<{
+    ): Promise<RequestResponse<{
         msg_id: string,
         msg_timestamp: number,
         nonce: string
-    } | undefined> {
+    }>> {
         if (content instanceof Card) {
             content = JSON.stringify([content.toObject()]);
         } else if (content instanceof Array<Card>) {
@@ -61,16 +59,10 @@ export default class DirectMessage {
             quote,
             chat_code: chatCode,
             nonce
-        }).then((data) => {
-            if (data)
-                if (data.nonce == nonce) return data;
-                else {
-                    this.rest.logger.error(new NonceDismatchError());
-                    return undefined;
-                }
-        }).catch((e) => {
-            this.rest.logger.error(e);
-            return undefined;
+        }).then(({ err, data }) => {
+            if (err) return { err };
+            if (data.nonce == nonce) return { data };
+            else return { err: new NonceDismatchError() }
         });
     }
 
@@ -78,7 +70,7 @@ export default class DirectMessage {
         messageId: string,
         content: string | Card | Card[],
         quote?: string
-    ): Promise<void> {
+    ): Promise<RequestResponse<void>> {
         if (content instanceof Card) {
             content = JSON.stringify([content.toObject()]);
         } else if (content instanceof Array<Card>) {
@@ -88,45 +80,34 @@ export default class DirectMessage {
             msg_id: messageId,
             content,
             quote
-        }).catch((e) => {
-            this.rest.logger.error(e);
-        });
+        })
     }
 
-    public async delete(messageId: string): Promise<void> {
+    public async delete(messageId: string): Promise<RequestResponse<void>> {
         return this.rest.post('/direct-message/delete', {
             msg_id: messageId
-        }).catch((e) => {
-            this.rest.logger.error(e);
-        });
+        })
     }
 
-    public async reactionUserList(messageId: string, emojiId: string): Promise<User[] | undefined> {
+    public async reactionUserList(messageId: string, emojiId: string): Promise<RequestResponse<User[]>> {
         return this.rest.get('/direct-message/reaction-list', {
             msg_id: messageId,
             emoji: emojiId
-        }).catch((e) => {
-            this.rest.logger.error(e);
-            return undefined;
-        });
+        })
     }
 
-    public async addReaction(messageId: string, emojiId: string): Promise<void> {
+    public async addReaction(messageId: string, emojiId: string): Promise<RequestResponse<void>> {
         return this.rest.post('/direct-message/add-reaction', {
             msg_id: messageId,
             emoji: emojiId
-        }).catch((e) => {
-            this.rest.logger.error(e);
-        });
+        })
     }
 
-    public async deleteReaction(messageId: string, emojiId: string, userId?: string): Promise<void> {
+    public async deleteReaction(messageId: string, emojiId: string, userId?: string): Promise<RequestResponse<void>> {
         return this.rest.post('/direct-message/delete-reaction', {
             msg_id: messageId,
             emoji: emojiId,
             user_id: userId
-        }).catch((e) => {
-            this.rest.logger.error(e);
-        });
+        })
     }
 }

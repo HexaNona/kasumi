@@ -1,5 +1,5 @@
 import User from "../user";
-import { FullChannel } from "../../type";
+import { FullChannel, RequestResponse } from "../../type";
 import Rest from "../../requestor";
 import { RawChannelListResponse } from "./type";
 import ChannelUser from "./user";
@@ -46,11 +46,8 @@ export default class Channel {
      * @param channelId Channel ID
      * @returns Channel details
      */
-    async view(channelId: string): Promise<FullChannel | undefined> {
-        return this.rest.get('/channel/view', { target_id: channelId }).catch((e) => {
-            this.rest.logger.error(e);
-            return undefined;
-        });
+    async view(channelId: string): Promise<RequestResponse<FullChannel>> {
+        return this.rest.get('/channel/view', { target_id: channelId })
     }
 
     private async __create({ guildId, name, parentCategoryId, channelDetail, isCategory }: {
@@ -65,7 +62,7 @@ export default class Channel {
             voiceQuality: 'LQ' | 'NM' | 'HQ'
         },
         isCategory?: boolean
-    }): Promise<FullChannel | undefined> {
+    }): Promise<RequestResponse<FullChannel>> {
         return this.rest.post('/channel/create', {
             guildId,
             name,
@@ -74,10 +71,7 @@ export default class Channel {
             limit_amount: channelDetail?.type == 'voice' ? channelDetail.memberLimit : undefined,
             voice_quality: channelDetail?.type == 'voice' ? this.__voice_quality_map[channelDetail.voiceQuality] : undefined,
             is_category: isCategory
-        }).catch((e) => {
-            this.rest.logger.error(e);
-            return undefined;
-        });
+        })
     }
 
     /**
@@ -127,9 +121,7 @@ export default class Channel {
      * @returns Category details
      */
     async createCategory(guildId: string, name: string) {
-        return this.__create({ guildId, name, isCategory: true }).catch((e) => {
-            this.rest.logger.error(e);
-        });
+        return this.__create({ guildId, name, isCategory: true })
     }
 
     /**
@@ -145,26 +137,21 @@ export default class Channel {
         name?: string,
         topic?: string,
         slowMode?: 0 | 5000 | 10000 | 15000 | 30000 | 60000 | 120000 | 300000 | 600000 | 900000 | 1800000 | 3600000 | 7200000 | 21600000
-    ): Promise<FullChannel | undefined> {
+    ): Promise<RequestResponse<FullChannel>> {
         return this.rest.post('/channel/update', {
             channel_id: channelId,
             name,
             topic,
             slow_mode: slowMode
-        }).catch((e) => {
-            this.rest.logger.error(e);
-            return undefined;
-        });
+        })
     }
 
     /**
      * Delete a channel
      * @param channelId Channel ID
      */
-    async delete(channelId: string): Promise<void> {
-        return this.rest.post('/channel/delete', { channel_id: channelId }).catch((e) => {
-            this.rest.logger.error(e);
-        });
+    async delete(channelId: string): Promise<RequestResponse<void>> {
+        return this.rest.post('/channel/delete', { channel_id: channelId })
     }
 
     /**
@@ -172,11 +159,8 @@ export default class Channel {
      * @param channelId Channel ID
      * @returns Array of user in the channel
      */
-    async voiceChannelUserList(channelId: string): Promise<User[] | undefined> {
-        return this.rest.get('/channel/user-list', { channel_id: channelId }).catch((e) => {
-            this.rest.logger.error(e);
-            return undefined;
-        });
+    async voiceChannelUserList(channelId: string): Promise<RequestResponse<User[]>> {
+        return this.rest.get('/channel/user-list', { channel_id: channelId })
     }
 
     /**
@@ -184,12 +168,10 @@ export default class Channel {
      * @param channelId Destination channel ID
      * @param userIds Array of IDs of users to be moved
      */
-    async voiceChannelMoveUser(channelId: string, userIds: string[]): Promise<void> {
+    async voiceChannelMoveUser(channelId: string, userIds: string[]): Promise<RequestResponse<void>> {
         return this.rest.post('/channel/move-user', {
             target_id: channelId,
             user_ids: userIds
-        }).catch((e) => {
-            this.rest.logger.error(e);
-        });
+        })
     }
 }

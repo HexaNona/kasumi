@@ -1,5 +1,5 @@
 import Rest from "../../requestor";
-import { MessageType, Message as MessageInterface, User } from "../../type";
+import { MessageType, Message as MessageInterface, User, RequestResponse } from "../../type";
 import { v4 as uuidv4 } from 'uuid';
 import { NonceDismatchError } from "../../error";
 import { RawMessageListResponse } from "./type";
@@ -25,16 +25,14 @@ export default class Message {
         pinned?: 0 | 1,
         messageId?: string,
         mode?: 'before' | 'around' | 'after'
-    ): Promise<RawMessageListResponse> {
+    ): Promise<RequestResponse<RawMessageListResponse>> {
         return this.rest.get('/message/list', {
             target_id: channelId,
             msg_id: messageId,
             pin: pinned,
             flag: mode,
             page_size: pageSize
-        }).catch((e) => {
-            this.rest.logger.error(e);
-        });
+        })
     }
 
     /**
@@ -42,13 +40,10 @@ export default class Message {
      * @param messageId ID of the requesting message
      * @returns The requested message item
      */
-    public async view(messageId: string): Promise<MessageInterface | undefined> {
+    public async view(messageId: string): Promise<RequestResponse<MessageInterface>> {
         return this.rest.get('/message/view', {
             msg_id: messageId
-        }).catch((e) => {
-            this.rest.logger.error(e);
-            return undefined;
-        });
+        })
     }
 
     public async create(
@@ -57,11 +52,11 @@ export default class Message {
         content: string | Card | Card[],
         quote?: string,
         tempMessageTargetUser?: string
-    ): Promise<{
+    ): Promise<RequestResponse<{
         msg_id: string,
         msg_timestamp: number,
         nonce: string
-    } | undefined> {
+    }>> {
         if (content instanceof Card) {
             content = JSON.stringify([content.toObject()]);
         } else if (content instanceof Array<Card>) {
@@ -76,16 +71,11 @@ export default class Message {
             temp_target_id: tempMessageTargetUser,
             nonce
         }).then((data) => {
-            if (data)
-                if (data.nonce == nonce) return data;
-                else {
-                    this.rest.logger.error(new NonceDismatchError());
-                    return undefined;
-                }
-        }).catch((e) => {
-            this.rest.logger.error(e);
-            return undefined;
-        });
+            if (data.data?.nonce == nonce) return data;
+            else {
+                return { err: new NonceDismatchError() };
+            }
+        })
     }
 
     public async update(
@@ -93,7 +83,7 @@ export default class Message {
         content: string | Card | Card[],
         quote?: string,
         tempUpdateTargetUser?: string
-    ): Promise<void> {
+    ): Promise<RequestResponse<void>> {
         if (content instanceof Card) {
             content = JSON.stringify([content.toObject()]);
         } else if (content instanceof Array<Card>) {
@@ -104,45 +94,34 @@ export default class Message {
             content,
             quote,
             temp_target_id: tempUpdateTargetUser
-        }).catch((e) => {
-            this.rest.logger.error(e);
-        });
+        })
     }
 
-    public async delete(messageId: string): Promise<void> {
+    public async delete(messageId: string): Promise<RequestResponse<void>> {
         return this.rest.post('/message/delete', {
             msg_id: messageId
-        }).catch((e) => {
-            this.rest.logger.error(e);
-        });
+        })
     }
 
-    public async reactionUserList(messageId: string, emojiId: string): Promise<User[] | undefined> {
+    public async reactionUserList(messageId: string, emojiId: string): Promise<RequestResponse<User[]>> {
         return this.rest.get('/message/reaction-list', {
             msg_id: messageId,
             emoji: emojiId
-        }).catch((e) => {
-            this.rest.logger.error(e);
-            return undefined;
-        });
+        })
     }
 
-    public async addReaction(messageId: string, emojiId: string): Promise<void> {
+    public async addReaction(messageId: string, emojiId: string): Promise<RequestResponse<void>> {
         return this.rest.post('/message/add-reaction', {
             msg_id: messageId,
             emoji: emojiId
-        }).catch((e) => {
-            this.rest.logger.error(e);
-        });
+        })
     }
 
-    public async deleteReaction(messageId: string, emojiId: string, userId?: string): Promise<void> {
+    public async deleteReaction(messageId: string, emojiId: string, userId?: string): Promise<RequestResponse<void>> {
         return this.rest.post('/message/delete-reaction', {
             msg_id: messageId,
             emoji: emojiId,
             user_id: userId
-        }).catch((e) => {
-            this.rest.logger.error(e);
-        });
+        })
     }
 }

@@ -1,3 +1,4 @@
+import { RequestResponse } from "../../type";
 import Rest from "../../requestor";
 import { RawUserMeResponse, RawUserViewResponse } from "./type";
 
@@ -7,26 +8,18 @@ export default class User {
         this.rest = rest;
     }
 
-    async me(): Promise<RawUserMeResponse | undefined> {
-        return this.rest.get('/user/me').catch((e) => {
-            this.rest.logger.error(e);
-            return undefined;
-        });
+    async me(): Promise<RequestResponse<RawUserMeResponse>> {
+        return this.rest.get('/user/me')
     }
 
-    async view(userId: string, guildId?: string): Promise<RawUserViewResponse | undefined> {
+    async view(userId: string, guildId?: string): Promise<RequestResponse<RawUserViewResponse>> {
         return this.rest.get('/user/view', {
             user_id: userId,
             guild_id: guildId
-        }).catch((e) => {
-            this.rest.logger.error(e);
-            return undefined;
-        });
+        })
     }
 
-    async offline(): Promise<void> {
-        return this.rest.get('/user/offline').catch((e) => {
-            this.rest.logger.error(e);
-        });
+    async offline(): Promise<RequestResponse<void>> {
+        return this.rest.get('/user/offline')
     }
 }

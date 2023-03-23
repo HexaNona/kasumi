@@ -1,3 +1,4 @@
+import { RequestResponse } from "../../../type";
 import Rest from "../../../requestor";
 import { RawChannelRoleResponse, RawChannelRoleIndexResponse } from "./type";
 
@@ -15,13 +16,13 @@ export default class ChannelRole {
      * @param channelId Channel ID
      * @returns Role/user permission override
      */
-    async list(channelId: string): Promise<RawChannelRoleIndexResponse> {
+    async list(channelId: string): Promise<RequestResponse<RawChannelRoleIndexResponse>> {
         return this.rest.get('/channel-role/index', {
             channel_id: channelId
         });
     }
 
-    private async __create<T extends 'role_id' | 'user_id'>(channelId: string, type: T, value: string): Promise<RawChannelRoleResponse[T]> {
+    private async __create<T extends 'role_id' | 'user_id'>(channelId: string, type: T, value: string): Promise<RequestResponse<RawChannelRoleResponse[T]>> {
         return this.rest.post('/channel-role/create', {
             channel_id: channelId, type, value
         })
@@ -47,7 +48,7 @@ export default class ChannelRole {
         return this.__create(channelId, 'user_id', userId);
     }
 
-    private async __update<T extends 'role_id' | 'user_id'>(channelId: string, type: T, value: string, allow: number, deny: number): Promise<RawChannelRoleResponse[T]> {
+    private async __update<T extends 'role_id' | 'user_id'>(channelId: string, type: T, value: string, allow: number, deny: number): Promise<RequestResponse<RawChannelRoleResponse[T]>> {
         return this.rest.post('/channel-role/update', {
             type, value, allow, deny,
             channel_id: channelId
@@ -78,7 +79,7 @@ export default class ChannelRole {
         return this.__update(channelId, 'user_id', userId, allow, deny)
     }
 
-    private async __delete(channelId: string, type: 'role_id' | 'user_id', value: string): Promise<void> {
+    private async __delete(channelId: string, type: 'role_id' | 'user_id', value: string): Promise<RequestResponse<void>> {
         return this.rest.post('/channel-role/delete', {
             channel_id: channelId,
             type, value

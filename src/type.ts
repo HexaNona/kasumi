@@ -507,6 +507,14 @@ export interface RawReaction {
     me: boolean
 }
 
+export type RequestResponse<T = any> = {
+    err: Error,
+    data?: undefined
+} | {
+    err?: undefined,
+    data: T
+}
+
 export interface RawResponse {
     code: number,
     message: string,

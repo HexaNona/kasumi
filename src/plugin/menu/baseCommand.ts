@@ -18,8 +18,8 @@ export default class BaseCommand {
     func: CommandFunction<BaseSession, any> = async (session: BaseSession) => {
         throw new MethodNotImplementedError();
     }
-    async exec(session: BaseSession): Promise<void>;
-    async exec(args: string[], event: PlainTextMessageEvent | MarkdownMessageEvent | ButtonClickedEvent, client: Kasumi): Promise<void>;
+    async exec(session: BaseSession): Promise<any>;
+    async exec(args: string[], event: PlainTextMessageEvent | MarkdownMessageEvent | ButtonClickedEvent, client: Kasumi): Promise<any>;
     async exec(sessionOrArgs: BaseSession | string[], event?: PlainTextMessageEvent | MarkdownMessageEvent | ButtonClickedEvent, client?: Kasumi) {
         if (sessionOrArgs instanceof BaseSession) {
             return this.func(sessionOrArgs).catch((e) => {

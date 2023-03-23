@@ -1,6 +1,7 @@
 import Rest from "../../requestor";
 import { RawAssetCreateResponse } from "./type";
 import FormData from "form-data";
+import { RequestResponse } from "../../type";
 
 export default class Asset {
     private rest: Rest;
@@ -14,17 +15,14 @@ export default class Asset {
      * @param config Other FormData configs
      * @returns File URL
      */
-    async create(buffer: Buffer, config?: FormData.AppendOptions): Promise<RawAssetCreateResponse | undefined> {
+    async create(buffer: Buffer, config?: FormData.AppendOptions): Promise<RequestResponse<RawAssetCreateResponse>> {
         const form = new FormData();
         form.append('file', buffer, {
             filename: 'image.png',
             ...config
         })
-        return await this.rest.post('/asset/create', form, {
+        return this.rest.post('/asset/create', form, {
             headers: form.getHeaders()
-        }).catch((e) => {
-            this.rest.logger.error(e);
-            return undefined;
         })
     }
 }
