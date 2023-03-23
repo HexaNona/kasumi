@@ -3,15 +3,21 @@ import GuildBoost from "./boost";
 import GuildMute from "./mute";
 import { RequestResponse } from "../../type";
 import { RawGuildListResponse, RawGuildUserListResponse, RawGuildViewResponse } from "./type";
+import GuildEmoji from "./emoji";
+import GuildRole from "./role";
 
 export default class Guild {
     private rest: Rest;
     boost: GuildBoost;
+    emoji: GuildEmoji;
     mute: GuildMute;
+    role: GuildRole;
     constructor(rest: Rest) {
         this.rest = rest;
         this.boost = new GuildBoost(rest);
+        this.emoji = new GuildEmoji(rest);
         this.mute = new GuildMute(rest);
+        this.role = new GuildRole(rest);
     }
 
     /**
@@ -93,7 +99,7 @@ export default class Guild {
             channel_id: channelId,
             search,
             role_id: roleId,
-            mobile_verified: mobileVerified ? (mobileVerified == true ? 1 : 0) : undefined,
+            mobile_verified: mobileVerified === undefined ? undefined : (mobileVerified === true ? 1 : 0),
             active_time: this.__get_desc_asc_map(lastSeen),
             joined_at: this.__get_desc_asc_map(joinTime),
             filter_user_id: userId

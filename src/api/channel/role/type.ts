@@ -1,4 +1,4 @@
-import { FullChannel, MultiPageResponse, User } from "../../../type";
+import { User } from "../../../type";
 
 export interface RawChannelRoleIndexResponse {
     permission_overwrites: {

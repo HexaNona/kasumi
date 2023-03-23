@@ -25,8 +25,8 @@ export default class Message {
         pinned?: 0 | 1,
         messageId?: string,
         mode?: 'before' | 'around' | 'after'
-    ): Promise<RequestResponse<RawMessageListResponse>> {
-        return this.rest.get('/message/list', {
+    ) {
+        return this.rest.get<RawMessageListResponse>('/message/list', {
             target_id: channelId,
             msg_id: messageId,
             pin: pinned,
@@ -40,30 +40,39 @@ export default class Message {
      * @param messageId ID of the requesting message
      * @returns The requested message item
      */
-    public async view(messageId: string): Promise<RequestResponse<MessageInterface>> {
-        return this.rest.get('/message/view', {
+    public async view(messageId: string) {
+        return this.rest.get<MessageInterface>('/message/view', {
             msg_id: messageId
         })
     }
 
+    /**
+     * Send a message
+     * @param type Message type
+     * @param channelId Channel ID
+     * @param content Messsage content
+     * @param quote Quote message ID
+     * @param tempMessageTargetUser ID of temp message target user
+     * @returns Message ID
+     */
     public async create(
         type: MessageType,
         channelId: string,
         content: string | Card | Card[],
         quote?: string,
         tempMessageTargetUser?: string
-    ): Promise<RequestResponse<{
-        msg_id: string,
-        msg_timestamp: number,
-        nonce: string
-    }>> {
+    ) {
         if (content instanceof Card) {
             content = JSON.stringify([content.toObject()]);
         } else if (content instanceof Array<Card>) {
             content = JSON.stringify(content.map(v => v.toObject()));
         }
         const nonce = uuidv4();
-        return this.rest.post('/message/create', {
+        return this.rest.post<{
+            msg_id: string,
+            msg_timestamp: number,
+            nonce: string
+        }>('/message/create', {
             type,
             target_id: channelId,
             content,
@@ -78,18 +87,25 @@ export default class Message {
         })
     }
 
+    /**
+     * Update a message
+     * @param messageId Message ID
+     * @param content Message content
+     * @param quote Quote message ID
+     * @param tempUpdateTargetUser ID of temporary update target user
+     */
     public async update(
         messageId: string,
         content: string | Card | Card[],
         quote?: string,
         tempUpdateTargetUser?: string
-    ): Promise<RequestResponse<void>> {
+    ) {
         if (content instanceof Card) {
             content = JSON.stringify([content.toObject()]);
         } else if (content instanceof Array<Card>) {
             content = JSON.stringify(content.map(v => v.toObject()));
         }
-        return this.rest.post('/message/update', {
+        return this.rest.post<void>('/message/update', {
             msg_id: messageId,
             content,
             quote,
@@ -97,28 +113,49 @@ export default class Message {
         })
     }
 
+    /**
+     * Delete a message
+     * @param messageId Message ID
+     */
     public async delete(messageId: string): Promise<RequestResponse<void>> {
         return this.rest.post('/message/delete', {
             msg_id: messageId
         })
     }
 
-    public async reactionUserList(messageId: string, emojiId: string): Promise<RequestResponse<User[]>> {
-        return this.rest.get('/message/reaction-list', {
+    /**
+     * Get a list of user who react to a emoji under a message
+     * @param messageId Message ID
+     * @param emojiId Emoji ID
+     * @returns User list
+     */
+    public async reactionUserList(messageId: string, emojiId: string) {
+        return this.rest.get<User[]>('/message/reaction-list', {
             msg_id: messageId,
             emoji: emojiId
         })
     }
 
-    public async addReaction(messageId: string, emojiId: string): Promise<RequestResponse<void>> {
-        return this.rest.post('/message/add-reaction', {
+    /**
+     * Add reaction to a message
+     * @param messageId Message ID
+     * @param emojiId Emoji ID
+     */
+    public async addReaction(messageId: string, emojiId: string) {
+        return this.rest.post<void>('/message/add-reaction', {
             msg_id: messageId,
             emoji: emojiId
         })
     }
 
-    public async deleteReaction(messageId: string, emojiId: string, userId?: string): Promise<RequestResponse<void>> {
-        return this.rest.post('/message/delete-reaction', {
+    /**
+     * Delete a reaction
+     * @param messageId Message ID
+     * @param emojiId Emoji ID
+     * @param userId User ID, do not provide = self
+     */
+    public async deleteReaction(messageId: string, emojiId: string, userId?: string) {
+        return this.rest.post<void>('/message/delete-reaction', {
             msg_id: messageId,
             emoji: emojiId,
             user_id: userId

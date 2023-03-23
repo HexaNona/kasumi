@@ -1,6 +1,6 @@
 import { RequestResponse } from "../../../type";
 import Rest from "../../../requestor";
-import { RawChannelRoleResponse, RawChannelRoleIndexResponse } from "./type";
+import { RawChannelRoleResponse, RawChannelRoleIndexResponse} from "./type";
 
 export default class ChannelRole {
     private rest: Rest;

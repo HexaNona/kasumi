@@ -77,7 +77,7 @@ export interface UserInGuildNonStandard extends UserInGuild {
   hoistInfo?: {
     color: number
     name: string
-    roleId: number
+    roleId: string
   }
   /**
    * 正在玩的游戏（非标准）
@@ -165,7 +165,7 @@ export interface Role {
   /**
    * 角色的id
    */
-  roleId: number
+  roleId: string
   /**
    * 角色的名称
    */

@@ -83,6 +83,20 @@ export interface Game {
     icon: string
 }
 
+export interface Emoji {
+    name: string,
+    id: string,
+    user_info: {
+        id: string,
+        username: string,
+        identify_num: string,
+        online: boolean,
+        os: string,
+        status: number,
+        avatar: string
+    }
+}
+
 export interface Guild {
     id: string,
     name: string,
