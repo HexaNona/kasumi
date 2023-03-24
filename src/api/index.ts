@@ -1,5 +1,4 @@
 import Logger from "bunyan";
-import { MultiPageResponse } from "../type";
 import Rest from "../requestor";
 import Asset from "./asset";
 import Channel from "./channel";
@@ -9,27 +8,39 @@ import Gateway from "./gateway";
 import Guild from "./guild";
 import Message from "./message";
 import User from "./user";
+import Badge from "./badge";
+import Blacklist from "./blacklist";
+import Intimacy from "./intimacy";
+import Inivte from "./invite";
 
 export default class API {
-    public rest: Rest;
+    rest: Rest;
 
-    public asset: Asset;
-    public channel: Channel;
-    public directMessage: DirectMessage;
-    public game: Game;
-    public gateway: Gateway;
-    public guild: Guild;
-    public message: Message;
-    public user: User;
+    asset: Asset;
+    badge: Badge;
+    blacklist: Blacklist;
+    channel: Channel;
+    directMessage: DirectMessage;
+    game: Game;
+    gateway: Gateway;
+    guild: Guild;
+    intimacy: Intimacy;
+    invite: Inivte;
+    message: Message;
+    user: User;
     constructor(token: string, logger: Logger) {
         this.rest = new Rest(token, logger);
 
         this.asset = new Asset(this.rest);
+        this.badge = new Badge(this.rest);
+        this.blacklist = new Blacklist(this.rest);
         this.channel = new Channel(this.rest);
         this.directMessage = new DirectMessage(this.rest);
         this.game = new Game(this.rest);
         this.gateway = new Gateway(this.rest);
         this.guild = new Guild(this.rest);
+        this.intimacy = new Intimacy(this.rest);
+        this.invite = new Inivte(this.rest);
         this.message = new Message(this.rest);
         this.user = new User(this.rest);
     }

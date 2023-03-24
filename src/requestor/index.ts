@@ -4,25 +4,25 @@ import { RestError } from "../error";
 import Logger from "bunyan";
 
 export default class Rest {
-    protected __this: AxiosInstance;
+    axios: AxiosInstance;
     logger: Logger;
     constructor(provide: string | AxiosInstance, logger: Logger) {
         if (typeof provide == 'string') {
-            this.__this = axios.create({
+            this.axios = axios.create({
                 baseURL: 'https://www.kookapp.cn/api/v3',
                 headers: {
                     Authorization: `Bot ${provide}`,
                 }
             });
         } else {
-            this.__this = provide;
+            this.axios = provide;
         }
         this.logger = logger;
     }
     async get<T = any>(endpoint: string, params?: any, config?: AxiosRequestConfig): Promise<RequestResponse<T>> {
         let data: RawResponse, err: Error;
         try {
-            data = (await this.__this.get(endpoint, { params, ...config })).data as RawResponse;
+            data = (await this.axios.get(endpoint, { params, ...config })).data as RawResponse;
             if (data.code == 0) return { data: data.data };
             else throw new RestError(data.code, data.message, 'GET', endpoint);
         } catch (e) {
@@ -36,7 +36,7 @@ export default class Rest {
     async post<T = any>(endpoint: string, body?: any, config?: AxiosRequestConfig): Promise<RequestResponse<T>> {
         let data: RawResponse, err: Error;
         try {
-            data = (await this.__this.post(endpoint, body, config)).data as RawResponse;
+            data = (await this.axios.post(endpoint, body, config)).data as RawResponse;
             if (data.code == 0) return { data: data.data };
             else throw new RestError(data.code, data.message, 'POST', endpoint);
         } catch (e) {
