@@ -33,34 +33,28 @@ export default class BaseSession {
         let messageType;
         if (content instanceof Card || content instanceof Array<Card>) messageType = MessageType.CardMessage;
         else messageType = MessageType.MarkdownMessage;
-        return await this.client.API.message.create(
+        return this.client.API.message.create(
             messageType,
             this.channelId,
             content,
             quote ? this.messageId : undefined,
             temporary ? this.authorId : undefined
-        ).catch((err) => {
-            this.client.logger.error(err);
-        })
+        );
     }
     async update(messageId: string, content: string | Card | Card[], reply: boolean = false) {
-        return await this.client.API.message.update(
+        return this.client.API.message.update(
             messageId,
             content,
             reply ? this.messageId : undefined
-        ).catch((err) => {
-            this.client.logger.error(err);
-        })
+        )
     }
     async updateTemp(messageId: string, content: string | Card | Card[], reply: boolean = false) {
-        return await this.client.API.message.update(
+        return this.client.API.message.update(
             messageId,
             content,
             reply ? this.messageId : undefined,
             this.authorId
-        ).catch((err) => {
-            this.client.logger.error(err);
-        })
+        )
     }
 
     async send(content: string | Card | Card[]) {
