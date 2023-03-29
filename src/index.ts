@@ -110,7 +110,7 @@ export default class Kasumi {
         this.logger.info(`Logged in as ${this.me.username}#${this.me.identifyNum} (${this.me.userId})`);
         if (this.__config.type == 'websocket') {
             if (this.__config.vendor == 'botroot') {
-                this.websocketBotRoot = new WebSocketSource(this);
+                this.websocketBotRoot = new WebSocketSource(this, false);
                 this.websocketBotRoot.connect();
             } else this.websocket = new WebSocket(this);
         } else {
