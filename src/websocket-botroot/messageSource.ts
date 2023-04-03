@@ -24,7 +24,7 @@ export class MessageSource extends EventEmitter implements MessageSource {
     constructor(botInstance: Kasumi) {
         super()
         this.botInstance = botInstance;
-        this.logger = this.botInstance.getLogger('websocket-botroot');
+        this.logger = this.botInstance.getLogger('websocket', 'botroot');
     }
     async connect(): Promise<boolean> {
         return false
@@ -34,7 +34,7 @@ export class MessageSource extends EventEmitter implements MessageSource {
     protected onEventArrive(packet: KHEventPacket): void {
         if ((packet as KHEventPacket).sn === this.sn + 1) {
             this.sn += 1
-            if(this.sn >= 65535) this.sn = 0; // Reset sn after 65535 !important
+            if (this.sn >= 65535) this.sn = 0; // Reset sn after 65535 !important
             this.emit('message', cloneDeep(packet.d))
             this.eventProcess(packet)
             this.buffer.sort((a, b) => a.sn - b.sn)
@@ -59,7 +59,7 @@ export class MessageSource extends EventEmitter implements MessageSource {
             const event = packet.d;
             this.logger.trace(`Recieved message "${event.content}" from ${event.author_id}, ID = ${event.msg_id}`, {
                 cur_sn: this.sn,
-                msg_sn: event.sn
+                msg_sn: packet.sn
             });
             this.botInstance.message.recievedMessage(packet as any);
         }

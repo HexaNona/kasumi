@@ -537,7 +537,7 @@ export interface RawResponse {
 
 export interface WebSocketConfig {
     type: 'websocket',
-    vendor?: 'botroot' | 'hexona'
+    vendor?: 'botroot' | 'hexona' | 'kookts'
     token: string
 }
 

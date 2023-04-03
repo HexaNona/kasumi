@@ -7,6 +7,8 @@ import WebSocket from "./websocket";
 import WebHook from "./webhook";
 import Plugin from "./plugin"
 import WebSocketSource from "./websocket-botroot";
+import { BaseReceiver, WebsocketReceiver } from "./websocket-kookts/event-receiver";
+import { BaseClient } from "./websocket-kookts";
 export { default as BaseMenu } from "./plugin/menu/baseMenu";
 export { default as BaseCommand, CommandFunction } from "./plugin/menu/baseCommand";
 export { default as BaseSession } from "./plugin/session";
@@ -19,8 +21,7 @@ export default class Kasumi {
     API: API;
     message: Message;
     plugin: Plugin;
-    websocket?: WebSocket;
-    websocketBotRoot?: WebSocketSource;
+    websocket?: WebSocket | WebSocketSource | BaseReceiver
     webhook?: WebHook;
     logger: Logger;
 
@@ -89,13 +90,16 @@ export default class Kasumi {
     getLogger(...name: string[]) {
         return new Logger({
             name: `${['kasumi', ...name].join('.')}`,
-            streams: [{
-                stream: process.stdout,
-                level: this.__bunyan_log_level
-            }, {
-                stream: process.stderr,
-                level: this.__bunyan_error_level
-            }]
+            streams: [
+                {
+                    stream: process.stdout,
+                    level: this.__bunyan_log_level
+                },
+                {
+                    stream: process.stderr,
+                    level: this.__bunyan_error_level
+                }
+            ]
         });
     }
     async connect() {
@@ -110,9 +114,13 @@ export default class Kasumi {
         this.logger.info(`Logged in as ${this.me.username}#${this.me.identifyNum} (${this.me.userId})`);
         if (this.__config.type == 'websocket') {
             if (this.__config.vendor == 'botroot') {
-                this.websocketBotRoot = new WebSocketSource(this, false);
-                this.websocketBotRoot.connect();
-            } else this.websocket = new WebSocket(this);
+                this.websocket = new WebSocketSource(this, false);
+                this.websocket.connect();
+            } else if (this.__config.vendor == 'kookts') {
+                this.websocket = new WebsocketReceiver(new BaseClient(this));
+                this.websocket.connect();
+            }
+            else this.websocket = new WebSocket(this);
         } else {
             this.webhook = new WebHook(this.__config, this);
         }
