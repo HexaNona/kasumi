@@ -36,7 +36,7 @@ export default class WebSocket {
 
     private __interval?: NodeJS.Timer;
 
-    private async connectWebSocketType(resume: boolean = false) {
+    private async connectWebSocket(resume: boolean = false) {
         this.state = WebSocketType.State.ConnectGateway;
         let { err, data } = await this.client.API.gateway.index();
         if (err) throw err;
@@ -124,21 +124,24 @@ export default class WebSocket {
                 }
             }
         });
+
+        this.Socket.on('close', () => { this.reconnectWebSocket() });
+        this.Socket.on('error', (e) => { this.logger.error(e); this.reconnectWebSocket() });
     }
 
     private reconnectWebSocket() {
         if (this.Socket) {
             const socket = this.Socket;
-            this.Socket = undefined;
+            delete this.Socket;
             socket?.close();
         }
         clearInterval(this.__interval);
-        this.__interval = undefined;
-        // this.connectWebSocketType(true);
-        this.connectWebSocketType();
+        delete this.__interval;
+        // this.connectWebSocket(true);
+        this.connectWebSocket();
     }
     private ensureWebSocketTypeConnection() {
-        this.connectWebSocketType();
+        this.connectWebSocket();
         setInterval(async () => {
             if (this.state == WebSocketType.State.NeedsRestart) {
                 this.logger.info('WebSocket needs to reconnect');
