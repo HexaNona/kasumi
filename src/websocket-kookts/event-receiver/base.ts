@@ -12,6 +12,9 @@ abstract class BaseReceiver {
     abstract connect(): Promise<void>;
 
     protected onEventArrive(packet: KEventPacket): void {
+        if (this.client.kasumi.DISABLE_SN_ORDER_CHECK) { // Disable SN order check per config
+            return this.client.kasumi.message.recievedMessage(packet as any);
+        }
         if (packet.sn === this.sn + 1) {
             this.sn += 1;
             if (this.sn >= 65535) this.sn = 0;

@@ -20,7 +20,7 @@ export class BaseClient extends EventEmitter2 {
         this.axios = axios.create({
             baseURL: 'https://www.kookapp.cn/api',
             headers: {
-                Authorization: 'Bot ' + this.kasumi.__token,
+                Authorization: 'Bot ' + this.kasumi.TOKEN,
             },
         });
         this.receiver = new WebsocketReceiver(this);

@@ -91,6 +91,9 @@ export default class WebSocket {
                         cur_sn: this.sn,
                         msg_sn: data.sn
                     });
+                    if (this.client.DISABLE_SN_ORDER_CHECK) { // Disable SN order check per config
+                        return this.client.message.recievedMessage(data);
+                    }
                     this.messageBuffer.push(data);
                     this.messageBuffer.sort((a, b) => { return a.sn - b.sn });
                     while (this.messageBuffer[0] && this.messageBuffer[0].sn <= this.sn) this.messageBuffer.shift();

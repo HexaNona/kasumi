@@ -45,6 +45,9 @@ export default class WebHook {
                                 this.sn = event.sn;
                                 this.isInitialization = false;
                             }
+                            if (this.client.DISABLE_SN_ORDER_CHECK) { // Disable SN order check per config
+                                return this.client.message.recievedMessage(event);
+                            }
                             this.messageBuffer.push(event);
                             this.messageBuffer.sort((a, b) => { return a.sn - b.sn });
                             while (this.messageBuffer[0] && this.messageBuffer[0].sn <= this.sn) this.messageBuffer.shift();

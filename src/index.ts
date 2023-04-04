@@ -40,48 +40,51 @@ export default class Kasumi {
             avatar: ''
         }
 
-    __token: string;
-    __bunyan_log_level: Logger.LogLevel;
-    __bunyan_error_level: Logger.LogLevel;
-    private __config: KasumiConfig;
+    readonly TOKEN: string;
+    readonly BUNYAN_LOG_LEVEL: Logger.LogLevel;
+    readonly BUNYAN_ERROR_LEVEL: Logger.LogLevel;
+    readonly DISABLE_SN_ORDER_CHECK: boolean;
+    private readonly CONFIG: KasumiConfig;
+
     constructor(config: KasumiConfig) {
         switch (process.env.LOG_LEVEL?.toLowerCase()) {
             case 'verbose':
             case 'more':
             case 'trace':
-                this.__bunyan_log_level = Logger.TRACE;
+                this.BUNYAN_LOG_LEVEL = Logger.TRACE;
                 break;
             case 'debug':
-                this.__bunyan_log_level = Logger.DEBUG;
+                this.BUNYAN_LOG_LEVEL = Logger.DEBUG;
                 break;
             case 'less':
             case 'warn':
-                this.__bunyan_log_level = Logger.WARN;
+                this.BUNYAN_LOG_LEVEL = Logger.WARN;
                 break;
             default:
-                this.__bunyan_log_level = Logger.INFO;
+                this.BUNYAN_LOG_LEVEL = Logger.INFO;
         }
         switch (process.env.ERROR_LEVEL?.toLowerCase()) {
             case 'verbose':
             case 'more':
             case 'info':
-                this.__bunyan_error_level = Logger.INFO;
+                this.BUNYAN_ERROR_LEVEL = Logger.INFO;
                 break;
             case 'less':
             case 'error':
-                this.__bunyan_error_level = Logger.ERROR;
+                this.BUNYAN_ERROR_LEVEL = Logger.ERROR;
                 break;
             default:
-                this.__bunyan_error_level = Logger.WARN;
+                this.BUNYAN_ERROR_LEVEL = Logger.WARN;
         }
         this.logger = this.getLogger();
 
-        this.__config = config;
-        this.__token = this.__config.token;
+        this.CONFIG = structuredClone(config);
+        this.TOKEN = this.CONFIG.token;
+        this.DISABLE_SN_ORDER_CHECK = this.CONFIG.disableSnOrderCheck || false;
 
         this.message = new Message(this);
         this.plugin = new Plugin(this);
-        this.API = new API(this.__token, this.getLogger('requestor'));
+        this.API = new API(this.TOKEN, this.getLogger('requestor'));
 
         this.message.on('allTextMessages', (event) => {
             this.plugin.messageProcessing(event.content, event);
@@ -93,11 +96,11 @@ export default class Kasumi {
             streams: [
                 {
                     stream: process.stdout,
-                    level: this.__bunyan_log_level
+                    level: this.BUNYAN_LOG_LEVEL
                 },
                 {
                     stream: process.stderr,
-                    level: this.__bunyan_error_level
+                    level: this.BUNYAN_ERROR_LEVEL
                 }
             ]
         });
@@ -112,17 +115,17 @@ export default class Kasumi {
         this.me.identifyNum = profile.identify_num;
         this.me.avatar = profile.avatar;
         this.logger.info(`Logged in as ${this.me.username}#${this.me.identifyNum} (${this.me.userId})`);
-        if (this.__config.type == 'websocket') {
-            if (this.__config.vendor == 'botroot') {
+        if (this.CONFIG.type == 'websocket') {
+            if (this.CONFIG.vendor == 'botroot') {
                 this.websocket = new WebSocketSource(this, false);
                 this.websocket.connect();
-            } else if (this.__config.vendor == 'kookts') {
+            } else if (this.CONFIG.vendor == 'kookts') {
                 this.websocket = new WebsocketReceiver(new BaseClient(this));
                 this.websocket.connect();
             }
             else this.websocket = new WebSocket(this);
         } else {
-            this.webhook = new WebHook(this.__config, this);
+            this.webhook = new WebHook(this.CONFIG, this);
         }
     }
     // on = this.message.on;
