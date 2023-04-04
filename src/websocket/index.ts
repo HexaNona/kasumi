@@ -92,6 +92,7 @@ export default class WebSocket {
                         msg_sn: data.sn
                     });
                     if (this.client.DISABLE_SN_ORDER_CHECK) { // Disable SN order check per config
+                        this.sn = Math.max(data.sn, this.sn);
                         return this.client.message.recievedMessage(data);
                     }
                     this.messageBuffer.push(data);

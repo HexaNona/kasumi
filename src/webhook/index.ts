@@ -46,6 +46,7 @@ export default class WebHook {
                                 this.isInitialization = false;
                             }
                             if (this.client.DISABLE_SN_ORDER_CHECK) { // Disable SN order check per config
+                                this.sn = Math.max(event.sn, this.sn);
                                 return this.client.message.recievedMessage(event);
                             }
                             this.messageBuffer.push(event);
