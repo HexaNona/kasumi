@@ -52,16 +52,21 @@ export default class WebSocket {
             this.state = WebSocketType.State.Initialization;
 
             this.__interval = setInterval(async () => {
-                this.Socket?.send(Buffer.from(JSON.stringify({
-                    s: 2,
-                    sn: this.sn
-                })))
-                await this.getNextItemFromQueue(WebSocketType.SignalType.Pong, 6 * 1000).catch((e) => {
-                    if (e instanceof TimeoutError) {
-                        this.state = WebSocketType.State.NeedsRestart;
-                        this.logger.warn("PING timed out, retrying");
-                    } else throw e;
-                });
+                try {
+                    this.Socket?.send(Buffer.from(JSON.stringify({
+                        s: 2,
+                        sn: this.sn
+                    })));
+                    await this.getNextItemFromQueue(WebSocketType.SignalType.Pong, 6 * 1000).catch((e) => {
+                        if (e instanceof TimeoutError) {
+                            this.state = WebSocketType.State.NeedsRestart;
+                            this.logger.warn("PING timed out, retrying");
+                        } else throw e;
+                    });
+                } catch (e) {
+                    this.logger.error(e);
+                    this.reconnectWebSocket();
+                }
             }, 30 * 1000);
 
             this.getNextItemFromQueue(WebSocketType.SignalType.Hello, 6 * 1000).then(async (helloPackage) => {
