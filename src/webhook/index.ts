@@ -12,6 +12,7 @@ export default class WebHook {
     private client: Kasumi;
     private http: Express;
     private sn: number = 0;
+    private port!: number;
     private messageBuffer: Array<Exclude<WebHookType.Events, WebHookType.ChallengeEvent>> = [];
     constructor(config: WebHookConfig, client: Kasumi) {
         this.client = client;
@@ -77,9 +78,23 @@ export default class WebHook {
                 res.status(401).send();
             }
         })
-        this.http.listen(config.port, () => {
-            this.logger.info(`Kasumi starts listening on port ${config.port}`);
-        });
+        this.http.get('/', (req, res) => {
+            res.send({
+                user: this.client.me,
+                message: {
+                    latestSn: this.sn,
+                    bufferSize: this.messageBuffer.length
+                }
+            })
+        })
+        import('get-port').then(({ default: getPort }) => {
+            getPort({ port: config.port }).then(port => {
+                this.port = port;
+                this.http.listen(this.port, () => {
+                    this.logger.info(`Kasumi starts listening on port ${this.port}`);
+                });
+            })
+        })
     }
 
     private __isChallengeEvent(event: WebHookType.Events): event is WebHookType.ChallengeEvent {

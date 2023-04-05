@@ -5,6 +5,7 @@
         "requester",
         "API",
         "command",
-        "logger"
+        "logger",
+        "webhook"
     ]
 }
