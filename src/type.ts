@@ -208,7 +208,8 @@ export namespace WebSocket {
     export enum State {
         Initialization = 0,
         ConnectGateway = 1,
-        RecievingMessage = 2,
+        ConnectionOpen = 2,
+        RecievingMessage = 3,
         NeedsRestart = 255
     }
     export namespace Signal {

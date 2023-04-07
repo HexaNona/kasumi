@@ -106,9 +106,12 @@ export default class Kasumi {
         });
     }
     async connect() {
-        let res = await this.API.user.me();
-        if (res.err) throw res.err;
-        let { data } = res;
+        const { err, data } = await this.API.user.me();
+        if (err) {
+            this.logger.error('Getting bot details failed, retrying in 30s');
+            setTimeout(() => { this.connect() }, 30 * 1000);
+            return;
+        }
         let profile = data;
         this.me.userId = profile.id;
         this.me.username = profile.username;

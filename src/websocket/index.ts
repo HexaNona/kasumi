@@ -38,9 +38,14 @@ export default class WebSocket {
 
     private async connectWebSocket(resume: boolean = false) {
         this.state = WebSocketType.State.ConnectGateway;
-        let { err, data } = await this.client.API.gateway.index();
-        if (err) throw err;
-        let gateway = data?.url;
+        const { err, data } = await this.client.API.gateway.index()
+        if (err) {
+            this.logger.error("Getting gateway failed");
+            this.logger.error(err);
+            this.reconnectWebSocket();
+            return;
+        }
+        let gateway = data.url;
         if (resume && this.sessionId) this.Socket = new ws(`${gateway}?compress=0&resume=1&sessionId=${this.sessionId}&sn=${this.sn}`);
         else {
             this.sn = 0;
@@ -49,7 +54,7 @@ export default class WebSocket {
         }
         this.Socket.on('open', async () => {
             this.logger.debug('WebSocket connection established');
-            this.state = WebSocketType.State.Initialization;
+            this.state = WebSocketType.State.ConnectionOpen;
 
             this.__interval = setInterval(async () => {
                 try {
@@ -136,15 +141,18 @@ export default class WebSocket {
     }
 
     private reconnectWebSocket() {
+        if (this.state == WebSocketType.State.Initialization) return;
+        this.state = WebSocketType.State.Initialization;
+        this.logger.info('Reconnectting WebSocket in 90s');
         if (this.Socket) {
             const socket = this.Socket;
             delete this.Socket;
-            socket?.close();
+            socket.close();
         }
         clearInterval(this.__interval);
         delete this.__interval;
         // this.connectWebSocket(true);
-        this.connectWebSocket();
+        setTimeout(() => { this.connectWebSocket(true); }, 90 * 1000);
     }
     private ensureWebSocketTypeConnection() {
         this.connectWebSocket();
