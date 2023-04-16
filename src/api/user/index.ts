@@ -20,6 +20,6 @@ export default class User {
     }
 
     async offline(): Promise<RequestResponse<void>> {
-        return this.rest.get('/user/offline')
+        return this.rest.post('/user/offline')
     }
 }
