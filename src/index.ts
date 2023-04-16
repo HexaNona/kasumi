@@ -119,6 +119,8 @@ export default class Kasumi {
         this.me.avatar = profile.avatar;
         this.logger.info(`Logged in as ${this.me.username}#${this.me.identifyNum} (${this.me.userId})`);
         if (this.CONFIG.type == 'websocket') {
+            const { err } = await this.API.user.offline();
+            if (err) throw err;
             if (this.CONFIG.vendor == 'botroot') {
                 this.websocket = new WebSocketSource(this, false);
                 this.websocket.connect();
