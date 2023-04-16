@@ -156,11 +156,13 @@ export default class WebSocket {
     }
     private ensureWebSocketTypeConnection() {
         this.connectWebSocket();
-        setInterval(async () => {
+        const interval = async () => {
             if (this.state == WebSocketType.State.NeedsRestart) {
                 this.logger.info('WebSocket needs to reconnect');
                 this.reconnectWebSocket();
             }
-        }, 500)
+            setTimeout(() => { interval() }, 500);
+        }
+        interval();
     }
 }

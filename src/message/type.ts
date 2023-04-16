@@ -59,6 +59,7 @@ export class ButtonClickedEvent extends SystemMessageEvent {
         this.authorId = rawEvent.extra.body.user_id;
         this.author = rawEvent.extra.body.user_info;
         this.channelId = rawEvent.extra.body.target_id;
+        this.guildId = rawEvent.extra.body.guild_id;
     }
 }
 
@@ -76,7 +77,7 @@ class UserMessageEvent extends BaseMessageEvent {
         return object.channel_type == 'GROUP';
     }
     public async delete() {
-        return this.client.API.message.delete(this.messageId);
+        this.client.API.message.delete(this.messageId);
     }
     public async reply(content: string, tempUpdateTargetUser?: string) {
         if (this.channelType == 'GROUP') return this.client.API.message.create(this.messageType, this.channelId, content, this.messageId, tempUpdateTargetUser);

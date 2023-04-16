@@ -456,7 +456,9 @@ export namespace WebSocket {
                 msg_id: string,
                 user_id: string,
                 target_id: string,
-                user_info: User
+                user_info: User,
+                channel_type: "GROUP" | "PRESON",
+                guild_id?: string
             }
         }
     }
