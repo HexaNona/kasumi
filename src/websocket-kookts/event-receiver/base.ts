@@ -13,7 +13,7 @@ abstract class BaseReceiver {
 
     protected onEventArrive(packet: KEventPacket): void {
         if (this.client.kasumi.DISABLE_SN_ORDER_CHECK) { // Disable SN order check per config
-            this.sn = Math.max(packet.sn, this.sn);
+            this.sn = packet.sn;
             return this.client.kasumi.message.recievedMessage(packet as any);
         }
         if (packet.sn === this.sn + 1) {

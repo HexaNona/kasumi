@@ -33,7 +33,7 @@ export class MessageSource extends EventEmitter implements MessageSource {
     protected sn = 0
     protected onEventArrive(packet: KHEventPacket): void {
         if (this.botInstance.DISABLE_SN_ORDER_CHECK) { // Disable SN order check per config
-            this.sn = Math.max(packet.sn, this.sn);
+            this.sn = packet.sn;
             return this.botInstance.message.recievedMessage(packet as any);
         }
         if ((packet as KHEventPacket).sn === this.sn + 1) {
