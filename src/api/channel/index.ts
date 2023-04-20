@@ -1,5 +1,4 @@
-import User from "../user";
-import { FullChannel, RequestResponse } from "../../type";
+import { FullChannel, RequestResponse, User } from "../../type";
 import Rest from "../../requestor";
 import { RawChannelListResponse } from "./type";
 import ChannelUser from "./user";
