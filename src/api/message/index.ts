@@ -79,11 +79,10 @@ export default class Message {
             quote,
             temp_target_id: tempMessageTargetUser,
             nonce
-        }).then((data) => {
-            if (data.data?.nonce == nonce) return data;
-            else {
-                return { err: new NonceDismatchError() };
-            }
+        }).then((res) => {
+            if (res.err) return res;
+            else if (res.data.nonce == nonce) return res;
+            else return { err: new NonceDismatchError() };
         })
     }
 

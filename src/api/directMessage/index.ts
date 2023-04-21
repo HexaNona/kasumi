@@ -59,11 +59,11 @@ export default class DirectMessage {
             quote,
             chat_code: chatCode,
             nonce
-        }).then(({ err, data }) => {
-            if (err) return { err };
-            if (data.nonce == nonce) return { data };
-            else return { err: new NonceDismatchError() }
-        });
+        }).then((res) => {
+            if (res.err) return res;
+            else if (res.data.nonce == nonce) return res;
+            else return { err: new NonceDismatchError() };
+        })
     }
 
     public async update(
