@@ -105,7 +105,7 @@ export default class Kasumi {
             ]
         });
     }
-    async connect() {
+    async fetchMe() {
         const { err, data } = await this.API.user.me();
         if (err) {
             this.logger.error('Getting bot details failed, retrying in 30s');
@@ -118,6 +118,9 @@ export default class Kasumi {
         this.me.identifyNum = profile.identify_num;
         this.me.avatar = profile.avatar;
         this.logger.info(`Logged in as ${this.me.username}#${this.me.identifyNum} (${this.me.userId})`);
+    }
+    async connect() {
+        await this.fetchMe();
         if (this.CONFIG.type == 'websocket') {
             const { err } = await this.API.user.offline();
             if (err) throw err;
