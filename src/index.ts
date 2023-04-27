@@ -94,7 +94,7 @@ export class Kasumi extends EventEmitter2 implements Kasumi {
         this.plugin = new Plugin(this);
         this.API = new API(this.TOKEN, this.getLogger('requestor'));
 
-        this.message.on('allTextMessages', (event) => {
+        this.on('message.text', (event) => {
             this.plugin.messageProcessing(event.content, event);
         })
     }
