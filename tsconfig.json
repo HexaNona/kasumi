@@ -1,14 +1,11 @@
 {
     "compilerOptions": {
         "declaration": true,
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "target": "es2020",
+        "target": "ES2022",
         "module": "commonjs",
         "moduleResolution": "node16",
         "lib": [
-            "dom",
-            "es2020"
+            "ES2022"
         ],
         "baseUrl": "./src",
         "rootDirs": [
@@ -17,7 +14,6 @@
         "outDir": "./dist",
         "strict": true,
         "typeRoots": [
-            "./typings",
             "node_modules/@types"
         ],
         "esModuleInterop": true,
@@ -27,7 +23,6 @@
     },
     "include": [
         "./src/**/*.ts",
-        ".eslintrc.js",
     ],
     "exclude": [
         "./src/tests/*.ts"

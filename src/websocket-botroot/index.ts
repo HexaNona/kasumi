@@ -328,6 +328,12 @@ export default class WebSocketSource extends MessageSource {
                     this.sn = 0
                 }
                 this.sessionId = packet.d.session_id
+                this.botInstance.emit('connect.websocket', {
+                    type: 'websocket',
+                    vendor: 'botroot',
+                    sessionId: this.sessionId,
+                    bot: structuredClone(this.botInstance.me)
+                })
                 this.nextStage()
                 break
             case 40100:

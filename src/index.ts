@@ -1,6 +1,7 @@
 import Logger from "bunyan";
 
 import API from "./api";
+import { RawEmisions } from './event';
 import { KasumiConfig } from "./type";
 import Message from "./message";
 import WebSocket from "./websocket";
@@ -9,6 +10,8 @@ import Plugin from "./plugin"
 import WebSocketSource from "./websocket-botroot";
 import { BaseReceiver, WebsocketReceiver } from "./websocket-kookts/event-receiver";
 import { BaseClient } from "./websocket-kookts";
+
+import EventEmitter2 from "eventemitter2";
 export { default as BaseMenu } from "./plugin/menu/baseMenu";
 export { default as BaseCommand, CommandFunction } from "./plugin/menu/baseCommand";
 export { default as BaseSession } from "./plugin/session";
@@ -16,8 +19,12 @@ export { default as Card } from './card';
 
 export * from './message/type'
 
+export interface Kasumi extends EventEmitter2 {
+    on<T extends keyof RawEmisions>(event: T, listener: RawEmisions[T]): this;
+    emit<T extends keyof RawEmisions>(event: T, ...args: Parameters<RawEmisions[T]>): boolean;
+}
 
-export default class Kasumi {
+export class Kasumi extends EventEmitter2 implements Kasumi {
     API: API;
     message: Message;
     plugin: Plugin;
@@ -47,6 +54,7 @@ export default class Kasumi {
     private readonly CONFIG: KasumiConfig;
 
     constructor(config: KasumiConfig) {
+        super({ wildcard: true });
         switch (process.env.LOG_LEVEL?.toLowerCase()) {
             case 'verbose':
             case 'more':
@@ -139,3 +147,5 @@ export default class Kasumi {
     // on = this.message.on;
     // emit = this.message.emit;
 }
+
+export default Kasumi;

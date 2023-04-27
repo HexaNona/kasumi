@@ -79,6 +79,12 @@ export default class WebSocket {
                     this.logger.debug('Recieved HELLO');
                     this.state = WebSocketType.State.RecievingMessage;
                     this.sessionId = helloPackage.d.session_id;
+                    this.client.emit('connect.websocket', {
+                        type: 'websocket',
+                        vendor: 'hexona',
+                        sessionId: this.sessionId,
+                        bot: structuredClone(this.client.me)
+                    })
                 } else {
                     this.logger.warn('HELLO not successful');
                     this.logger.warn(`Recieving code ${helloPackage.d.code}`);

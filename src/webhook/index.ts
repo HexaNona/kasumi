@@ -92,6 +92,11 @@ export default class WebHook {
                 this.port = port;
                 this.http.listen(this.port, () => {
                     this.logger.info(`Kasumi starts listening on port ${this.port}`);
+                    this.client.emit('connect.webhook', {
+                        type: 'webhook',
+                        vendor: 'hexona',
+                        bot: this.client.me
+                    })
                 });
             })
         })

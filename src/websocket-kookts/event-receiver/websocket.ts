@@ -134,7 +134,15 @@ export class WebsocketReceiver extends BaseReceiver {
                     : '';
                 self.ws = new WebSocket(self.url + sessionIdPart);
 
-                const onOpen = () => self.transition(Actions.OPEN());
+                const onOpen = () => {
+                    this.client.kasumi.emit('connect.websocket', {
+                        type: 'websocket',
+                        vendor: 'kookts',
+                        sessionId: this.sessionId,
+                        bot: structuredClone(this.client.kasumi.me)
+                    })
+                    return self.transition(Actions.OPEN());
+                }
                 self.addEventListener('open', onOpen);
 
                 const onClose = () => {
