@@ -33,28 +33,45 @@ export default class BaseSession {
         let messageType;
         if (content instanceof Card || content instanceof Array<Card>) messageType = MessageType.CardMessage;
         else messageType = MessageType.MarkdownMessage;
-        return this.client.API.message.create(
-            messageType,
-            this.channelId,
-            content,
-            quote ? this.messageId : undefined,
-            temporary ? this.authorId : undefined
-        );
+        if (this.channelType == 'GROUP') {
+            return this.client.API.message.create(
+                messageType,
+                this.channelId,
+                content,
+                quote ? this.messageId : undefined,
+                temporary ? this.authorId : undefined
+            );
+        } else {
+            return this.client.API.directMessage.create(
+                messageType,
+                this.authorId,
+                content,
+                quote ? this.messageId : undefined,
+                temporary ? this.authorId : undefined
+            );
+        }
+    }
+    private async __update(messageId: string, content: string | Card | Card[], reply?: boolean, temporary?: boolean) {
+        if (this.channelType == 'GROUP') {
+            return this.client.API.message.update(
+                messageId,
+                content,
+                reply ? this.messageId : undefined,
+                temporary ? this.authorId : undefined
+            );
+        } else {
+            return this.client.API.directMessage.update(
+                messageId,
+                content,
+                reply ? this.messageId : undefined
+            );
+        }
     }
     async update(messageId: string, content: string | Card | Card[], reply: boolean = false) {
-        return this.client.API.message.update(
-            messageId,
-            content,
-            reply ? this.messageId : undefined
-        )
+        return this.__update(messageId, content, reply);
     }
     async updateTemp(messageId: string, content: string | Card | Card[], reply: boolean = false) {
-        return this.client.API.message.update(
-            messageId,
-            content,
-            reply ? this.messageId : undefined,
-            this.authorId
-        )
+        return this.__update(messageId, content, reply, true);
     }
 
     async send(content: string | Card | Card[]) {
