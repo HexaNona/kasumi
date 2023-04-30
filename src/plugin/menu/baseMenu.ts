@@ -48,8 +48,9 @@ export default class BaseMenu extends BaseCommand {
             for (const alias of aliases) {
                 if (!this.__commands[alias]) {
                     this.__commands[alias] = command;
+                    command.logger.debug(`Loaded alias ${alias}`);
                 } else {
-                    this.logger.warn(`Duplicated trigger ${alias}`);
+                    command.logger.warn(`Duplicated trigger ${alias}`);
                 }
             }
         } else throw new UnknowInputTypeError(typeof command, 'BaseMenu | BaseCommand');
