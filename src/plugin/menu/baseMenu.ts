@@ -1,81 +1,85 @@
-import BaseCommand from "./baseCommand";
-import Logger from "bunyan";
+import BaseCommand, { CommandFunction } from "./baseCommand";
 import Kasumi, { Card } from "../..";
 import BaseSession from "../../plugin/session";
-import { PlainTextMessageEvent, MarkdownMessageEvent } from "../../message/type";
 import { UnknowInputTypeError } from "../../error";
 
-export default class BaseMenu {
-    name: string = 'default';
-    description?: string
+export default class BaseMenu extends BaseCommand {
+    private get promptSequence() {
+        return this.loggerSequence;
+    }
 
-    prefix: string = '/';
-
-    client!: Kasumi;
-    logger!: Logger;
-
-    private __commands: {
-        [name: string]: BaseCommand;
-    } = {};
-
-    private __raw_commands: BaseCommand[];
-
-    constructor(...commands: BaseCommand[]) {
+    constructor(...commands: Array<BaseMenu | BaseCommand>) {
+        super();
         this.__raw_commands = commands;
     }
-    init() {
+
+    protected __commands: {
+        [name: string]: BaseMenu | BaseCommand;
+    } = {};
+
+    private __raw_commands: Array<BaseMenu | BaseCommand>;
+
+    init(client: Kasumi, loggerSequence: string[]) {
+        this.client = client;
+        this.loggerSequence = loggerSequence;
+        this.logger = this.client.getLogger('plugin', ...this.loggerSequence);
         this.load(...this.__raw_commands);
+        this._isInit = true;
     }
-    load(...commands: BaseCommand[]) {
+    load(...commands: Array<BaseMenu | BaseCommand>) {
         for (const command of commands) {
             this.addCommand(command);
         }
     }
-    addCommand(command: BaseCommand) {
-        this.logger.debug(`Loading command: ${command.name}`);
-        command.logger = this.client.getLogger('plugin', 'menu', this.name, command.name);
-        this.__commands[command.name] = command;
+    addCommand(command: BaseMenu | BaseCommand) {
+        if (command instanceof BaseMenu) {
+            this.logger.debug(`Loaded menu: ${command.name}`);
+            this.__commands[command.name] = command;
+        } else {
+            this.logger.debug(`Loaded command: ${command.name}`);
+            command.logger = this.client.getLogger('plugin', command.name);
+            this.__commands[command.name] = command;
+        }
+        if (!command.isInit) command.init(this.client, [...this.loggerSequence, command.name]);
     }
-    addAlias(command: BaseCommand, ...aliases: string[]) {
+    addAlias(command: BaseMenu | BaseCommand, ...aliases: string[]) {
         if (command instanceof BaseCommand) {
             if (!this.__commands[command.name]) this.addCommand(command);
             for (const alias of aliases) {
-                this.__commands[alias] = command;
+                if (!this.__commands[alias]) {
+                    this.__commands[alias] = command;
+                } else {
+                    this.logger.warn(`Duplicated trigger ${alias}`);
+                }
             }
         } else throw new UnknowInputTypeError(typeof command, 'BaseMenu | BaseCommand');
     }
-    private __get_command_list() {
+    protected get __command_list() {
         return Object.keys(this.__commands)
     }
-    messageProcessing(content: string, event: PlainTextMessageEvent | MarkdownMessageEvent) {
-        let splitContent = content ? content.split(' ') : [];
-        const commands = Object.keys(this.__commands).filter(k => splitContent[0] == k);
-        if (commands.length) {
-            for (const key of commands) {
-                const command = this.__commands[key];
-                if (command) {
-                    let processedContent = content.replace(key, '').trim();
-                    let args = processedContent ? processedContent.split(' ') : [];
-                    command.exec(args, event, this.client);
-                }
-            }
+    func: CommandFunction<BaseSession, void> = async (session) => {
+        let splitContent = session.args, command;
+        const commandName = Object.keys(this.__commands).find(k => splitContent[0] == k);
+        if (commandName && (command = this.__commands[commandName])) {
+            command.exec(session.args.splice(1), session.event, session.client);
         } else {
-            const session = new BaseSession([], event, this.client);
             const card = new Card()
                 .addTitle("命令未找到")
-                .addDivider()
-                .addText("(font)可用命令(font)[success]");
-            const list = this.__get_command_list();
-            for (const commandName of list) {
-                const command = this.__commands[commandName];
-                if (command && commandName == command.name) {
-                    let text = "";
-                    if (command.usage) text += `\`\`\`plain\n${command.usage}\n\`\`\``;
-                    else text += `\`\`\`plain\n${this.prefix.charAt(0)}${this.name} ${command.name}\n\`\`\``;
-                    if (command.description) text += '\n' + command.description;
-                    else text += '\n' + '(font)无介绍(font)[secondary]';
-                    card.addText(text);
+                .addDivider();
+            const list = this.__command_list;
+            if (list.length) {
+                card.addText("(font)可用命令(font)[success]");
+                for (const commandName of list) {
+                    const command = this.__commands[commandName];
+                    if (command && commandName == command.name) {
+                        let text = `\`\`\`plain\n${this.client.plugin.primaryPrefix}${this.promptSequence.join(" ")} ${command.name}\n\`\`\``;
+                        if (command.description) text += '\n' + command.description;
+                        else text += '\n' + '(font)无介绍(font)[secondary]';
+                        card.addText(text);
+                    }
                 }
+            } else {
+                card.addText("(font)菜单下没有可用命令(font)[danger]");
             }
             session.reply(card)
         }

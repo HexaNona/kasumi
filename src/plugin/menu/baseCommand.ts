@@ -8,14 +8,24 @@ export type CommandFunction<T, K> = (session: T) => Promise<K>
 
 export default class BaseCommand {
     name: string = 'default';
-    usage?: string;
+    protected _isInit = false;
+    protected client!: Kasumi;
+    protected loggerSequence: string[] = [];
+    get isInit() {
+        return this._isInit;
+    }
     description?: string;
 
     logger!: Logger;
 
-    constructor() { }
+    init(client: Kasumi, loggerSequence: string[]) {
+        this.client = client;
+        this.loggerSequence = loggerSequence;
+        this.logger = this.client.getLogger(...this.loggerSequence);
+        this._isInit = true;
+    }
 
-    func: CommandFunction<BaseSession, any> = async (session: BaseSession) => {
+    func: CommandFunction<BaseSession, any> = async () => {
         throw new MethodNotImplementedError();
     }
     async exec(session: BaseSession): Promise<any>;
