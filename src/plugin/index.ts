@@ -66,12 +66,11 @@ export default class Plugin extends BaseMenu {
     }
 
     /**
-     * Set primary prefix.
-     * Alias of `primaryPrefix`
-     * @param prefix Desired primary prefix
+     * Set prefix.
+     * @param prefix Desired prefixes
      * @deprecated
      */
     setPrefix(prefix: string) {
-        this.primaryPrefix = prefix;
+        this.prefix = new Set(prefix.split(""));
     }
 }
