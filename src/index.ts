@@ -17,7 +17,8 @@ export { default as BaseCommand, CommandFunction } from "./plugin/menu/baseComma
 export { default as BaseSession } from "./plugin/session";
 export { default as Card } from './card';
 
-export * from './message/type'
+export * from './message/type';
+export * from './type';
 
 export interface Kasumi extends EventEmitter2 {
     on<T extends keyof RawEmisions>(event: T, listener: RawEmisions[T]): this;
