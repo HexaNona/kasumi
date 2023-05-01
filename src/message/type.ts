@@ -1,5 +1,5 @@
 import Kasumi from "../";
-import { WebSocket, MessageType, User, GuildType } from "../type";
+import { NormalMessageType, WebSocket, MessageType, User, GuildType } from "../type";
 
 export default interface RawEmisions {
     allMessages(event: unknown): void;
@@ -73,7 +73,7 @@ class UserMessageEvent extends BaseMessageEvent {
     mentionRoles?: any[];
     isMentionAll?: boolean;
     isMentionHere?: boolean;
-    private isGroupMessage(object: WebSocket.NormalMessageEvent<WebSocket.NormalMessageType, GuildType>): object is WebSocket.NormalMessageEvent<WebSocket.NormalMessageType, 'GROUP'> {
+    private isGroupMessage(object: WebSocket.NormalMessageEvent<NormalMessageType, GuildType>): object is WebSocket.NormalMessageEvent<NormalMessageType, 'GROUP'> {
         return object.channel_type == 'GROUP';
     }
     public async delete() {
@@ -92,7 +92,7 @@ class UserMessageEvent extends BaseMessageEvent {
     public async deleteReaction(emojiId: string, userId?: string) {
         return this.client.API.message.deleteReaction(this.messageId, emojiId, userId);
     }
-    constructor(rawEvent: WebSocket.NormalMessageEvent<WebSocket.NormalMessageType, GuildType>, client: Kasumi) {
+    constructor(rawEvent: WebSocket.NormalMessageEvent<NormalMessageType, GuildType>, client: Kasumi) {
         super(rawEvent, client);
         if (this.isGroupMessage(rawEvent)) {
             this.guildId = rawEvent.extra.guild_id;

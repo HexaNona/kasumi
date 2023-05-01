@@ -1,4 +1,4 @@
-import { GuildType, WebSocket } from "../type";
+import { GuildType, NormalMessageType, WebSocket } from "../type";
 
 export namespace WebHook {
     type ChannelType = 'GROUP' | 'PERSON' | 'BOARDCAST' | 'WEBHOOK_CHALLENGE';
@@ -10,7 +10,7 @@ export namespace WebHook {
         verify_token: string
     }
 
-    export interface NormalMessageEventData<T extends WebSocket.NormalMessageType, K extends GuildType> extends WebSocket.NormalMessageEvent<T, K> {
+    export interface NormalMessageEventData<T extends NormalMessageType, K extends GuildType> extends WebSocket.NormalMessageEvent<T, K> {
         verify_token: string
     }
 
@@ -18,7 +18,7 @@ export namespace WebHook {
         verify_token: string
     }
 
-    export interface NormalMessageEvent<T extends WebSocket.NormalMessageType, K extends GuildType> {
+    export interface NormalMessageEvent<T extends NormalMessageType, K extends GuildType> {
         s: 0,
         sn: number,
         d: NormalMessageEventData<T, K>
@@ -33,5 +33,5 @@ export namespace WebHook {
         d: ChallengeEventData
     }
 
-    export type Events = NormalMessageEvent<WebSocket.NormalMessageType, GuildType> | SystemMessageEvent | ChallengeEvent;
+    export type Events = NormalMessageEvent<NormalMessageType, GuildType> | SystemMessageEvent | ChallengeEvent;
 }

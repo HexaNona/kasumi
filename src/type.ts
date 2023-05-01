@@ -3,12 +3,31 @@ export enum MessageType {
     ImageMessage = 2,
     VideoMessage = 3,
     FileMessage = 4,
+    /**
+     * @deprecated Not used by bot client
+     */
+    FriendAddedMessage = 5,
+    /**
+     * @deprecated Not used by bot client
+     */
+    VoiceChannelInvitationMessage = 6,
+    /**
+     * @deprecated Not used by bot client
+     */
+    UserJoinedGuildMessage = 7,
     AudioMessage = 8,
     MarkdownMessage = 9,
     CardMessage = 10,
     ActionMessage = 12,
     SystemMessage = 255
 }
+
+export type NormalMessageType = Exclude<MessageType,
+    MessageType.SystemMessage |
+    MessageType.FriendAddedMessage |
+    MessageType.UserJoinedGuildMessage |
+    MessageType.VoiceChannelInvitationMessage
+>
 
 export type GuildType = 'GROUP' | 'PERSON' | 'BROADCAST';
 
@@ -325,7 +344,6 @@ export namespace WebSocket {
             }
         }
     }
-    export type NormalMessageType = Exclude<MessageType, MessageType.SystemMessage>;
     interface MessageEventChannelTypeExtra<T extends NormalMessageType> {
         'GROUP': MessageEventExtra[T] & {
             guild_id: string,
