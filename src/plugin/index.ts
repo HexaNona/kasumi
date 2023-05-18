@@ -17,18 +17,35 @@ export default class Plugin extends BaseMenu {
 
 
     private prefix: Set<string> = new Set(['/', '.', '!']);
+    /**
+     * The primary prefix of Kasumi, 
+     * which will be displayed on command list
+     */
     get primaryPrefix() {
         return this.prefix.values().next().value;
     }
     set primaryPrefix(prefix: string) {
         this.prefix = new Set([prefix, ...this.prefix]);
     }
+    /**
+     * Add additional prefixes
+     * @param prefixes Prefixes to be added
+     */
     addPrefix(...prefixes: string[]) {
         prefixes.forEach(v => this.prefix.add(v));
     }
+    /**
+     * Remove existing prefixes
+     * @param prefixes Prefixes to be removed
+     */
     removePrefix(...prefixes: string[]) {
         prefixes.forEach(v => this.prefix.delete(v));
     }
+    /**
+     * Check if a prefix exist
+     * @param prefix Prefix to be tested
+     * @returns Has the prefix
+     */
     hasPrefix(prefix: string) {
         return this.prefix.has(prefix);
     }
