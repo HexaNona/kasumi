@@ -60,13 +60,11 @@ export default class Card {
         });
     }
     addTextWithButton(content: string, {
-        position = 'right',
         theme = 'primary',
         buttonContent,
         value,
         click
     }: {
-        position?: 'left' | 'right'
         buttonContent: string,
         theme?: Theme,
         value?: string,
@@ -78,7 +76,7 @@ export default class Card {
                 type: 'kmarkdown',
                 content
             },
-            mode: position,
+            mode: 'right',
             accessory: {
                 type: 'button',
                 text: {
