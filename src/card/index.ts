@@ -1,12 +1,30 @@
 import { Card as CardType, Modules, Size, Theme } from "./type";
 
 export default class Card {
-    __theme: Theme = 'info';
-    __size: Size = 'lg';
-    __modules: Modules[] = [];
-    constructor(card?: CardType) {
-        if (card) {
-            this.setTheme(card.theme).setSize(card.size);
+    private __theme: Theme = 'info';
+    private __size: Size = 'lg';
+    private __modules: Modules[] = [];
+
+    public get theme() {
+        return this.__theme;
+    }
+    public get size() {
+        return this.__size;
+    }
+    public get modules() {
+        return this.__modules;
+    }
+    public set modules(modules: Modules[]) {
+        this.modules = modules;
+    }
+    constructor(card?: Partial<CardType>) {
+        if (card?.theme) {
+            this.setTheme(card.theme);
+        }
+        if (card?.size) {
+            this.setSize(card.size);
+        }
+        if (card?.modules) {
             for (const module of card.modules) {
                 this.addModule(module);
             }
