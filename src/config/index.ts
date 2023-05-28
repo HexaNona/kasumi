@@ -7,6 +7,10 @@ dotenv.config();
 
 export default class Config extends Map<string | number, any> {
     private file: any;
+    constructor() {
+        super();
+        this.set('disableSnOrderCheck', false);
+    }
     public loadConfigFile(inputPath?: string) {
         const configPath = process.env.CONFIG_PATH;
         const path = inputPath || configPath;
