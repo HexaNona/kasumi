@@ -1,7 +1,7 @@
 import BaseCommand, { CommandFunction } from "./baseCommand";
 import Kasumi, { Card } from "../..";
 import BaseSession from "../../plugin/session";
-import { UnknowInputTypeError } from "../../error";
+import { UnknownInputTypeError } from "../../error";
 
 export default class BaseMenu extends BaseCommand {
     private get promptSequence() {
@@ -53,7 +53,7 @@ export default class BaseMenu extends BaseCommand {
                     command.logger.warn(`Duplicated trigger ${alias}`);
                 }
             }
-        } else throw new UnknowInputTypeError(typeof command, 'BaseMenu | BaseCommand');
+        } else throw new UnknownInputTypeError(typeof command, 'BaseMenu | BaseCommand');
     }
     protected get __command_list() {
         return Object.keys(this.__commands)

@@ -22,8 +22,33 @@ export class MethodNotImplementedError extends Error {
     }
 }
 
-export class UnknowInputTypeError extends Error {
+export class UnknownInputTypeError extends Error {
     constructor(received: string, required: string) {
         super(`Input requires "${required}", received "${received}" instead`);
+    }
+}
+
+class InitializationError extends Error {
+    constructor(message: string) {
+        super(`Failed to initialize a Kasumi instance: ${message}`)
+    }
+}
+
+export class TokenNotProvidedError extends InitializationError {
+    constructor() {
+        super("Missing token");
+    }
+}
+
+export class WebHookMissingConfigError extends InitializationError {
+    constructor() {
+        super("Required config entry(s) is missing for WebHook connection")
+    }
+}
+
+export class UnknownConnectionType extends InitializationError {
+    constructor(connection?: string) {
+        if (connection) super(`Current connection mode (${connection}) is not supported`);
+        else super("Missing connection mode");
     }
 }

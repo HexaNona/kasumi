@@ -5,6 +5,7 @@ import { RawEmisions } from './event';
 import { KasumiConfig } from "./type";
 import Message from "./message";
 import WebSocket from "./websocket";
+import Config from "./config";
 import WebHook from "./webhook";
 import Plugin from "./plugin"
 import WebSocketSource from "./websocket-botroot";
@@ -12,6 +13,7 @@ import { BaseReceiver, WebsocketReceiver } from "./websocket-kookts/event-receiv
 import { BaseClient } from "./websocket-kookts";
 
 import EventEmitter2 from "eventemitter2";
+import { TokenNotProvidedError, UnknownConnectionType, UnknownInputTypeError } from "./error";
 export { default as BaseMenu } from "./plugin/menu/baseMenu";
 export { default as BaseCommand, CommandFunction } from "./plugin/menu/baseCommand";
 export { default as BaseSession } from "./plugin/session";
@@ -29,6 +31,7 @@ export class Kasumi extends EventEmitter2 implements Kasumi {
     API: API;
     message: Message;
     plugin: Plugin;
+    config: Config;
     websocket?: WebSocket | WebSocketSource | BaseReceiver
     webhook?: WebHook;
     logger: Logger;
@@ -52,9 +55,8 @@ export class Kasumi extends EventEmitter2 implements Kasumi {
     readonly BUNYAN_LOG_LEVEL: Logger.LogLevel;
     readonly BUNYAN_ERROR_LEVEL: Logger.LogLevel;
     readonly DISABLE_SN_ORDER_CHECK: boolean;
-    private readonly CONFIG: KasumiConfig;
 
-    constructor(config: KasumiConfig) {
+    constructor(config?: KasumiConfig) {
         super({ wildcard: true });
         switch (process.env.LOG_LEVEL?.toLowerCase()) {
             case 'verbose':
@@ -87,9 +89,17 @@ export class Kasumi extends EventEmitter2 implements Kasumi {
         }
         this.logger = this.getLogger();
 
-        this.CONFIG = structuredClone(config);
-        this.TOKEN = this.CONFIG.token;
-        this.DISABLE_SN_ORDER_CHECK = this.CONFIG.disableSnOrderCheck || false;
+        this.config = new Config();
+        if (config) this.config.loadConifg(config);
+        this.config.loadConfigFile();
+        this.config.loadEnvironment();
+
+        if (!this.config.has('token')) throw new TokenNotProvidedError();
+        else this.TOKEN = this.config.get('token');
+
+        if (this.config.has('disableSnOrderCheck')) this.DISABLE_SN_ORDER_CHECK = this.config.get('disableSnOrderCheck');
+        else this.DISABLE_SN_ORDER_CHECK = false;
+
 
         this.message = new Message(this);
         this.plugin = new Plugin(this);
@@ -130,19 +140,26 @@ export class Kasumi extends EventEmitter2 implements Kasumi {
     }
     async connect() {
         await this.fetchMe();
-        if (this.CONFIG.type == 'websocket') {
+        if (this.config.get('connection') == 'webhook') {
+            this.webhook = new WebHook(this);
+        } else {
             const { err } = await this.API.user.offline();
             if (err) throw err;
-            if (this.CONFIG.vendor == 'botroot') {
-                this.websocket = new WebSocketSource(this, false);
-                this.websocket.connect();
-            } else if (this.CONFIG.vendor == 'kookts') {
-                this.websocket = new WebsocketReceiver(new BaseClient(this));
-                this.websocket.connect();
+            switch (this.config.get('connection')) {
+                case 'botroot':
+                    this.websocket = new WebSocketSource(this, false);
+                    this.websocket.connect();
+                    break;
+                case 'kookts':
+                    this.websocket = new WebsocketReceiver(new BaseClient(this));
+                    this.websocket.connect();
+                    break;
+                case 'hexona':
+                    this.websocket = new WebSocket(this);
+                    break;
+                default:
+                    throw new UnknownConnectionType(this.config.get('connection'));
             }
-            else this.websocket = new WebSocket(this);
-        } else {
-            this.webhook = new WebHook(this.CONFIG, this);
         }
     }
     // on = this.message.on;

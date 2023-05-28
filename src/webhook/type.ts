@@ -1,3 +1,4 @@
+import Config from "config";
 import { GuildType, NormalMessageType, WebSocket } from "../type";
 
 export namespace WebHook {
@@ -34,4 +35,11 @@ export namespace WebHook {
     }
 
     export type Events = NormalMessageEvent<NormalMessageType, GuildType> | SystemMessageEvent | ChallengeEvent;
+}
+
+export interface WebHookSafeConfig extends Config {
+    get(key: 'token'): string;
+    get(key: 'webhookVerifyToken'): string;
+    get(key: 'webhookEncryptKey'): string;
+    get(key: 'webhookPort'): number;
 }

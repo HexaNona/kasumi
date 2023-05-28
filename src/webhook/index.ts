@@ -1,10 +1,10 @@
 import Logger from 'bunyan';
 import Kasumi from '../';
 import express, { Express } from 'express';
-import { WebHookConfig } from '../type';
 import bodyParser from 'body-parser';
 import crypto from 'crypto';
-import { WebHook as WebHookType } from './type';
+import { WebHookSafeConfig, WebHook as WebHookType } from './type';
+import { WebHookMissingConfigError } from '../error';
 
 export default class WebHook {
     public logger: Logger;
@@ -14,8 +14,11 @@ export default class WebHook {
     private sn: number = 0;
     private port!: number;
     private messageBuffer: Array<Exclude<WebHookType.Events, WebHookType.ChallengeEvent>> = [];
-    constructor(config: WebHookConfig, client: Kasumi) {
+    private config: WebHookSafeConfig;
+    constructor(client: Kasumi) {
         this.client = client;
+        if (!this.client.config.isWebHookSafe()) throw new WebHookMissingConfigError();
+        this.config = this.client.config as WebHookSafeConfig;
         this.logger = this.client.getLogger('webhook');
         this.http = express();
         this.http.use(bodyParser.json());
@@ -27,11 +30,12 @@ export default class WebHook {
                     const base64Decode = Buffer.from(base64Content, 'base64').toString('utf8');
                     const iv = base64Decode.substring(0, 16);
                     const encrypt = base64Decode.substring(16);
-                    const encryptKey = config.encryptKey.padEnd(32, '\0');
+
+                    const encryptKey = this.config.get('webhookEncryptKey').padEnd(32, '\0');
                     const decipher = crypto.createDecipheriv('aes-256-cbc', encryptKey, iv);
                     const decrypt = decipher.update(encrypt, 'base64', 'utf8') + decipher.final('utf8');
                     const event: WebHookType.Events = JSON.parse(decrypt);
-                    if (event.d.verify_token == config.verifyToken) {
+                    if (event.d.verify_token == this.config.get('webhookVerifyToken')) {
                         if (this.__isChallengeEvent(event)) {
                             res.send({
                                 challenge: event.d.challenge
@@ -88,7 +92,7 @@ export default class WebHook {
             })
         })
         import('get-port').then(({ default: getPort }) => {
-            getPort({ port: config.port }).then(port => {
+            getPort({ port: this.config.get("webhookPort") }).then(port => {
                 this.port = port;
                 this.http.listen(this.port, () => {
                     this.logger.info(`Kasumi starts listening on port ${this.port}`);
