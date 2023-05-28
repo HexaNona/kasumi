@@ -1,9 +1,11 @@
 import type { DefiniteStorage, Storage } from './type';
 import * as fs from 'fs';
 import dotenv from 'dotenv';
+import dotenvExpand from 'dotenv-expand';
 import { WebHookSafeConfig } from '../webhook/type';
 import { KasumiConfig } from '../type';
 dotenv.config();
+dotenvExpand.expand();
 
 export default class Config extends Map<string | number, any> {
     private file: any;
