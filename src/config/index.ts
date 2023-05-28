@@ -4,8 +4,8 @@ import dotenv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
 import { WebHookSafeConfig } from '../webhook/type';
 import { KasumiConfig } from '../type';
-dotenv.config();
-dotenvExpand.expand();
+
+dotenvExpand.expand(dotenv.config());
 
 export default class Config extends Map<string | number, any> {
     private file: any;
