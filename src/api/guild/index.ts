@@ -94,7 +94,7 @@ export default class Guild {
          */
         userId?: number
     }) {
-        return this.rest.multiPageRequest<RawGuildUserListResponse>('/guild/list', page, pageSize, {
+        return this.rest.multiPageRequest<RawGuildUserListResponse>('/guild/user-list', page, pageSize, {
             guild_id: guildId,
             channel_id: channelId,
             search,
