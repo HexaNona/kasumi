@@ -35,7 +35,7 @@ export default class Guild {
      * @returns Details of a guild
      */
     async view(guildId: string): Promise<RequestResponse<RawGuildViewResponse>> {
-        return this.rest.get('/guild/list', { guild_id: guildId })
+        return this.rest.get('/guild/view', { guild_id: guildId })
     }
 
     private readonly __desc_asc_map = {
