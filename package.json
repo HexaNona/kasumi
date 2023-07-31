@@ -34,7 +34,7 @@
     "form-data": "^4.0.0",
     "get-port": "^7.0.0",
     "lodash": "^4.17.21",
-    "type-fest": "^3.7.2",
+    "type-fest": "^4.1.0",
     "typescript": "^5.0.4",
     "unionize": "^3.1.0",
     "upath": "^2.0.1",
