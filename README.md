@@ -1,6 +1,6 @@
 # Kasumi
 
-A library to build KOOK bots.
+A library to build KOOK bots. **Requires Node 18+.**
 
 ## TODO
 
