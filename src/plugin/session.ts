@@ -74,16 +74,26 @@ export default class BaseSession {
         return this.__update(messageId, content, reply, true);
     }
 
-    async send(content: string | Card | Card[]) {
-        return this.__send(content);
+    async send(content: string | Card | Card[], mention?: boolean) {
+        if (content instanceof Card || content instanceof Array<Card>) {
+            return this.__send(content);
+        } else {
+            return this.__send(mention ? `(met)${this.authorId}(met) ${content}` : content);
+        }
     }
-    async sendTemp(content: string | Card | Card[]) {
-        return this.__send(content, false, true);
+    async sendTemp(content: string | Card | Card[], mention?: boolean) {
+        if (content instanceof Card || content instanceof Array<Card>) {
+            return this.__send(content);
+        } else {
+            return this.__send(mention ? `(met)${this.authorId}(met) ${content}` : content, false, true);
+        }
     }
-    async reply(content: string | Card | Card[]) {
-        return this.__send(content, true);
+    async reply(content: string | Card | Card[], mention?: boolean) {
+        if (this.event instanceof ButtonClickedEvent) return this.send(content, mention);
+        else return this.__send(content, true);
     }
-    async replyTemp(content: string | Card | Card[]) {
-        return this.__send(content, true, true);
+    async replyTemp(content: string | Card | Card[], mention?: boolean) {
+        if (this.event instanceof ButtonClickedEvent) return this.sendTemp(content, mention);
+        else return this.__send(content, true, true);
     }
 }
