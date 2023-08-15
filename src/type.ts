@@ -475,7 +475,7 @@ export namespace WebSocket {
                 user_id: string,
                 target_id: string,
                 user_info: User,
-                channel_type: "GROUP" | "PRESON",
+                channel_type: Exclude<GuildType, "BROADCAST">,
                 guild_id?: string
             }
         }
