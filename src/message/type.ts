@@ -60,6 +60,7 @@ export class ButtonClickedEvent extends SystemMessageEvent {
         this.author = rawEvent.extra.body.user_info;
         this.channelId = rawEvent.extra.body.target_id;
         this.guildId = rawEvent.extra.body.guild_id;
+        this.channelType = rawEvent.extra.body.channel_type;
     }
 }
 
