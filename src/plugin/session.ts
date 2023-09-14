@@ -31,7 +31,7 @@ export default class BaseSession {
     }
     private async __send(content: string | Card | Card[], quote: boolean = false, temporary: boolean = false) {
         let messageType;
-        if (content instanceof Card || content instanceof Array<Card>) messageType = MessageType.CardMessage;
+        if (content instanceof Card || content instanceof Array) messageType = MessageType.CardMessage;
         else messageType = MessageType.MarkdownMessage;
         if (this.channelType == 'GROUP') {
             return this.client.API.message.create(
@@ -75,14 +75,14 @@ export default class BaseSession {
     }
 
     async send(content: string | Card | Card[], mention?: boolean) {
-        if (content instanceof Card || content instanceof Array<Card>) {
+        if (content instanceof Card || content instanceof Array) {
             return this.__send(content);
         } else {
             return this.__send(mention ? `(met)${this.authorId}(met) ${content}` : content);
         }
     }
     async sendTemp(content: string | Card | Card[], mention?: boolean) {
-        if (content instanceof Card || content instanceof Array<Card>) {
+        if (content instanceof Card || content instanceof Array) {
             return this.__send(content);
         } else {
             return this.__send(mention ? `(met)${this.authorId}(met) ${content}` : content, false, true);
