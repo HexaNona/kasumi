@@ -64,7 +64,7 @@ export default class Message {
     ) {
         if (content instanceof Card) {
             content = JSON.stringify([content.toObject()]);
-        } else if (content instanceof Array<Card>) {
+        } else if (content instanceof Array) {
             content = JSON.stringify(content.map(v => v.toObject()));
         }
         const nonce = uuidv4();
@@ -101,7 +101,7 @@ export default class Message {
     ) {
         if (content instanceof Card) {
             content = JSON.stringify([content.toObject()]);
-        } else if (content instanceof Array<Card>) {
+        } else if (content instanceof Array) {
             content = JSON.stringify(content.map(v => v.toObject()));
         }
         return this.rest.post<void>('/message/update', {

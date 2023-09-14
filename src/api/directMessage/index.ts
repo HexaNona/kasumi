@@ -48,7 +48,7 @@ export default class DirectMessage {
     }>> {
         if (content instanceof Card) {
             content = JSON.stringify([content.toObject()]);
-        } else if (content instanceof Array<Card>) {
+        } else if (content instanceof Array) {
             content = JSON.stringify(content.map(v => v.toObject()));
         }
         const nonce = uuidv4();
@@ -73,7 +73,7 @@ export default class DirectMessage {
     ): Promise<RequestResponse<void>> {
         if (content instanceof Card) {
             content = JSON.stringify([content.toObject()]);
-        } else if (content instanceof Array<Card>) {
+        } else if (content instanceof Array) {
             content = JSON.stringify(content.map(v => v.toObject()));
         }
         return this.rest.post('/direct-message/update', {
