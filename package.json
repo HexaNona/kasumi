@@ -15,6 +15,11 @@
     "clean": "rimraf dist/*",
     "make": "npm run clean && npm run build"
   },
+  "exports": {
+    "require": "./dist/index.js",
+    "import": "./esm/esm_export.mjs",
+    "default": "./dist/index.js"
+  },
   "author": "Hexona",
   "license": "MIT",
   "bugs": {
