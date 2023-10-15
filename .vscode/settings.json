@@ -6,7 +6,8 @@
         "API",
         "command",
         "logger",
-        "webhook"
+        "webhook",
+        "config"
     ],
     "typescript.tsdk": "node_modules/typescript/lib"
 }

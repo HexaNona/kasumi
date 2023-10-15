@@ -22,7 +22,7 @@ export default class WebHook {
         this.logger = this.client.getLogger('webhook');
         this.http = express();
         this.http.use(bodyParser.json());
-        this.http.post('/', (req, res) => {
+        this.http.post('/', async (req, res) => {
             const body: { encrypt: string } = req.body;
             if (body.encrypt) {
                 try {
@@ -31,11 +31,11 @@ export default class WebHook {
                     const iv = base64Decode.substring(0, 16);
                     const encrypt = base64Decode.substring(16);
 
-                    const encryptKey = this.config.get('webhookEncryptKey').padEnd(32, '\0');
+                    const encryptKey = (await this.config.getOne('kasumi::webhookEncryptKey')).padEnd(32, '\0');
                     const decipher = crypto.createDecipheriv('aes-256-cbc', encryptKey, iv);
                     const decrypt = decipher.update(encrypt, 'base64', 'utf8') + decipher.final('utf8');
                     const event: WebHookType.Events = JSON.parse(decrypt);
-                    if (event.d.verify_token == this.config.get('webhookVerifyToken')) {
+                    if (event.d.verify_token == (await this.config.getOne('kasumi::webhookEncryptKey'))) {
                         if (this.__isChallengeEvent(event)) {
                             res.send({
                                 challenge: event.d.challenge
@@ -92,16 +92,18 @@ export default class WebHook {
             })
         })
         import('get-port').then(({ default: getPort }) => {
-            getPort({ port: this.config.get("webhookPort") }).then(port => {
-                this.port = port;
-                this.http.listen(this.port, () => {
-                    this.logger.info(`Kasumi starts listening on port ${this.port}`);
-                    this.client.emit('connect.webhook', {
-                        type: 'webhook',
-                        vendor: 'hexona',
-                        bot: this.client.me
-                    })
-                });
+            this.config.getOne("kasumi::webhookPort").then((webhookPort) => {
+                getPort({ port: webhookPort }).then(port => {
+                    this.port = port;
+                    this.http.listen(this.port, () => {
+                        this.logger.info(`Kasumi starts listening on port ${this.port}`);
+                        this.client.emit('connect.webhook', {
+                            type: 'webhook',
+                            vendor: 'hexona',
+                            bot: this.client.me
+                        })
+                    });
+                })
             })
         })
     }

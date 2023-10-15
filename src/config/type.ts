@@ -1,11 +1,13 @@
 export interface DefiniteStorage {
-    token: string,
-    connection: 'webhook' | 'hexona' | 'kookts' | 'botroot',
-    webhookVerifyToken: string,
-    webhookEncryptKey: string,
-    webhookPort: number,
-    disableSnOrderCheck: boolean
+    'kasumi::token': string,
+    'kasumi::connection': 'webhook' | 'hexona' | 'kookts' | 'botroot',
+    'kasumi::webhookVerifyToken': string,
+    'kasumi::webhookEncryptKey': string,
+    'kasumi::webhookPort': number,
+    'kasumi::disableSnOrderCheck': boolean,
 }
 export interface Storage extends DefiniteStorage {
-    [key: string]: any
+    [key: string]: StorageItem;
 }
+
+export type StorageItem = boolean | number | string | object | [];
