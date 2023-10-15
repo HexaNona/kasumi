@@ -14,6 +14,7 @@ import { BaseClient } from "./websocket-kookts";
 
 import EventEmitter2 from "eventemitter2";
 import { TokenNotProvidedError, UnknownConnectionType, UnknownInputTypeError } from "./error";
+import { MongoDB } from "./config/database/mongodb";
 export { default as BaseMenu } from "./plugin/menu/baseMenu";
 export { default as BaseCommand, CommandFunction } from "./plugin/menu/baseCommand";
 export { default as BaseSession } from "./plugin/session";
@@ -56,7 +57,7 @@ export class Kasumi extends EventEmitter2 implements Kasumi {
     readonly BUNYAN_ERROR_LEVEL: Logger.LogLevel;
     readonly DISABLE_SN_ORDER_CHECK: boolean;
 
-    constructor(config?: KasumiConfig) {
+    constructor(config?: KasumiConfig, readFromEnv: boolean = true, readFromConfigFile: boolean = true) {
         super({ wildcard: true });
         switch (process.env.LOG_LEVEL?.toLowerCase()) {
             case 'verbose':
@@ -91,15 +92,22 @@ export class Kasumi extends EventEmitter2 implements Kasumi {
 
         this.config = new Config();
         if (config) this.config.loadConifg(config);
-        this.config.loadConfigFile();
-        this.config.loadEnvironment();
+        if (readFromConfigFile) this.config.loadConfigFile();
+        if (readFromEnv) this.config.loadEnvironment();
 
-        if (!this.config.has('token')) throw new TokenNotProvidedError();
-        else this.TOKEN = this.config.get('token');
+        if (!this.config.hasSync('kasumi::token')) throw new TokenNotProvidedError();
+        else this.TOKEN = this.config.getSync('kasumi::token');
 
-        if (this.config.has('disableSnOrderCheck')) this.DISABLE_SN_ORDER_CHECK = this.config.get('disableSnOrderCheck');
+        if (this.config.hasSync('kasumi::disableSnOrderCheck')) this.DISABLE_SN_ORDER_CHECK = this.config.getSync('kasumi::disableSnOrderCheck');
         else this.DISABLE_SN_ORDER_CHECK = false;
 
+        if (this.config.hasSync('kasumi::database')) {
+            switch (this.config.getSync('kasumi::database')) {
+                case 'mongodb':
+                    MongoDB.init(this.config);
+                    break;
+            }
+        }
 
         this.message = new Message(this);
         this.plugin = new Plugin(this);
@@ -140,12 +148,13 @@ export class Kasumi extends EventEmitter2 implements Kasumi {
     }
     async connect() {
         await this.fetchMe();
-        if (this.config.get('connection') == 'webhook') {
+        const connection = (await this.config.getOne('kasumi::connection'));
+        if (connection == 'webhook') {
             this.webhook = new WebHook(this);
         } else {
             const { err } = await this.API.user.offline();
             if (err) throw err;
-            switch (this.config.get('connection')) {
+            switch (connection) {
                 case 'botroot':
                     this.websocket = new WebSocketSource(this, false);
                     this.websocket.connect();
@@ -158,7 +167,7 @@ export class Kasumi extends EventEmitter2 implements Kasumi {
                     this.websocket = new WebSocket(this);
                     break;
                 default:
-                    throw new UnknownConnectionType(this.config.get('connection'));
+                    throw new UnknownConnectionType(connection);
             }
         }
     }

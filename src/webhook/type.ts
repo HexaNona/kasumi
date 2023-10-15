@@ -1,5 +1,7 @@
 import Config from "config";
 import { GuildType, NormalMessageType, WebSocket } from "../type";
+import { StringKeyOf } from "type-fest";
+import { DefiniteStorage, Storage, StorageItem } from "../config/type";
 
 export namespace WebHook {
     type ChannelType = 'GROUP' | 'PERSON' | 'BOARDCAST' | 'WEBHOOK_CHALLENGE';
@@ -37,9 +39,15 @@ export namespace WebHook {
     export type Events = NormalMessageEvent<NormalMessageType, GuildType> | SystemMessageEvent | ChallengeEvent;
 }
 
-export interface WebHookSafeConfig extends Config {
-    get(key: 'token'): string;
-    get(key: 'webhookVerifyToken'): string;
-    get(key: 'webhookEncryptKey'): string;
-    get(key: 'webhookPort'): number;
+type WebhookKeys = 'kasumi::token' | 'kasumi::webhookPort' | 'kasumi::webhookVerifyToken' | 'kasumi::webhookEncryptKey' | 'kasumi::connection'
+
+export declare class WebHookSafeConfig extends Config {
+    // @ts-ignore
+    get<T extends WebhookKeys, K extends StringKeyOf<Storage>>(
+        ...keys: (T | K)[]
+    ): Promise<
+        {
+            [key in (T | K)]: Storage[T | K]
+        }
+    >
 }
