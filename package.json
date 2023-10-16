@@ -1,6 +1,6 @@
 {
   "name": "kasumi.js",
-  "version": "0.5.0-SNAPSHOT-23oc15a",
+  "version": "0.5.0-SNAPSHOT-23w41b",
   "description": "KOOK TypeScript SDK",
   "main": "dist/index.js",
   "repository": {
@@ -8,7 +8,7 @@
     "url": "git+https://github.com/Hexona69/kasumi.git"
   },
   "keywords": [
-    "KOOK"
+    "kook", "kaiheila", "chatbot", "typescript"
   ],
   "scripts": {
     "build": "tsc",
