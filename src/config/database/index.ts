@@ -42,6 +42,7 @@ export declare abstract class Database {
     /**
      * Initialize database in config
      * @param config Config instance
+     * @returns Whether database is initialized
      */
-    static init(config: Config): void;
+    static builder(config: Config): boolean;
 }
