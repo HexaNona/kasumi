@@ -10,8 +10,6 @@ dotenvExpand.expand(dotenv.config());
 
 type StringKeyOf<T extends object> = Extract<keyof T, string>;
 
-type ArrayElement<A> = A extends readonly (infer T)[] ? T : never
-
 type Equals<X, Y> =
     (<T>() => T extends X ? 1 : 2) extends
     (<T>() => T extends Y ? 1 : 2) ? true : false;
@@ -26,22 +24,25 @@ type CombineOnlyWhenNotEqual<T, K, Q> = Equals<T, Q> extends true ? K : T | K
 export default class Config {
     private file: any;
 
-    private _map: Map<string, StorageItem> = new Map();
-    public get map() {
-        return this._map;
-    }
+    private map: Map<string, StorageItem> = new Map();
 
-    public database?: Database;
+    protected database?: Database;
     private hasDatabase(): this is { database: Database } {
         return this._hasDatabase;
     }
-    public set _hasDatabase(payload: boolean) {
-        this.__hasDatabase = payload;
+    private _hasDatabase: boolean;
+
+    public initDatabase(database: Database) {
+        if (database) {
+            this.database = database;
+            this.database.sync(Object.fromEntries(this.map.entries()));
+            this._hasDatabase = true;
+        }
     }
-    private __hasDatabase: boolean;
+
     constructor() {
         this.set('kasumi::disableSnOrderCheck', false);
-        this.__hasDatabase = false;
+        this._hasDatabase = false;
     }
     public loadConfigFile(inputPath?: string) {
         const configPath = process.env.CONFIG_PATH;

@@ -104,7 +104,7 @@ export class Kasumi extends EventEmitter2 implements Kasumi {
         if (this.config.hasSync('kasumi::database')) {
             switch (this.config.getSync('kasumi::database')) {
                 case 'mongodb':
-                    MongoDB.init(this.config);
+                    MongoDB.builder(this.config);
                     break;
             }
         }

@@ -78,11 +78,12 @@ export class MongoDB implements Database {
         if (operation.length) await this.collection.bulkWrite(operation);
     }
 
-    public static init(config: Config) {
+    public static builder(config: Config) {
         if (config.hasSync('kasumi::mongoConnectionString') && config.hasSync('kasumi::mongoDatabaseName') && config.hasSync('kasumi::mongoCollectionName')) {
-            config.database = new MongoDB(config.getSync('kasumi::mongoConnectionString').toString(), config.getSync('kasumi::mongoDatabaseName').toString(), config.getSync('kasumi::mongoCollectionName').toString());
-            config.database.sync(Object.fromEntries(config.map.entries()));
-            config._hasDatabase = true;
+            const database = new MongoDB(config.getSync('kasumi::mongoConnectionString').toString(), config.getSync('kasumi::mongoDatabaseName').toString(), config.getSync('kasumi::mongoCollectionName').toString());
+            config.initDatabase(database);
+            return true;
         }
+        return false;
     }
 }
