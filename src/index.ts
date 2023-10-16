@@ -95,14 +95,14 @@ export class Kasumi extends EventEmitter2 implements Kasumi {
         if (readFromConfigFile) this.config.loadConfigFile();
         if (readFromEnv) this.config.loadEnvironment();
 
-        if (!this.config.hasSync('kasumi::token')) throw new TokenNotProvidedError();
-        else this.TOKEN = this.config.getSync('kasumi::token');
+        if (!this.config.hasSync('kasumi::config.token')) throw new TokenNotProvidedError();
+        else this.TOKEN = this.config.getSync('kasumi::config.token');
 
-        if (this.config.hasSync('kasumi::disableSnOrderCheck')) this.DISABLE_SN_ORDER_CHECK = this.config.getSync('kasumi::disableSnOrderCheck');
+        if (this.config.hasSync('kasumi::config.disableSnOrderCheck')) this.DISABLE_SN_ORDER_CHECK = this.config.getSync('kasumi::config.disableSnOrderCheck');
         else this.DISABLE_SN_ORDER_CHECK = false;
 
-        if (this.config.hasSync('kasumi::database')) {
-            switch (this.config.getSync('kasumi::database')) {
+        if (this.config.hasSync('kasumi::config.database')) {
+            switch (this.config.getSync('kasumi::config.database')) {
                 case 'mongodb':
                     MongoDB.builder(this.config);
                     break;
@@ -148,7 +148,7 @@ export class Kasumi extends EventEmitter2 implements Kasumi {
     }
     async connect() {
         await this.fetchMe();
-        const connection = (await this.config.getOne('kasumi::connection'));
+        const connection = (await this.config.getOne('kasumi::config.connection'));
         if (connection == 'webhook') {
             this.webhook = new WebHook(this);
         } else {
