@@ -39,9 +39,9 @@ export default class WebHook {
                         if (this.__isChallengeEvent(event)) {
                             res.send({
                                 challenge: event.d.challenge
-                            });
+                            }).end();
                         } else {
-                            res.send();
+                            res.end();
                             this.logger.trace(`Recieved message "${event.d.content}" from ${event.d.author_id}, ID = ${event.d.msg_id}`, {
                                 cur_sn: this.sn,
                                 msg_sn: event.sn
@@ -71,15 +71,15 @@ export default class WebHook {
                     } else {
                         this.logger.warn('Verify token dismatch!');
                         this.logger.warn(event);
-                        res.status(401).send();
+                        res.status(401).end();
                     }
                 } catch (e) {
-                    res.status(500).send();
+                    res.status(500).end();
                     this.logger.error(e);
                 }
             } else {
                 this.logger.warn('Recieved unencrypted request')
-                res.status(401).send();
+                res.status(401).end();
             }
         })
         this.http.get('/', (req, res) => {
