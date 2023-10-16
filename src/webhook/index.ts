@@ -31,11 +31,11 @@ export default class WebHook {
                     const iv = base64Decode.substring(0, 16);
                     const encrypt = base64Decode.substring(16);
 
-                    const encryptKey = (await this.config.getOne('kasumi::webhookEncryptKey')).padEnd(32, '\0');
+                    const encryptKey = (await this.config.getOne('kasumi::config.webhookEncryptKey')).padEnd(32, '\0');
                     const decipher = crypto.createDecipheriv('aes-256-cbc', encryptKey, iv);
                     const decrypt = decipher.update(encrypt, 'base64', 'utf8') + decipher.final('utf8');
                     const event: WebHookType.Events = JSON.parse(decrypt);
-                    if (event.d.verify_token == (await this.config.getOne('kasumi::webhookEncryptKey'))) {
+                    if (event.d.verify_token == (await this.config.getOne('kasumi::config.webhookEncryptKey'))) {
                         if (this.__isChallengeEvent(event)) {
                             res.send({
                                 challenge: event.d.challenge
@@ -92,7 +92,7 @@ export default class WebHook {
             })
         })
         import('get-port').then(({ default: getPort }) => {
-            this.config.getOne("kasumi::webhookPort").then((webhookPort) => {
+            this.config.getOne("kasumi::config.webhookPort").then((webhookPort) => {
                 getPort({ port: webhookPort }).then(port => {
                     this.port = port;
                     this.http.listen(this.port, () => {

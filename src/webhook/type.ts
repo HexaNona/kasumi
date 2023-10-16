@@ -39,7 +39,7 @@ export namespace WebHook {
     export type Events = NormalMessageEvent<NormalMessageType, GuildType> | SystemMessageEvent | ChallengeEvent;
 }
 
-type WebhookKeys = 'kasumi::token' | 'kasumi::webhookPort' | 'kasumi::webhookVerifyToken' | 'kasumi::webhookEncryptKey' | 'kasumi::connection'
+type WebhookKeys = 'kasumi::config.token' | 'kasumi::config.webhookPort' | 'kasumi::config.webhookVerifyToken' | 'kasumi::config.webhookEncryptKey' | 'kasumi::config.connection'
 
 export declare class WebHookSafeConfig extends Config {
     // @ts-ignore

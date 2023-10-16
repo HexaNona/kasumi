@@ -41,7 +41,7 @@ export default class Config {
     }
 
     constructor() {
-        this.set('kasumi::disableSnOrderCheck', false);
+        this.set('kasumi::config.disableSnOrderCheck', false);
         this._hasDatabase = false;
     }
     public loadConfigFile(inputPath?: string) {
@@ -57,31 +57,31 @@ export default class Config {
         }
     }
     public loadConifg(config: KasumiConfig) {
-        this.set('kasumi::token', config.token)
-            .set('kasumi::disableSnOrderCheck', config.disableSnOrderCheck || false)
+        this.set('kasumi::config.token', config.token)
+            .set('kasumi::config.disableSnOrderCheck', config.disableSnOrderCheck || false)
         if (config.type == 'websocket') {
-            this.set('kasumi::connection', config.vendor || 'hexona');
+            this.set('kasumi::config.connection', config.vendor || 'hexona');
         } else {
-            this.set('kasumi::connection', config.type)
-                .set('kasumi::webhookVerifyToken', config.verifyToken)
-                .set('kasumi::webhookEncryptKey', config.encryptKey)
-                .set('kasumi::webhookPort', config.port);
+            this.set('kasumi::config.connection', config.type)
+                .set('kasumi::config.webhookVerifyToken', config.verifyToken)
+                .set('kasumi::config.webhookEncryptKey', config.encryptKey)
+                .set('kasumi::config.webhookPort', config.port);
         }
     }
     public async syncEssential() {
-        if ((await this.get("kasumi::connection", "kasumi::disableSnOrderCheck", "kasumi::token"))['kasumi::connection'] == 'webhook') {
-            await this.get("kasumi::webhookEncryptKey", "kasumi::webhookVerifyToken", "kasumi::webhookPort");
+        if ((await this.get("kasumi::config.connection", "kasumi::config.disableSnOrderCheck", "kasumi::config.token"))['kasumi::config.connection'] == 'webhook') {
+            await this.get("kasumi::config.webhookEncryptKey", "kasumi::config.webhookVerifyToken", "kasumi::config.webhookPort");
         }
     }
     public loadEnvironment() {
-        if (process.env.TOKEN) this.set("kasumi::token", process.env.TOKEN);
+        if (process.env.TOKEN) this.set("kasumi::config.token", process.env.TOKEN);
         if (process.env.CONNECTION) {
             const connection = process.env.CONNECTION.toLowerCase();
-            if (Config.isConnectionMode(connection)) this.set("kasumi::connection", connection);
+            if (Config.isConnectionMode(connection)) this.set("kasumi::config.connection", connection);
         }
-        if (process.env.VERIFY_TOKEN) this.set("kasumi::webhookVerifyToken", process.env.VERIFY_TOKEN);
-        if (process.env.ENCRYPT_KEY) this.set("kasumi::webhookEncryptKey", process.env.ENCRYPT_KEY);
-        if (process.env.PORT) this.set("kasumi::webhookPort", parseInt(process.env.PORT));
+        if (process.env.VERIFY_TOKEN) this.set("kasumi::config.webhookVerifyToken", process.env.VERIFY_TOKEN);
+        if (process.env.ENCRYPT_KEY) this.set("kasumi::config.webhookEncryptKey", process.env.ENCRYPT_KEY);
+        if (process.env.PORT) this.set("kasumi::config.webhookPort", parseInt(process.env.PORT));
     }
     public hasSync<T extends StringKeyOf<DefiniteStorage>, K extends StringKeyOf<Storage>>(key: T | K): boolean {
         return this.map.has(key);
@@ -130,10 +130,10 @@ export default class Config {
     }
 
     public isWebHookSafe(): this is WebHookSafeConfig {
-        return this.hasSync('kasumi::token') &&
-            this.hasSync('kasumi::webhookVerifyToken') &&
-            this.hasSync('kasumi::webhookEncryptKey') &&
-            this.hasSync('kasumi::webhookPort');
+        return this.hasSync('kasumi::config.token') &&
+            this.hasSync('kasumi::config.webhookVerifyToken') &&
+            this.hasSync('kasumi::config.webhookEncryptKey') &&
+            this.hasSync('kasumi::config.webhookPort');
     }
 
     public static isConnectionMode(payload?: string): payload is 'webhook' | 'hexona' | 'kookts' | 'botroot' {

@@ -79,8 +79,8 @@ export class MongoDB implements Database {
     }
 
     public static builder(config: Config) {
-        if (config.hasSync('kasumi::mongoConnectionString') && config.hasSync('kasumi::mongoDatabaseName') && config.hasSync('kasumi::mongoCollectionName')) {
-            const database = new MongoDB(config.getSync('kasumi::mongoConnectionString').toString(), config.getSync('kasumi::mongoDatabaseName').toString(), config.getSync('kasumi::mongoCollectionName').toString());
+        if (config.hasSync('kasumi::config.mongoConnectionString') && config.hasSync('kasumi::config.mongoDatabaseName') && config.hasSync('kasumi::config.mongoCollectionName')) {
+            const database = new MongoDB(config.getSync('kasumi::config.mongoConnectionString').toString(), config.getSync('kasumi::config.mongoDatabaseName').toString(), config.getSync('kasumi::config.mongoCollectionName').toString());
             config.initDatabase(database);
             return true;
         }
