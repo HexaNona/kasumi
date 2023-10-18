@@ -35,7 +35,7 @@ export default class WebHook {
                     const decipher = crypto.createDecipheriv('aes-256-cbc', encryptKey, iv);
                     const decrypt = decipher.update(encrypt, 'base64', 'utf8') + decipher.final('utf8');
                     const event: WebHookType.Events = JSON.parse(decrypt);
-                    if (event.d.verify_token == (await this.config.getOne('kasumi::config.webhookEncryptKey'))) {
+                    if (event.d.verify_token == (await this.config.getOne('kasumi::config.webhookVerifyToken'))) {
                         if (this.__isChallengeEvent(event)) {
                             res.send({
                                 challenge: event.d.challenge
