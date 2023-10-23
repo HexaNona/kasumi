@@ -1,6 +1,12 @@
-# Kasumi
+<p align="center">
+  <img height="70" src="./assets/kasumi.png">
+</p>
 
-A library to build KOOK chatbots. **Requires Node 18+.**
+Yet another TypeScript framework to build KOOK chatbots. **Requires Node 18+.**
+
+## Documentation
+
+Docs can be found on the [website](https://kasumi.js.org/).
 
 ## TODO
 
