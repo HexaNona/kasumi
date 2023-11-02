@@ -1,5 +1,6 @@
 import BaseCommand, { CommandFunction } from "./baseCommand";
-import Kasumi, { Card } from "../..";
+import Kasumi from "../../client";
+import Card from "../../card";
 import BaseSession from "../../plugin/session";
 import { UnknownInputTypeError } from "../../error";
 

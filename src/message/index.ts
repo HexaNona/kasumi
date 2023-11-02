@@ -1,5 +1,5 @@
 import Logger from "bunyan";
-import Kasumi from "../";
+import Kasumi from "../client";
 import { WebSocket, MessageType } from "../type";
 import RawEmisions, { ActionMessageEvent, AudioMessageEvent, ButtonClickedEvent, CardMessageEvent, FileMessageEvent, ImageMessageEvent, MarkdownMessageEvent, PlainTextMessageEvent, SystemMessageEvent, VideoMessageEvent } from "./type";
 import EventEmitter2 from "eventemitter2";
@@ -53,7 +53,7 @@ export class Message extends EventEmitter2 implements Message {
                 break;
             }
             case MessageType.MarkdownMessage: {
-                event = new MarkdownMessageEvent(data as any, this.client)
+                event = new MarkdownMessageEvent(data as any, this.client);
                 this.emit('markdownMessages', event);
                 this.emit('allTextMessages', event);
                 this.client.emit('message.text', event);

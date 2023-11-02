@@ -1,5 +1,5 @@
 import { PlainTextMessageEvent, MarkdownMessageEvent, ButtonClickedEvent } from "../message/type";
-import Kasumi from "..";
+import Kasumi from "../client";
 import { GuildType, MessageType } from "../type";
 import Card from "../card";
 import { User } from "../type";
