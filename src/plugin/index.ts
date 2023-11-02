@@ -1,5 +1,7 @@
 import Logger from "bunyan";
-import Kasumi, { BaseSession, Card } from "..";
+import Kasumi from "../client";
+import BaseSession from "./session";
+import Card from "../card";
 import BaseCommand, { CommandFunction } from "./menu/baseCommand";
 import BaseMenu from "./menu/baseMenu";
 import { MarkdownMessageEvent, PlainTextMessageEvent } from "../message/type";

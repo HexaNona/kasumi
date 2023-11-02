@@ -3,7 +3,7 @@ import Logger from 'bunyan';
 import { WebSocket as WebSocketType } from '../type'
 import delay from 'delay';
 import { TimeoutError } from '../error';
-import Kasumi from '../';
+import Kasumi from '../client';
 
 export default class WebSocket {
     public logger: Logger;

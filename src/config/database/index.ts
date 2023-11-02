@@ -15,6 +15,12 @@ export declare abstract class Database {
     addToSetQueue(key: string, value: StorageItem): void;
 
     /**
+     * Add a entry to delete queue and update them to database in bulk periodically
+     * @param key Key of entry
+     */
+    addToDeleteQueue(key: string): void;
+
+    /**
      * Download single entry from database
      * @param key Key of entry
      */
@@ -33,10 +39,10 @@ export declare abstract class Database {
     /**
      * Sync whole object to database
      * 
-     * @param config Config instance
+     * @param config Config object
      */
     sync(config: {
-        [key: string]: StorageItem
+        [key: string]: StorageItem | null
     }): Promise<void>;
 
     /**

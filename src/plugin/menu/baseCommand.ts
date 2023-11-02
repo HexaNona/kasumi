@@ -1,6 +1,6 @@
 import Logger from "bunyan";
 import { PlainTextMessageEvent, MarkdownMessageEvent, ButtonClickedEvent } from "../../message/type";
-import Kasumi from "../..";
+import Kasumi from "../../client";
 import { MethodNotImplementedError } from "../../error";
 import BaseSession from "../session";
 

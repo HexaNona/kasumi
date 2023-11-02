@@ -13,12 +13,12 @@ const clients: {
 } = {};
 
 export class MongoDB implements Database {
-    readonly SYNC_INTERVAL;
+    private readonly SYNC_INTERVAL;
 
-    readonly client: MongoClient;
-    readonly database: Db;
-    readonly collection: Collection<collectionItem>;
-    readonly map: Map<string, StorageItem> = new Map();
+    private readonly client: MongoClient;
+    private readonly database: Db;
+    private readonly collection: Collection<collectionItem>;
+    private readonly setBuffer: Map<string, StorageItem | null> = new Map();
     constructor(connectionString: string, databaseName: string, collectionName: string, syncInterval = 30 * 1000) {
         if (!clients.hasOwnProperty(connectionString)) {
             clients[connectionString] = new MongoClient(connectionString)
@@ -48,11 +48,14 @@ export class MongoDB implements Database {
         return res as any;
     }
     public addToSetQueue(key: string, value: StorageItem): void {
-        this.map.set(key, value);
+        this.setBuffer.set(key, value);
+    }
+    public addToDeleteQueue(key: string): void {
+        this.setBuffer.set(key, null);
     }
     private syncTask() {
-        const config = Object.fromEntries(this.map.entries());
-        this.map.clear();
+        const config = Object.fromEntries(this.setBuffer.entries());
+        this.setBuffer.clear();
         this.sync(config).then((() => {
             setTimeout(() => {
                 this.syncTask();
@@ -64,14 +67,23 @@ export class MongoDB implements Database {
         return value > 0;
     }
     public async sync(config: {
-        [key: string]: StorageItem
+        [key: string]: StorageItem | null
     }) {
         const operation = Object.keys(config).map(key => {
-            return {
-                updateOne: {
-                    filter: { "_id": key },
-                    update: { $set: { "content": config[key] } },
-                    upsert: true
+            const value = config[key];
+            if (value == null) {
+                return {
+                    deleteOne: {
+                        filter: { "_id": key }
+                    }
+                }
+            } else {
+                return {
+                    updateOne: {
+                        filter: { "_id": key },
+                        update: { $set: { "content": value } },
+                        upsert: true
+                    }
                 }
             }
         });

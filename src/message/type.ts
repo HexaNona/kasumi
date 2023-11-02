@@ -1,4 +1,4 @@
-import Kasumi from "../";
+import Kasumi from "../client";
 import { NormalMessageType, WebSocket, MessageType, User, GuildType } from "../type";
 
 export default interface RawEmisions {

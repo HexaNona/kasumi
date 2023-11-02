@@ -22,6 +22,9 @@ type Equals<X, Y> =
 type CombineOnlyWhenNotEqual<T, K, Q> = Equals<T, Q> extends true ? K : T | K
 
 export default class Config {
+    static join(namespace: string, ...keys: string[]) {
+        return `${namespace}::${keys.join('.')}`;
+    }
     private file: any;
 
     private map: Map<string, StorageItem> = new Map();
@@ -126,6 +129,12 @@ export default class Config {
     public set<T extends StringKeyOf<DefiniteStorage>, K extends StringKeyOf<Storage>>(key: T | K, value: Storage[T | K]) {
         this.map.set(key, value);
         if (this.hasDatabase()) this.database.addToSetQueue(key, value);
+        return this;
+    }
+
+    public delete<T extends StringKeyOf<DefiniteStorage>, K extends StringKeyOf<Storage>>(key: T | K) {
+        this.map.delete(key);
+        if (this.hasDatabase()) this.database.addToDeleteQueue(key);
         return this;
     }
 

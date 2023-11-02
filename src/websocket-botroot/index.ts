@@ -6,7 +6,7 @@
 
 
 import WebSocket from 'ws'
-import Kasumi from '..'
+import Kasumi from '../client'
 import { inflate, InputType } from 'zlib'
 import {
     KHEventPacket,
@@ -135,7 +135,7 @@ export default class WebSocketSource extends MessageSource {
                     return
                 }
                 if (this.readyState === this.CONNECTING || botInstance.stage === 2) {
-                    console.warn('Fail to Connect to Kaiheila, retrying', error)
+                    botInstance.logger.warn('Fail to Connect to Kaiheila, retrying', error)
                     botInstance.socket = undefined
                     try {
                         this.close()
@@ -144,7 +144,7 @@ export default class WebSocketSource extends MessageSource {
                     }
                     botInstance.retry(error)
                 }
-                console.warn(error)
+                botInstance.logger.warn(error)
             })
             this.socket.on('close', function (code, reason) {
                 if (botInstance.socket !== this) {

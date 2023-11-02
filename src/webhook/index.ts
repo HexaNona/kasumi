@@ -1,5 +1,5 @@
 import Logger from 'bunyan';
-import Kasumi from '../';
+import Kasumi from '../client';
 import express, { Express } from 'express';
 import bodyParser from 'body-parser';
 import crypto from 'crypto';
