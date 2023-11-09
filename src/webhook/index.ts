@@ -1,6 +1,7 @@
 import Logger from 'bunyan';
 import Kasumi from '../client';
 import express, { Express } from 'express';
+import { Server } from 'http';
 import bodyParser from 'body-parser';
 import crypto from 'crypto';
 import { WebHookSafeConfig, WebHook as WebHookType } from './type';
@@ -10,7 +11,8 @@ export default class WebHook {
     public logger: Logger;
     private isInitialization = true;
     private client: Kasumi;
-    private http: Express;
+    private express: Express;
+    private http?: Server;
     private sn: number = 0;
     private port!: number;
     private messageBuffer: Array<Exclude<WebHookType.Events, WebHookType.ChallengeEvent>> = [];
@@ -18,11 +20,11 @@ export default class WebHook {
     constructor(client: Kasumi) {
         this.client = client;
         if (!this.client.config.isWebHookSafe()) throw new WebHookMissingConfigError();
-        this.config = this.client.config as WebHookSafeConfig;
+        this.config = this.client.config;
         this.logger = this.client.getLogger('webhook');
-        this.http = express();
-        this.http.use(bodyParser.json());
-        this.http.post('/', async (req, res) => {
+        this.express = express();
+        this.express.use(bodyParser.json());
+        this.express.post('/', (req, res) => {
             const body: { encrypt: string } = req.body;
             if (body.encrypt) {
                 try {
@@ -31,11 +33,11 @@ export default class WebHook {
                     const iv = base64Decode.substring(0, 16);
                     const encrypt = base64Decode.substring(16);
 
-                    const encryptKey = (await this.config.getOne('kasumi::config.webhookEncryptKey')).padEnd(32, '\0');
+                    const encryptKey = this.config.getSync('kasumi::config.webhookEncryptKey').padEnd(32, '\0');
                     const decipher = crypto.createDecipheriv('aes-256-cbc', encryptKey, iv);
                     const decrypt = decipher.update(encrypt, 'base64', 'utf8') + decipher.final('utf8');
                     const event: WebHookType.Events = JSON.parse(decrypt);
-                    if (event.d.verify_token == (await this.config.getOne('kasumi::config.webhookVerifyToken'))) {
+                    if (event.d.verify_token == this.config.getSync('kasumi::config.webhookVerifyToken')) {
                         if (this.__isChallengeEvent(event)) {
                             res.send({
                                 challenge: event.d.challenge
@@ -82,7 +84,7 @@ export default class WebHook {
                 res.status(401).end();
             }
         })
-        this.http.get('/', (req, res) => {
+        this.express.get('/', (req, res) => {
             res.send({
                 user: this.client.me,
                 message: {
@@ -91,21 +93,26 @@ export default class WebHook {
                 }
             })
         })
-        import('get-port').then(({ default: getPort }) => {
-            this.config.getOne("kasumi::config.webhookPort").then((webhookPort) => {
-                getPort({ port: webhookPort }).then(port => {
-                    this.port = port;
-                    this.http.listen(this.port, () => {
-                        this.logger.info(`Kasumi starts listening on port ${this.port}`);
-                        this.client.emit('connect.webhook', {
-                            type: 'webhook',
-                            vendor: 'hexona',
-                            bot: this.client.me
-                        })
-                    });
-                })
+    }
+
+    public async connect() {
+        const getPort = (await import('get-port')).default;
+        const webhookPort = this.config.getSync("kasumi::config.webhookPort");
+        const port = await getPort({ port: webhookPort })
+        this.port = port;
+        this.http = this.express.listen(this.port, () => {
+            this.logger.info(`Kasumi starts listening on port ${this.port}`);
+            this.client.emit('connect.webhook', {
+                type: 'webhook',
+                vendor: 'hexona',
+                bot: this.client.me
             })
-        })
+        });
+        return true;
+    }
+
+    public close() {
+        this.http?.close();
     }
 
     private __isChallengeEvent(event: WebHookType.Events): event is WebHookType.ChallengeEvent {

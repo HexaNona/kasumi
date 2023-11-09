@@ -6,6 +6,9 @@ export { default as BaseCommand, CommandFunction } from "./plugin/menu/baseComma
 export { default as BaseSession } from "./plugin/session";
 export { default as Card } from './card';
 
+export * from './config/type';
+export { default as Config } from './config';
+
 export * from './events/type';
 export * from './message/type';
 export * from './type';

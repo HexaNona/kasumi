@@ -90,24 +90,26 @@ export class Kasumi extends EventEmitter2 implements Kasumi {
         if (readFromConfigFile) this.config.loadConfigFile();
         if (readFromEnv) this.config.loadEnvironment();
 
+
+        if (this.config.hasSync('kasumi::config.database')) {
+            switch (this.config.getSync('kasumi::config.database')) {
+                case 'mongodb':
+                    MongoDB.builder(this);
+                    this.config.syncEssential()
+                    break;
+            }
+        }
+
         if (!this.config.hasSync('kasumi::config.token')) throw new TokenNotProvidedError();
         else this.TOKEN = this.config.getSync('kasumi::config.token');
 
         if (this.config.hasSync('kasumi::config.disableSnOrderCheck')) this.DISABLE_SN_ORDER_CHECK = this.config.getSync('kasumi::config.disableSnOrderCheck');
         else this.DISABLE_SN_ORDER_CHECK = false;
 
-        if (this.config.hasSync('kasumi::config.database')) {
-            switch (this.config.getSync('kasumi::config.database')) {
-                case 'mongodb':
-                    MongoDB.builder(this.config);
-                    break;
-            }
-        }
-
         this.message = new Message(this);
         this.plugin = new Plugin(this);
         this.events = new Event(this);
-        this.API = new API(this.TOKEN, this.getLogger('requestor'));
+        this.API = new API(this.TOKEN, this.getLogger('requestor'), this.config.getSync('kasumi::config.customEndpoint'));
 
         this.on('message.text', (event) => {
             this.plugin.messageProcessing(event.content, event);
@@ -132,8 +134,11 @@ export class Kasumi extends EventEmitter2 implements Kasumi {
         const { err, data } = await this.API.user.me();
         if (err) {
             this.logger.error('Getting bot details failed, retrying in 30s');
-            setTimeout(() => { this.connect() }, 30 * 1000);
-            return;
+            setTimeout(() => {
+                this.webhook?.close();
+                this.connect()
+            }, 30 * 1000);
+            return false;
         }
         let profile = data;
         this.me.userId = profile.id;
@@ -141,23 +146,25 @@ export class Kasumi extends EventEmitter2 implements Kasumi {
         this.me.identifyNum = profile.identify_num;
         this.me.avatar = profile.avatar;
         this.logger.info(`Logged in as ${this.me.username}#${this.me.identifyNum} (${this.me.userId})`);
+        return true;
     }
     async connect() {
-        await this.fetchMe();
+        if (!(await this.fetchMe())) return;
         const connection = (await this.config.getOne('kasumi::config.connection'));
         if (connection == 'webhook') {
             this.webhook = new WebHook(this);
+            await this.webhook.connect();
         } else {
             const { err } = await this.API.user.offline();
             if (err) throw err;
             switch (connection) {
                 case 'botroot':
                     this.websocket = new WebSocketSource(this, false);
-                    this.websocket.connect();
+                    await this.websocket.connect();
                     break;
                 case 'kookts':
                     this.websocket = new WebsocketReceiver(new BaseClient(this));
-                    this.websocket.connect();
+                    await this.websocket.connect();
                     break;
                 case 'hexona':
                     this.websocket = new WebSocket(this);

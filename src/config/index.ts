@@ -1,4 +1,4 @@
-import type { DefiniteStorage, Storage, StorageItem } from './type';
+import type { CombineOnlyWhenNotEqual, DefiniteStorage, Storage, StorageItem, StringKeyOf } from './type';
 import * as fs from 'fs';
 import dotenv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
@@ -7,19 +7,6 @@ import { KasumiConfig } from '../type';
 import { Database } from './database';
 
 dotenvExpand.expand(dotenv.config());
-
-type StringKeyOf<T extends object> = Extract<keyof T, string>;
-
-type Equals<X, Y> =
-    (<T>() => T extends X ? 1 : 2) extends
-    (<T>() => T extends Y ? 1 : 2) ? true : false;
-
-/**
- * Combine T and K only T is not equal to Q
- * 
- * Otherwise K will be returned
- */
-type CombineOnlyWhenNotEqual<T, K, Q> = Equals<T, Q> extends true ? K : T | K
 
 export default class Config {
     static join(namespace: string, ...keys: string[]) {
@@ -61,7 +48,8 @@ export default class Config {
     }
     public loadConifg(config: KasumiConfig) {
         this.set('kasumi::config.token', config.token)
-            .set('kasumi::config.disableSnOrderCheck', config.disableSnOrderCheck || false)
+        if (config.disableSnOrderCheck) this.set('kasumi::config.disableSnOrderCheck', config.disableSnOrderCheck);
+        if (config.customEnpoint) this.set('kasumi::config.customEndpoint', config.customEnpoint);
         if (config.type == 'websocket') {
             this.set('kasumi::config.connection', config.vendor || 'hexona');
         } else {
@@ -86,7 +74,7 @@ export default class Config {
         if (process.env.ENCRYPT_KEY) this.set("kasumi::config.webhookEncryptKey", process.env.ENCRYPT_KEY);
         if (process.env.PORT) this.set("kasumi::config.webhookPort", parseInt(process.env.PORT));
     }
-    public hasSync<T extends StringKeyOf<DefiniteStorage>, K extends StringKeyOf<Storage>>(key: T | K): boolean {
+    public hasSync<T extends StringKeyOf<DefiniteStorage>, K extends StringKeyOf<Storage>>(key: T | K): this is { getSync(key: T | K): NonNullable<Storage[T | K]> } & this {
         return this.map.has(key);
     }
     public getSync<T extends StringKeyOf<DefiniteStorage>, K extends StringKeyOf<Storage>>(key: T | K): Storage[T | K] {
@@ -126,7 +114,7 @@ export default class Config {
         }
         return res as any;
     }
-    public set<T extends StringKeyOf<DefiniteStorage>, K extends StringKeyOf<Storage>>(key: T | K, value: Storage[T | K]) {
+    public set<T extends StringKeyOf<DefiniteStorage>, K extends StringKeyOf<Storage>>(key: T | K, value: Required<Storage[T | K]>) {
         this.map.set(key, value);
         if (this.hasDatabase()) this.database.addToSetQueue(key, value);
         return this;

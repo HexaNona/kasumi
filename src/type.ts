@@ -556,20 +556,23 @@ export interface RawResponse {
     data: any
 }
 
-export interface WebSocketConfig {
-    type: 'websocket',
-    vendor?: 'botroot' | 'hexona' | 'kookts',
+interface BaseConfig {
     token: string,
+    customEnpoint?: string,
     disableSnOrderCheck?: boolean
 }
 
-export interface WebHookConfig {
+export interface WebSocketConfig extends BaseConfig {
+    type: 'websocket',
+    vendor?: 'botroot' | 'hexona' | 'kookts',
+    disableSnOrderCheck?: boolean
+}
+
+export interface WebHookConfig extends BaseConfig {
     type: 'webhook',
     port: number,
-    token: string,
     verifyToken: string,
     encryptKey: string,
-    disableSnOrderCheck?: boolean
 }
 
 export type KasumiConfig = WebSocketConfig | WebHookConfig;

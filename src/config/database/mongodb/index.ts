@@ -1,7 +1,7 @@
 import { Collection, Db, MongoClient } from "mongodb";
 import { Database } from "..";
 import { StorageItem } from "../../type";
-import Config from "../../";
+import Kasumi from "../../../client";
 
 export interface collectionItem {
     _id: string,
@@ -90,10 +90,10 @@ export class MongoDB implements Database {
         if (operation.length) await this.collection.bulkWrite(operation);
     }
 
-    public static builder(config: Config) {
-        if (config.hasSync('kasumi::config.mongoConnectionString') && config.hasSync('kasumi::config.mongoDatabaseName') && config.hasSync('kasumi::config.mongoCollectionName')) {
-            const database = new MongoDB(config.getSync('kasumi::config.mongoConnectionString').toString(), config.getSync('kasumi::config.mongoDatabaseName').toString(), config.getSync('kasumi::config.mongoCollectionName').toString());
-            config.initDatabase(database);
+    public static builder(client: Kasumi) {
+        if (client.config.hasSync('kasumi::config.mongoConnectionString') && client.config.hasSync('kasumi::config.mongoDatabaseName') && client.config.hasSync('kasumi::config.mongoCollectionName')) {
+            const database = new MongoDB(client.config.getSync('kasumi::config.mongoConnectionString').toString(), client.config.getSync('kasumi::config.mongoDatabaseName').toString(), client.config.getSync('kasumi::config.mongoCollectionName').toString());
+            client.config.initDatabase(database);
             return true;
         }
         return false;
