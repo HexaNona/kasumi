@@ -6,10 +6,10 @@ import BaseSession from "../session";
 
 export type CommandFunction<T, K> = (session: T) => Promise<K>
 
-export default class BaseCommand {
+export default class BaseCommand<T extends Kasumi = Kasumi> {
     name: string = 'default';
     protected _isInit = false;
-    protected client!: Kasumi;
+    protected client!: T;
     protected loggerSequence: string[] = [];
     get isInit() {
         return this._isInit;
@@ -18,7 +18,7 @@ export default class BaseCommand {
 
     logger!: Logger;
 
-    init(client: Kasumi, loggerSequence: string[]) {
+    init(client: T, loggerSequence: string[]) {
         this.client = client;
         this.loggerSequence = loggerSequence;
         this.logger = this.client.getLogger(...this.loggerSequence);
