@@ -28,8 +28,8 @@ export default class API {
     invite: Inivte;
     message: Message;
     user: User;
-    constructor(token: string, logger: Logger) {
-        this.rest = new Rest(token, logger);
+    constructor(token: string, logger: Logger, customEndpoint?: string) {
+        this.rest = new Rest(token, logger, customEndpoint);
 
         this.asset = new Asset(this.rest);
         this.badge = new Badge(this.rest);

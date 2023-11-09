@@ -1,4 +1,4 @@
-import Config from "..";
+import { Kasumi } from "../../client";
 import { StorageItem } from "../type";
 
 export declare abstract class Database {
@@ -50,5 +50,5 @@ export declare abstract class Database {
      * @param config Config instance
      * @returns Whether database is initialized
      */
-    static builder(config: Config): boolean;
+    static builder(client: Kasumi): boolean;
 }

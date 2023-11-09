@@ -6,10 +6,10 @@ import Logger from "bunyan";
 export default class Rest {
     axios: AxiosInstance;
     logger: Logger;
-    constructor(provide: string | AxiosInstance, logger: Logger) {
+    constructor(provide: string | AxiosInstance, logger: Logger, customEndpoint = "https://www.kookapp.cn/api/v3") {
         if (typeof provide == 'string') {
             this.axios = axios.create({
-                baseURL: 'https://www.kookapp.cn/api/v3',
+                baseURL: customEndpoint,
                 headers: {
                     Authorization: `Bot ${provide}`,
                 }
