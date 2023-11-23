@@ -13,9 +13,9 @@ export default class Button {
 
     private activatorFunctions: Map<string, Function> = new Map();
 
-    private client: Kasumi;
+    private client: Kasumi<any>;
 
-    constructor(client: Kasumi) {
+    constructor(client: Kasumi<any>) {
         this.client = client;
 
         this.client.on('event.button', async (event: ButtonClickedEvent) => {

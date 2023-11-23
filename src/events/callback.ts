@@ -10,9 +10,9 @@ export interface PresistentSession {
 }
 export default class Callback {
 
-    private client: Kasumi;
+    private client: Kasumi<any>;
 
-    constructor(client: Kasumi) {
+    constructor(client: Kasumi<any>) {
         this.client = client;
     }
 

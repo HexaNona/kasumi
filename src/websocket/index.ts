@@ -8,7 +8,7 @@ import Kasumi from '../client';
 export default class WebSocket {
     public logger: Logger;
     private Socket?: ws;
-    private client: Kasumi;
+    private client: Kasumi<any>;
     private state: WebSocketType.State;
     private sessionId: string = '';
     private sn: number = 0;

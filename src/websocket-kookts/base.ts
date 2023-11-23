@@ -8,7 +8,7 @@ import Kasumi from '../client';
 export class BaseClient extends EventEmitter2 {
     axios: AxiosInstance;
     receiver: BaseReceiver;
-    kasumi: Kasumi;
+    kasumi: Kasumi<any>;
     logger: Logger;
 
     constructor(client: Kasumi<any>) {

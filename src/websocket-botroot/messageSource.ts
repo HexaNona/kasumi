@@ -20,8 +20,8 @@ export interface MessageSource extends EventEmitter {
 
 export class MessageSource extends EventEmitter implements MessageSource {
     logger: Logger;
-    protected botInstance: Kasumi;
-    constructor(botInstance: Kasumi) {
+    protected botInstance: Kasumi<any>;
+    constructor(botInstance: Kasumi<any>) {
         super()
         this.botInstance = botInstance;
         this.logger = this.botInstance.getLogger('websocket', 'botroot');

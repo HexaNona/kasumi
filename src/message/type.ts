@@ -23,8 +23,8 @@ export class BaseMessageEvent {
     timestamp: number;
     content: string;
     rawEvent: WebSocket.MessageEvent
-    protected client: Kasumi;
-    constructor(rawEvent: WebSocket.MessageEvent, client: Kasumi) {
+    protected client: Kasumi<any>;
+    constructor(rawEvent: WebSocket.MessageEvent, client: Kasumi<any>) {
         this.messageType = rawEvent.type
         this.channelType = rawEvent.channel_type;
         this.messageId = rawEvent.msg_id;
@@ -39,7 +39,7 @@ export class SystemMessageEvent extends BaseMessageEvent {
     messageType = MessageType.SystemMessage;
     guildId?: string;
     body: any;
-    constructor(rawEvent: WebSocket.SystemMessageEvent, client: Kasumi) {
+    constructor(rawEvent: WebSocket.SystemMessageEvent, client: Kasumi<any>) {
         super(rawEvent, client);
         this.body = rawEvent.extra.body;
         if (this.channelType == 'GROUP') this.guildId = rawEvent.target_id
@@ -52,7 +52,7 @@ export class ButtonClickedEvent extends SystemMessageEvent {
     channelId: string;
     authorId: string;
     author: User;
-    constructor(rawEvent: WebSocket.ButtonClickedEvent, client: Kasumi) {
+    constructor(rawEvent: WebSocket.ButtonClickedEvent, client: Kasumi<any>) {
         super(rawEvent, client);
         this.value = rawEvent.extra.body.value;
         this.targetMsgId = rawEvent.extra.body.msg_id;
@@ -93,7 +93,7 @@ class UserMessageEvent extends BaseMessageEvent {
     public async deleteReaction(emojiId: string, userId?: string) {
         return this.client.API.message.deleteReaction(this.messageId, emojiId, userId);
     }
-    constructor(rawEvent: WebSocket.NormalMessageEvent<NormalMessageType, GuildType>, client: Kasumi) {
+    constructor(rawEvent: WebSocket.NormalMessageEvent<NormalMessageType, GuildType>, client: Kasumi<any>) {
         super(rawEvent, client);
         if (this.isGroupMessage(rawEvent)) {
             this.guildId = rawEvent.extra.guild_id;
@@ -111,7 +111,7 @@ class UserMessageEvent extends BaseMessageEvent {
 
 export class PlainTextMessageEvent extends UserMessageEvent {
     messageType = MessageType.TextMessage;
-    constructor(rawEvent: WebSocket.NormalMessageEvent<MessageType.TextMessage, GuildType>, client: Kasumi) {
+    constructor(rawEvent: WebSocket.NormalMessageEvent<MessageType.TextMessage, GuildType>, client: Kasumi<any>) {
         super(rawEvent, client);
     }
 }
@@ -119,28 +119,28 @@ export class PlainTextMessageEvent extends UserMessageEvent {
 
 export class MarkdownMessageEvent extends UserMessageEvent {
     messageType = MessageType.MarkdownMessage;
-    constructor(rawEvent: WebSocket.NormalMessageEvent<MessageType.MarkdownMessage, GuildType>, client: Kasumi) {
+    constructor(rawEvent: WebSocket.NormalMessageEvent<MessageType.MarkdownMessage, GuildType>, client: Kasumi<any>) {
         super(rawEvent, client);
     }
 }
 
 export class ImageMessageEvent extends UserMessageEvent {
     messageType = MessageType.ImageMessage;
-    constructor(rawEvent: WebSocket.NormalMessageEvent<MessageType.ImageMessage, GuildType>, client: Kasumi) {
+    constructor(rawEvent: WebSocket.NormalMessageEvent<MessageType.ImageMessage, GuildType>, client: Kasumi<any>) {
         super(rawEvent, client);
     }
 }
 
 export class AudioMessageEvent extends UserMessageEvent {
     messageType = MessageType.AudioMessage;
-    constructor(rawEvent: WebSocket.NormalMessageEvent<MessageType.AudioMessage, GuildType>, client: Kasumi) {
+    constructor(rawEvent: WebSocket.NormalMessageEvent<MessageType.AudioMessage, GuildType>, client: Kasumi<any>) {
         super(rawEvent, client);
     }
 }
 
 export class VideoMessageEvent extends UserMessageEvent {
     messageType = MessageType.VideoMessage;
-    constructor(rawEvent: WebSocket.NormalMessageEvent<MessageType.VideoMessage, GuildType>, client: Kasumi) {
+    constructor(rawEvent: WebSocket.NormalMessageEvent<MessageType.VideoMessage, GuildType>, client: Kasumi<any>) {
         super(rawEvent, client);
     }
 }
@@ -148,7 +148,7 @@ export class VideoMessageEvent extends UserMessageEvent {
 
 export class FileMessageEvent extends UserMessageEvent {
     messageType = MessageType.FileMessage;
-    constructor(rawEvent: WebSocket.NormalMessageEvent<MessageType.FileMessage, GuildType>, client: Kasumi) {
+    constructor(rawEvent: WebSocket.NormalMessageEvent<MessageType.FileMessage, GuildType>, client: Kasumi<any>) {
         super(rawEvent, client);
     }
 }
@@ -156,14 +156,14 @@ export class FileMessageEvent extends UserMessageEvent {
 
 export class CardMessageEvent extends UserMessageEvent {
     messageType = MessageType.CardMessage;
-    constructor(rawEvent: WebSocket.NormalMessageEvent<MessageType.CardMessage, GuildType>, client: Kasumi) {
+    constructor(rawEvent: WebSocket.NormalMessageEvent<MessageType.CardMessage, GuildType>, client: Kasumi<any>) {
         super(rawEvent, client);
     }
 }
 
 export class ActionMessageEvent extends UserMessageEvent {
     messageType = MessageType.ActionMessage;
-    constructor(rawEvent: WebSocket.NormalMessageEvent<MessageType.ActionMessage, GuildType>, client: Kasumi) {
+    constructor(rawEvent: WebSocket.NormalMessageEvent<MessageType.ActionMessage, GuildType>, client: Kasumi<any>) {
         super(rawEvent, client);
     }
 }
