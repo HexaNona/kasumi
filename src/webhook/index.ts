@@ -4,23 +4,21 @@ import express, { Express } from 'express';
 import { Server } from 'http';
 import bodyParser from 'body-parser';
 import crypto from 'crypto';
-import { WebHookSafeConfig, WebHook as WebHookType } from './type';
+import { WebHookStorage, WebHook as WebHookType } from './type';
 import { WebHookMissingConfigError } from '../error';
 
 export default class WebHook {
     public logger: Logger;
     private isInitialization = true;
-    private client: Kasumi;
+    private client: Kasumi<WebHookStorage>;
     private express: Express;
     private http?: Server;
     private sn: number = 0;
     private port!: number;
     private messageBuffer: Array<Exclude<WebHookType.Events, WebHookType.ChallengeEvent>> = [];
-    private config: WebHookSafeConfig;
-    constructor(client: Kasumi) {
+    constructor(client: Kasumi<any>) {
+        if (!this.configIsWebHookSafe(client)) throw new WebHookMissingConfigError();
         this.client = client;
-        if (!this.client.config.isWebHookSafe()) throw new WebHookMissingConfigError();
-        this.config = this.client.config;
         this.logger = this.client.getLogger('webhook');
         this.express = express();
         this.express.use(bodyParser.json());
@@ -33,11 +31,11 @@ export default class WebHook {
                     const iv = base64Decode.substring(0, 16);
                     const encrypt = base64Decode.substring(16);
 
-                    const encryptKey = this.config.getSync('kasumi::config.webhookEncryptKey').padEnd(32, '\0');
+                    const encryptKey = this.client.config.getSync('kasumi::config.webhookEncryptKey').padEnd(32, '\0');
                     const decipher = crypto.createDecipheriv('aes-256-cbc', encryptKey, iv);
                     const decrypt = decipher.update(encrypt, 'base64', 'utf8') + decipher.final('utf8');
                     const event: WebHookType.Events = JSON.parse(decrypt);
-                    if (event.d.verify_token == this.config.getSync('kasumi::config.webhookVerifyToken')) {
+                    if (event.d.verify_token == this.client.config.getSync('kasumi::config.webhookVerifyToken')) {
                         if (this.__isChallengeEvent(event)) {
                             res.send({
                                 challenge: event.d.challenge
@@ -97,7 +95,7 @@ export default class WebHook {
 
     public async connect() {
         const getPort = (await import('get-port')).default;
-        const webhookPort = this.config.getSync("kasumi::config.webhookPort");
+        const webhookPort = this.client.config.getSync("kasumi::config.webhookPort");
         const port = await getPort({ port: webhookPort })
         this.port = port;
         this.http = this.express.listen(this.port, () => {
@@ -117,5 +115,12 @@ export default class WebHook {
 
     private __isChallengeEvent(event: WebHookType.Events): event is WebHookType.ChallengeEvent {
         return event.d.channel_type == 'WEBHOOK_CHALLENGE'
+    }
+
+    private configIsWebHookSafe(client: Kasumi<any>): boolean {
+        return client.config.hasSync('kasumi::config.token') &&
+            client.config.hasSync('kasumi::config.webhookVerifyToken') &&
+            client.config.hasSync('kasumi::config.webhookEncryptKey') &&
+            client.config.hasSync('kasumi::config.webhookPort');
     }
 }

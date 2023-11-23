@@ -1,9 +1,9 @@
 import Logger from "bunyan";
 
 import API from "./api";
-import { RawEmisions } from './events/type';
+import { RawEmisions } from './event/type';
 import { KasumiConfig } from "./type";
-import Event from './events';
+import Event from './event';
 import Message from "./message";
 import WebSocket from "./websocket";
 import Config from "./config";
@@ -16,18 +16,19 @@ import { BaseClient } from "./websocket-kookts";
 import EventEmitter2 from "eventemitter2";
 import { TokenNotProvidedError, UnknownConnectionType, UnknownInputTypeError } from "./error";
 import { MongoDB } from "./config/database/mongodb";
+import { DefiniteStorage, GenericStorage } from "index";
 
-export interface Kasumi extends EventEmitter2 {
+export interface Kasumi<CustomStorage extends {}> extends EventEmitter2 {
     on<T extends keyof RawEmisions>(event: T, listener: RawEmisions[T]): this;
     emit<T extends keyof RawEmisions>(event: T, ...args: Parameters<RawEmisions[T]>): boolean;
 }
 
-export class Kasumi extends EventEmitter2 implements Kasumi {
+export class Kasumi<CustomStorage extends {} = {}> extends EventEmitter2 implements Kasumi<CustomStorage> {
     API: API;
     events: Event;
     message: Message;
     plugin: Plugin;
-    config: Config;
+    config: Config<CustomStorage>;
     websocket?: WebSocket | WebSocketSource | BaseReceiver
     webhook?: WebHook;
     logger: Logger;
@@ -90,7 +91,6 @@ export class Kasumi extends EventEmitter2 implements Kasumi {
         if (readFromConfigFile) this.config.loadConfigFile();
         if (readFromEnv) this.config.loadEnvironment();
 
-
         if (this.config.hasSync('kasumi::config.database')) {
             switch (this.config.getSync('kasumi::config.database')) {
                 case 'mongodb':
@@ -101,10 +101,13 @@ export class Kasumi extends EventEmitter2 implements Kasumi {
         }
 
         if (!this.config.hasSync('kasumi::config.token')) throw new TokenNotProvidedError();
-        else this.TOKEN = this.config.getSync('kasumi::config.token');
+        else {
+            this.TOKEN = this.config.getSync('kasumi::config.token');
+        }
 
-        if (this.config.hasSync('kasumi::config.disableSnOrderCheck')) this.DISABLE_SN_ORDER_CHECK = this.config.getSync('kasumi::config.disableSnOrderCheck');
-        else this.DISABLE_SN_ORDER_CHECK = false;
+        this.DISABLE_SN_ORDER_CHECK = true;
+        // if (this.config.hasSync('kasumi::config.disableSnOrderCheck')) this.DISABLE_SN_ORDER_CHECK = this.config.getSync('kasumi::config.disableSnOrderCheck');
+        // else this.DISABLE_SN_ORDER_CHECK = false;
 
         this.message = new Message(this);
         this.plugin = new Plugin(this);
@@ -131,6 +134,7 @@ export class Kasumi extends EventEmitter2 implements Kasumi {
         });
     }
     async fetchMe() {
+        this.config.getSync("kasumi::config.connection");
         const { err, data } = await this.API.user.me();
         if (err) {
             this.logger.error('Getting bot details failed, retrying in 30s');

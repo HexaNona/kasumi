@@ -8,7 +8,10 @@
     "url": "git+https://github.com/Hexona69/kasumi.git"
   },
   "keywords": [
-    "kook", "kaiheila", "chatbot", "typescript"
+    "kook",
+    "kaiheila",
+    "chatbot",
+    "typescript"
   ],
   "scripts": {
     "build": "tsc",
@@ -40,6 +43,7 @@
     "get-port": "^7.0.0",
     "lodash": "^4.17.21",
     "type-fest": "^3.7.2",
+    "type-plus": "^7.6.0",
     "typescript": "^5.0.4",
     "unionize": "^3.1.0",
     "upath": "^2.0.1",

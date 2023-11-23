@@ -9,6 +9,6 @@ export { default as Card } from './card';
 export * from './config/type';
 export { default as Config } from './config';
 
-export * from './events/type';
+export * from './event/type';
 export * from './message/type';
 export * from './type';

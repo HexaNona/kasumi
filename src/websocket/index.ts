@@ -14,7 +14,7 @@ export default class WebSocket {
     private sn: number = 0;
     private messageBuffer: WebSocketType.Signal.Event[] = [];
     private messageQueue: WebSocketType.MessageQueue = { 0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] }
-    constructor(client: Kasumi) {
+    constructor(client: Kasumi<any>) {
         this.client = client;
         this.logger = this.client.getLogger('websocket', 'hexona');
         this.state = WebSocketType.State.Initialization;

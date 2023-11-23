@@ -90,7 +90,7 @@ export class MongoDB implements Database {
         if (operation.length) await this.collection.bulkWrite(operation);
     }
 
-    public static builder(client: Kasumi) {
+    public static builder(client: Kasumi<any>) {
         if (client.config.hasSync('kasumi::config.mongoConnectionString') && client.config.hasSync('kasumi::config.mongoDatabaseName') && client.config.hasSync('kasumi::config.mongoCollectionName')) {
             const database = new MongoDB(client.config.getSync('kasumi::config.mongoConnectionString').toString(), client.config.getSync('kasumi::config.mongoDatabaseName').toString(), client.config.getSync('kasumi::config.mongoCollectionName').toString());
             client.config.initDatabase(database);

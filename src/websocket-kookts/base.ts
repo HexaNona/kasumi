@@ -11,7 +11,7 @@ export class BaseClient extends EventEmitter2 {
     kasumi: Kasumi;
     logger: Logger;
 
-    constructor(client: Kasumi) {
+    constructor(client: Kasumi<any>) {
         super({ wildcard: true });
 
         this.kasumi = client;
