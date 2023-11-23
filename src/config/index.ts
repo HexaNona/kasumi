@@ -1,14 +1,13 @@
-import type { CombineOnlyWhenNotEqual, DefiniteStorage, Storage, StorageItem, StringKeyOf } from './type';
+import type { DefiniteStorage, ExtractProperty, GenericStorage, StorageItem, StringKeyOf } from './type';
 import * as fs from 'fs';
 import dotenv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
-import { WebHookSafeConfig } from '../webhook/type';
 import { KasumiConfig } from '../type';
 import { Database } from './database';
 
 dotenvExpand.expand(dotenv.config());
 
-export default class Config {
+export default class Config<CustomStorage extends {}> {
     static join(namespace: string, ...keys: string[]) {
         return `${namespace}::${keys.join('.')}`;
     }
@@ -74,24 +73,39 @@ export default class Config {
         if (process.env.ENCRYPT_KEY) this.set("kasumi::config.webhookEncryptKey", process.env.ENCRYPT_KEY);
         if (process.env.PORT) this.set("kasumi::config.webhookPort", parseInt(process.env.PORT));
     }
-    public hasSync<T extends StringKeyOf<DefiniteStorage>, K extends StringKeyOf<Storage>>(key: T | K): this is { getSync(key: T | K): NonNullable<Storage[T | K]> } & this {
+    public hasSync<P extends StringKeyOf<CustomStorage>>(key: P): this is { getSync(key: P): NonNullable<ExtractProperty<P, CustomStorage>> } & this;
+    public hasSync<T extends StringKeyOf<DefiniteStorage>>(key: T): this is { getSync(key: T): NonNullable<ExtractProperty<T, DefiniteStorage>> } & this;
+    public hasSync<K extends StringKeyOf<GenericStorage>>(key: K): this is { getSync(key: K): StorageItem } & this;
+    public hasSync(key: string) {
         return this.map.has(key);
     }
-    public getSync<T extends StringKeyOf<DefiniteStorage>, K extends StringKeyOf<Storage>>(key: T | K): Storage[T | K] {
-        return (this.map.get(key) || "") as any;
+    public getSync<P extends StringKeyOf<CustomStorage>>(key: P): ExtractProperty<P, CustomStorage>;
+    public getSync<T extends StringKeyOf<DefiniteStorage>>(key: T): ExtractProperty<T, DefiniteStorage>;
+    public getSync<K extends StringKeyOf<GenericStorage>>(key: K): StorageItem | undefined
+    public getSync(key: string) {
+        return this.map.get(key)
     }
 
-    public async getOne<T extends StringKeyOf<DefiniteStorage>, K extends StringKeyOf<Storage>>(key: T | K): Promise<Storage[T | K]> {
-        return (await this.get(key))[key] as any;
+    public async getOne<P extends StringKeyOf<CustomStorage>>(key: P): Promise<ExtractProperty<P, CustomStorage>>;
+    public async getOne<T extends StringKeyOf<DefiniteStorage>>(key: T): Promise<ExtractProperty<T, DefiniteStorage>>;
+    public async getOne<K extends StringKeyOf<GenericStorage>>(key: K): Promise<StorageItem | undefined>;
+    public async getOne(key: string) {
+        // @ts-expect-error
+        return (await this.get(key))[key];
     }
 
-    public async get<T extends StringKeyOf<DefiniteStorage>, K extends StringKeyOf<Storage>>(...keys: (T | K)[]): Promise<{
-        [key in CombineOnlyWhenNotEqual<T, K, StringKeyOf<DefiniteStorage>>]: Storage[(T | K)];
-    }> {
+    public async get<T extends StringKeyOf<DefiniteStorage>, P extends StringKeyOf<CustomStorage>, K extends StringKeyOf<GenericStorage>>(...keys: (T | P | K)[]): Promise<
+        {
+            [key in K as K extends StringKeyOf<CustomStorage> ? K : never]: ExtractProperty<K, CustomStorage>
+        } & {
+            [key in K as K extends StringKeyOf<DefiniteStorage> ? K : never]: ExtractProperty<K, DefiniteStorage>
+        } & {
+            [key in K as K extends StringKeyOf<DefiniteStorage> ? never : (K extends StringKeyOf<CustomStorage> ? never : K)]: ExtractProperty<K, GenericStorage>
+        }> {
         let res: {
-            [key in (T | K)]?: StorageItem;
+            [key in (T | P | K)]?: StorageItem;
         } = {};
-        const getQueue: (T | K)[] = [];
+        const getQueue: (T | P | K)[] = [];
         for (const key of keys) {
             if (this.map.has(key)) res[key] = this.map.get(key);
             else {
@@ -114,23 +128,23 @@ export default class Config {
         }
         return res as any;
     }
-    public set<T extends StringKeyOf<DefiniteStorage>, K extends StringKeyOf<Storage>>(key: T | K, value: Required<Storage[T | K]>) {
+    public set<T extends StringKeyOf<DefiniteStorage>>(key: T, value: ExtractProperty<T, DefiniteStorage>): this;
+    public set<P extends StringKeyOf<CustomStorage>>(key: P, value: ExtractProperty<P, CustomStorage>): this;
+    public set<K extends StringKeyOf<GenericStorage>>(key: K, value: StorageItem | undefined): this;
+    public set(key: string, value: any) {
+        if (!value) return this.delete(key);
         this.map.set(key, value);
         if (this.hasDatabase()) this.database.addToSetQueue(key, value);
         return this;
     }
 
-    public delete<T extends StringKeyOf<DefiniteStorage>, K extends StringKeyOf<Storage>>(key: T | K) {
+    public delete<T extends StringKeyOf<DefiniteStorage>>(key: T): this;
+    public delete<P extends StringKeyOf<CustomStorage>>(key: P): this;
+    public delete<K extends StringKeyOf<GenericStorage>>(key: K): this;
+    public delete(key: string) {
         this.map.delete(key);
         if (this.hasDatabase()) this.database.addToDeleteQueue(key);
         return this;
-    }
-
-    public isWebHookSafe(): this is WebHookSafeConfig {
-        return this.hasSync('kasumi::config.token') &&
-            this.hasSync('kasumi::config.webhookVerifyToken') &&
-            this.hasSync('kasumi::config.webhookEncryptKey') &&
-            this.hasSync('kasumi::config.webhookPort');
     }
 
     public static isConnectionMode(payload?: string): payload is 'webhook' | 'hexona' | 'kookts' | 'botroot' {

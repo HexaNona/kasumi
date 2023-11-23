@@ -10,7 +10,7 @@ import { MethodNotImplementedError } from "../error";
 export default class Plugin extends BaseMenu {
     name = '';
     logger: Logger;
-    constructor(client: Kasumi, ...commands: Array<BaseMenu | BaseCommand>) {
+    constructor(client: Kasumi<any>, ...commands: Array<BaseMenu | BaseCommand>) {
         super(...commands)
         this.client = client;
         this.logger = this.client.getLogger('plugin');

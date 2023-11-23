@@ -22,7 +22,7 @@ export class Message extends EventEmitter2 implements Message {
     private __is_button_clicked_event(event: WebSocket.SystemMessageEvent): event is WebSocket.ButtonClickedEvent {
         return event.extra.type == "message_btn_click";
     }
-    constructor(client: Kasumi) {
+    constructor(client: Kasumi<any>) {
         super();
         this.client = client;
         this.logger = this.client.getLogger('event');

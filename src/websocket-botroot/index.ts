@@ -33,7 +33,7 @@ export default class WebSocketSource extends MessageSource {
     heartbeatInterval: any
     heartbeatTimeout: any
 
-    constructor(botInstance: Kasumi, compress = true) {
+    constructor(botInstance: Kasumi<any>, compress = true) {
         super(botInstance)
         this.compress = compress
     }
