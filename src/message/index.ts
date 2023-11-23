@@ -16,7 +16,7 @@ export interface Message extends EventEmitter2 {
 }
 
 export class Message extends EventEmitter2 implements Message {
-    private client: Kasumi;
+    private client: Kasumi<any>;
     logger: Logger;
 
     private __is_button_clicked_event(event: WebSocket.SystemMessageEvent): event is WebSocket.ButtonClickedEvent {

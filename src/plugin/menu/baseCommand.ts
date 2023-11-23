@@ -29,8 +29,8 @@ export default class BaseCommand<T extends Kasumi = Kasumi> {
         throw new MethodNotImplementedError();
     }
     async exec(session: BaseSession): Promise<any>;
-    async exec(args: string[], event: PlainTextMessageEvent | MarkdownMessageEvent | ButtonClickedEvent, client: Kasumi): Promise<any>;
-    async exec(sessionOrArgs: BaseSession | string[], event?: PlainTextMessageEvent | MarkdownMessageEvent | ButtonClickedEvent, client?: Kasumi) {
+    async exec(args: string[], event: PlainTextMessageEvent | MarkdownMessageEvent | ButtonClickedEvent, client: Kasumi<any>): Promise<any>;
+    async exec(sessionOrArgs: BaseSession | string[], event?: PlainTextMessageEvent | MarkdownMessageEvent | ButtonClickedEvent, client?: Kasumi<any>) {
         if (sessionOrArgs instanceof BaseSession) {
             return this.func(sessionOrArgs).catch((e) => {
                 this.logger.error(e);

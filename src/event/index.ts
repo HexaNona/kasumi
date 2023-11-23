@@ -4,7 +4,7 @@ import Callback from "./callback";
 
 export default class Event {
 
-    private client: Kasumi;
+    private client: Kasumi<any>;
 
     callback: Callback;
     button: Button;

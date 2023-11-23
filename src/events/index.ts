@@ -4,12 +4,12 @@ import Callback from "./callback";
 
 export default class Event {
 
-    private client: Kasumi;
+    private client: Kasumi<any>;
 
     callback: Callback;
     button: Button;
 
-    constructor(client: Kasumi) {
+    constructor(client: Kasumi<any>) {
         this.client = client;
         this.callback = new Callback(this.client);
         this.button = new Button(this.client);

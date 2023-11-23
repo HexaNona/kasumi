@@ -20,7 +20,7 @@ export default class BaseMenu extends BaseCommand {
 
     private __raw_commands: Array<BaseMenu | BaseCommand>;
 
-    init(client: Kasumi, loggerSequence: string[]) {
+    init(client: Kasumi<any>, loggerSequence: string[]) {
         this.client = client;
         this.loggerSequence = loggerSequence;
         this.logger = this.client.getLogger('plugin', ...this.loggerSequence);

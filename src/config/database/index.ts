@@ -50,5 +50,5 @@ export declare abstract class Database {
      * @param config Config instance
      * @returns Whether database is initialized
      */
-    static builder(client: Kasumi): boolean;
+    static builder(client: Kasumi<any>): boolean;
 }

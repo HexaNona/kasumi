@@ -7,7 +7,7 @@ import { User } from "../type";
 export default class BaseSession {
     args: string[];
     event: PlainTextMessageEvent | MarkdownMessageEvent | ButtonClickedEvent
-    client: Kasumi;
+    client: Kasumi<any>;
 
     guildId?: string;
     channelId: string;
@@ -17,7 +17,7 @@ export default class BaseSession {
     author: User;
 
     channelType: GuildType;
-    constructor(args: string[], event: PlainTextMessageEvent | MarkdownMessageEvent | ButtonClickedEvent, client: Kasumi) {
+    constructor(args: string[], event: PlainTextMessageEvent | MarkdownMessageEvent | ButtonClickedEvent, client: Kasumi<any>) {
         this.args = args;
         this.event = event;
         this.client = client;
