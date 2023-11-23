@@ -4,21 +4,21 @@ import Card from "../../card";
 import BaseSession from "../../plugin/session";
 import { UnknownInputTypeError } from "../../error";
 
-export default class BaseMenu extends BaseCommand {
+export default class BaseMenu extends BaseCommand<Kasumi<any>> {
     private get promptSequence() {
         return this.loggerSequence;
     }
 
-    constructor(...commands: Array<BaseMenu | BaseCommand>) {
+    constructor(...commands: Array<BaseMenu | BaseCommand<Kasumi<any>>>) {
         super();
         this.__raw_commands = commands;
     }
 
     protected __commands: {
-        [name: string]: BaseMenu | BaseCommand;
+        [name: string]: BaseMenu | BaseCommand<Kasumi<any>>;
     } = {};
 
-    private __raw_commands: Array<BaseMenu | BaseCommand>;
+    private __raw_commands: Array<BaseMenu | BaseCommand<Kasumi<any>>>;
 
     init(client: Kasumi<any>, loggerSequence: string[]) {
         this.client = client;
@@ -27,12 +27,12 @@ export default class BaseMenu extends BaseCommand {
         this.load(...this.__raw_commands);
         this._isInit = true;
     }
-    load(...commands: Array<BaseMenu | BaseCommand>) {
+    load(...commands: Array<BaseMenu | BaseCommand<Kasumi<any>>>) {
         for (const command of commands) {
             this.addCommand(command);
         }
     }
-    addCommand(command: BaseMenu | BaseCommand) {
+    addCommand(command: BaseMenu | BaseCommand<Kasumi<any>>) {
         if (command instanceof BaseMenu) {
             this.logger.debug(`Loaded menu: ${command.name}`);
             this.__commands[command.name] = command;
@@ -43,8 +43,8 @@ export default class BaseMenu extends BaseCommand {
         }
         if (!command.isInit) command.init(this.client, [...this.loggerSequence, command.name]);
     }
-    addAlias(command: BaseMenu | BaseCommand, ...aliases: string[]) {
-        if (command instanceof BaseCommand) {
+    addAlias(command: BaseMenu | BaseCommand<Kasumi<any>>, ...aliases: string[]) {
+        if (command instanceof BaseCommand<Kasumi<any>>) {
             if (!this.__commands[command.name]) this.addCommand(command);
             for (const alias of aliases) {
                 if (!this.__commands[alias]) {
@@ -54,7 +54,7 @@ export default class BaseMenu extends BaseCommand {
                     command.logger.warn(`Duplicated trigger ${alias}`);
                 }
             }
-        } else throw new UnknownInputTypeError(typeof command, 'BaseMenu | BaseCommand');
+        } else throw new UnknownInputTypeError(typeof command, 'BaseMenu | BaseCommand<Kasumi<any>>');
     }
     protected get __command_list() {
         return Object.keys(this.__commands)

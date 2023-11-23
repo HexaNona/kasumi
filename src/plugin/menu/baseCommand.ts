@@ -6,7 +6,7 @@ import BaseSession from "../session";
 
 export type CommandFunction<T, K> = (session: T) => Promise<K>
 
-export default class BaseCommand<T extends Kasumi = Kasumi> {
+export default class BaseCommand<T extends Kasumi<any> = Kasumi> {
     name: string = 'default';
     protected _isInit = false;
     protected client!: T;
