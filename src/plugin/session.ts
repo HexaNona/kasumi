@@ -31,8 +31,9 @@ export default class BaseSession {
     }
     private async __send(content: string | Card | Card[], quote: boolean = false, temporary: boolean = false) {
         let messageType;
-        if (content instanceof Card || content instanceof Array) messageType = MessageType.CardMessage;
-        else messageType = MessageType.MarkdownMessage;
+        if (content instanceof Card || content instanceof Array) {
+            messageType = MessageType.CardMessage;
+        } else messageType = MessageType.MarkdownMessage;
         if (this.channelType == 'GROUP') {
             return this.client.API.message.create(
                 messageType,
