@@ -4,6 +4,16 @@ import { RestError } from "../error";
 import Logger from "bunyan";
 
 export default class Rest {
+    readonly TRACE_MAX_CHARACTERS = 250;
+
+    private isVerbose() {
+        return process.env.LOG_LEVEL && ["verbose", "more", "trace"].includes(process.env.LOG_LEVEL.toLowerCase());
+    }
+
+    private isDebug() {
+        return process.env.LOG_LEVEL && ["debug"].includes(process.env.LOG_LEVEL.toLowerCase());
+    }
+
     axios: AxiosInstance;
     logger: Logger;
     constructor(provide: string | AxiosInstance, logger: Logger, customEndpoint = "https://www.kookapp.cn/api/v3") {
@@ -22,6 +32,10 @@ export default class Rest {
     async get<T = any>(endpoint: string, params?: any, config?: AxiosRequestConfig): Promise<RequestResponse<T>> {
         let data: RawResponse, err: Error;
         try {
+            if (this.isVerbose()) {
+                const stringBody = JSON.stringify(params) || "";
+                this.logger.trace(`GET ${endpoint} ${stringBody.length > this.TRACE_MAX_CHARACTERS ? `${stringBody.substring(0, this.TRACE_MAX_CHARACTERS)}...` : stringBody}`)
+            }
             data = (await this.axios.get(endpoint, { params, ...config })).data as RawResponse;
             if (data.code == 0) return { data: data.data };
             else throw new RestError(data.code, data.message, 'GET', endpoint);
@@ -30,12 +44,19 @@ export default class Rest {
                 if (e.response) err = new RestError(e.response.data.code, e.response.data.message, 'POST', endpoint);
                 else err = new RestError(parseInt(e.code || '-1'), '', 'POST', endpoint);
             else err = e as any;
+            if (this.isDebug() || this.isVerbose()) {
+                this.logger.warn(err.message || err);
+            }
             return { err };
         }
     }
     async post<T = any>(endpoint: string, body?: any, config?: AxiosRequestConfig): Promise<RequestResponse<T>> {
         let data: RawResponse, err: Error;
         try {
+            if (this.isVerbose()) {
+                const stringBody = JSON.stringify(body) || "";
+                this.logger.trace(`POST ${endpoint} ${stringBody.length > this.TRACE_MAX_CHARACTERS ? `${stringBody.substring(0, this.TRACE_MAX_CHARACTERS)}...` : stringBody}`)
+            }
             data = (await this.axios.post(endpoint, body, config)).data as RawResponse;
             if (data.code == 0) return { data: data.data };
             else throw new RestError(data.code, data.message, 'POST', endpoint);
@@ -44,6 +65,9 @@ export default class Rest {
                 if (e.response) err = new RestError(e.response.data.code, e.response.data.message, 'POST', endpoint);
                 else err = new RestError(parseInt(e.code || '-1'), '', 'POST', endpoint);
             else err = e as any;
+            if (this.isDebug() || this.isVerbose()) {
+                this.logger.warn(err.message || err);
+            }
             return { err };
         }
     }
