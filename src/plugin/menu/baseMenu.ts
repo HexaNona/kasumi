@@ -65,25 +65,27 @@ export default class BaseMenu extends BaseCommand<Kasumi<any>> {
         if (commandName && (command = this.__commands[commandName])) {
             command.exec(session.args.splice(1), session.event, session.client);
         } else {
-            const card = new Card()
-                .addTitle("命令未找到")
-                .addDivider();
+            const card = new Card();
+            if (splitContent[0]) card.addTitle("命令未找到")
+            else card.addTitle("命令列表");
+            card.addDivider();
             const list = this.__command_list;
             if (list.length) {
-                card.addText("(font)可用命令(font)[success]");
+                card.addText(`(font)${list.length} 个可用命令(font)[success]`);
                 for (const commandName of list) {
                     const command = this.__commands[commandName];
                     if (command && commandName == command.name) {
                         let text = `\`\`\`plain\n${this.client.plugin.primaryPrefix}${this.promptSequence.join(" ")} ${command.name}\n\`\`\``;
                         if (command.description) text += '\n' + command.description;
-                        else text += '\n' + '(font)无介绍(font)[secondary]';
+                        else text += '\n' + '(font)无命令介绍(font)[secondary]';
                         card.addText(text);
                     }
                 }
             } else {
                 card.addText("(font)菜单下没有可用命令(font)[danger]");
             }
-            session.reply(card)
+            const { err } = await session.reply(card);
+            if (err) this.logger.error(err);
         }
     }
 }

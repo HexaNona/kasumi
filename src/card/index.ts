@@ -154,7 +154,7 @@ export default class Card {
             endTime
         });
     }
-    toObject(): CardType {
+    toJSON(): CardType {
         return {
             type: 'card',
             size: this.__size,
@@ -163,6 +163,6 @@ export default class Card {
         };
     }
     toString(): string {
-        return JSON.stringify([this.toObject()]);
+        return JSON.stringify(this.toJSON());
     }
 }

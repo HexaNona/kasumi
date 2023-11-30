@@ -62,11 +62,8 @@ export default class Message {
         quote?: string,
         tempMessageTargetUser?: string
     ) {
-        if (content instanceof Card) {
-            content = JSON.stringify([content.toObject()]);
-        } else if (content instanceof Array) {
-            content = JSON.stringify(content.map(v => v.toObject()));
-        }
+        if (content instanceof Card) content = [content];
+        if (content instanceof Array) content = JSON.stringify(content);
         const nonce = uuidv4();
         return this.rest.post<{
             msg_id: string,
@@ -80,6 +77,7 @@ export default class Message {
             temp_target_id: tempMessageTargetUser,
             nonce
         }).then((res) => {
+            console.log(content);
             if (res.err) return res;
             else if (res.data.nonce == nonce) return res;
             else return { err: new NonceDismatchError() };
@@ -99,11 +97,8 @@ export default class Message {
         quote?: string,
         tempUpdateTargetUser?: string
     ) {
-        if (content instanceof Card) {
-            content = JSON.stringify([content.toObject()]);
-        } else if (content instanceof Array) {
-            content = JSON.stringify(content.map(v => v.toObject()));
-        }
+        if (content instanceof Card) content = [content];
+        if (content instanceof Array) content = JSON.stringify(content);
         return this.rest.post<void>('/message/update', {
             msg_id: messageId,
             content,
