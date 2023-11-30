@@ -77,7 +77,6 @@ export default class Message {
             temp_target_id: tempMessageTargetUser,
             nonce
         }).then((res) => {
-            console.log(content);
             if (res.err) return res;
             else if (res.data.nonce == nonce) return res;
             else return { err: new NonceDismatchError() };
