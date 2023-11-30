@@ -5,7 +5,7 @@ import BaseSession from "../../plugin/session";
 import { UnknownInputTypeError } from "../../error";
 
 export default class BaseMenu extends BaseCommand<Kasumi<any>> {
-    private get promptSequence() {
+    protected get promptSequence() {
         return this.loggerSequence;
     }
 
@@ -18,7 +18,7 @@ export default class BaseMenu extends BaseCommand<Kasumi<any>> {
         [name: string]: BaseMenu | BaseCommand<Kasumi<any>>;
     } = {};
 
-    private __raw_commands: Array<BaseMenu | BaseCommand<Kasumi<any>>>;
+    protected __raw_commands: Array<BaseMenu | BaseCommand<Kasumi<any>>>;
 
     init(client: Kasumi<any>, loggerSequence: string[]) {
         this.client = client;
@@ -44,7 +44,7 @@ export default class BaseMenu extends BaseCommand<Kasumi<any>> {
         if (!command.isInit) command.init(this.client, [...this.loggerSequence, command.name]);
     }
     addAlias(command: BaseMenu | BaseCommand<Kasumi<any>>, ...aliases: string[]) {
-        if (command instanceof BaseCommand<Kasumi<any>>) {
+        if (command instanceof BaseCommand) {
             if (!this.__commands[command.name]) this.addCommand(command);
             for (const alias of aliases) {
                 if (!this.__commands[alias]) {
