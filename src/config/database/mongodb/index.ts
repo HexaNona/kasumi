@@ -3,7 +3,7 @@ import { Database } from "..";
 import { StorageItem } from "../../type";
 import Kasumi from "../../../client";
 
-export interface collectionItem {
+export interface CollectionItem {
     _id: string,
     content: StorageItem;
 }
@@ -17,7 +17,7 @@ export class MongoDB implements Database {
 
     private readonly client: MongoClient;
     private readonly database: Db;
-    private readonly collection: Collection<collectionItem>;
+    private readonly collection: Collection<CollectionItem>;
     private readonly setBuffer: Map<string, StorageItem | null> = new Map();
     constructor(connectionString: string, databaseName: string, collectionName: string, syncInterval = 30 * 1000) {
         if (!clients.hasOwnProperty(connectionString)) {
@@ -91,11 +91,11 @@ export class MongoDB implements Database {
     }
 
     public static builder(client: Kasumi<any>) {
-    if (client.config.hasSync('kasumi::config.mongoConnectionString') && client.config.hasSync('kasumi::config.mongoDatabaseName') && client.config.hasSync('kasumi::config.mongoCollectionName')) {
-        const database = new MongoDB(client.config.getSync('kasumi::config.mongoConnectionString').toString(), client.config.getSync('kasumi::config.mongoDatabaseName').toString(), client.config.getSync('kasumi::config.mongoCollectionName').toString());
-        client.config.initDatabase(database);
-        return true;
+        if (client.config.hasSync('kasumi::config.mongoConnectionString') && client.config.hasSync('kasumi::config.mongoDatabaseName') && client.config.hasSync('kasumi::config.mongoCollectionName')) {
+            const database = new MongoDB(client.config.getSync('kasumi::config.mongoConnectionString').toString(), client.config.getSync('kasumi::config.mongoDatabaseName').toString(), client.config.getSync('kasumi::config.mongoCollectionName').toString());
+            client.config.initDatabase(database);
+            return true;
+        }
+        return false;
     }
-    return false;
-}
 }
