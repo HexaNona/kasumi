@@ -59,7 +59,7 @@ export default class BaseMenu extends BaseCommand<Kasumi<any>> {
     protected get __command_list() {
         return Object.keys(this.__commands)
     }
-    func: CommandFunction<BaseSession, void> = async (session) => {
+    async func(session: BaseSession): Promise<void> {
         let splitContent = session.args, command;
         const commandName = Object.keys(this.__commands).find(k => splitContent[0] == k);
         if (commandName && (command = this.__commands[commandName])) {

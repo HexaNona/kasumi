@@ -16,6 +16,12 @@ export class NonceDismatchError extends Error {
     }
 }
 
+export class CommandNameNotPresentErorr extends Error {
+    constructor() {
+        super("Name is required in commands and menus")
+    }
+}
+
 export class MethodNotImplementedError extends Error {
     constructor() {
         super("Method not implemented");

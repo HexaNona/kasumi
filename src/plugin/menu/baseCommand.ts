@@ -1,13 +1,13 @@
 import Logger from "bunyan";
 import { PlainTextMessageEvent, MarkdownMessageEvent, ButtonClickedEvent } from "../../message/type";
 import Kasumi from "../../client";
-import { MethodNotImplementedError } from "../../error";
+import { CommandNameNotPresentErorr, MethodNotImplementedError } from "../../error";
 import BaseSession from "../session";
 
 export type CommandFunction<T, K> = (session: T) => Promise<K>
 
 export default class BaseCommand<T extends Kasumi<any> = Kasumi> {
-    name: string = 'default';
+    name: string = "";
     protected _isInit = false;
     protected client!: T;
     protected loggerSequence: string[] = [];
@@ -19,13 +19,14 @@ export default class BaseCommand<T extends Kasumi<any> = Kasumi> {
     logger!: Logger;
 
     init(client: T, loggerSequence: string[]) {
+        if (!this.name) throw new CommandNameNotPresentErorr()
         this.client = client;
         this.loggerSequence = loggerSequence;
         this.logger = this.client.getLogger(...this.loggerSequence);
         this._isInit = true;
     }
 
-    func: CommandFunction<BaseSession, any> = async () => {
+    async func(session: BaseSession): Promise<any> {
         throw new MethodNotImplementedError();
     }
     async exec(session: BaseSession): Promise<any>;
