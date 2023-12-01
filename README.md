@@ -6,9 +6,10 @@ Yet another TypeScript framework to build KOOK chatbots. **Requires Node 18+.**
 
 ## Documentation
 
-Docs can be found on the [website](https://kasumi.js.org/).
+Docs can be found on the [wiki](https://kasumi.js.org/).
 
 ## TODO
 
-- [ ] Easy button callback
+- [X] Easy button callback
+- [X] Middleware
 - [ ] RegEx match command
