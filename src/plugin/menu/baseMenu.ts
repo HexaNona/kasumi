@@ -54,7 +54,7 @@ export default class BaseMenu extends BaseCommand<Kasumi<any>> {
                     command.logger.warn(`Duplicated trigger ${alias}`);
                 }
             }
-        } else throw new UnknownInputTypeError(typeof command, 'BaseMenu | BaseCommand<Kasumi<any>>');
+        } else throw new UnknownInputTypeError(typeof command, 'BaseMenu | BaseCommand');
     }
     protected get __command_list() {
         return Object.keys(this.__commands)
