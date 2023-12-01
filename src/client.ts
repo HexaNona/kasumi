@@ -101,21 +101,23 @@ export class Kasumi<CustomStorage extends {} = {}> extends EventEmitter2 impleme
         }
 
         if (!this.config.hasSync('kasumi::config.token')) throw new TokenNotProvidedError();
-        else {
-            this.TOKEN = this.config.getSync('kasumi::config.token');
-        }
+        else this.TOKEN = this.config.getSync('kasumi::config.token');
 
-        this.DISABLE_SN_ORDER_CHECK = true;
-        // if (this.config.hasSync('kasumi::config.disableSnOrderCheck')) this.DISABLE_SN_ORDER_CHECK = this.config.getSync('kasumi::config.disableSnOrderCheck');
-        // else this.DISABLE_SN_ORDER_CHECK = false;
+        if (this.config.hasSync('kasumi::config.disableSnOrderCheck')) this.DISABLE_SN_ORDER_CHECK = this.config.getSync('kasumi::config.disableSnOrderCheck');
+        else this.DISABLE_SN_ORDER_CHECK = false;
 
         this.message = new Message(this);
+
         this.plugin = new Plugin(this);
+        this.plugin.use(this.plugin.mentionOnlyCommandMenuMiddleware);
+
         this.events = new Event(this);
         this.API = new API(this.TOKEN, this.getLogger('requestor'), this.config.getSync('kasumi::config.customEndpoint'));
 
         this.on('message.text', (event) => {
-            this.plugin.messageProcessing(event.content, event);
+            this.plugin.messageProcessing(event.content, event).catch((e) => {
+                this.plugin.logger.error(e);
+            })
         })
     }
     getLogger(...name: string[]) {

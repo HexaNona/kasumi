@@ -33,13 +33,42 @@ export default class BaseCommand<T extends Kasumi<any> = Kasumi> {
     async exec(args: string[], event: PlainTextMessageEvent | MarkdownMessageEvent | ButtonClickedEvent, client: Kasumi<any>): Promise<any>;
     async exec(sessionOrArgs: BaseSession | string[], event?: PlainTextMessageEvent | MarkdownMessageEvent | ButtonClickedEvent, client?: Kasumi<any>) {
         if (sessionOrArgs instanceof BaseSession) {
-            return this.func(sessionOrArgs).catch((e) => {
+            return this.run(structuredClone(sessionOrArgs)).catch((e) => {
                 this.logger.error(e);
             })
         } else if (event && client) {
-            return this.func(new BaseSession(sessionOrArgs, event, client)).catch((e) => {
+            return this.run(new BaseSession(sessionOrArgs, event, client)).catch((e) => {
                 this.logger.error(e);
             })
         } else return this.logger.warn("Executed command with wrong arguments");
+    }
+
+    protected middlewares: ((session: BaseSession) => Promise<boolean>)[] = [];
+
+    use(...middleware: ((session: BaseSession) => Promise<boolean>)[]) {
+        this.middlewares.push(...middleware);
+    }
+
+    protected async run(session: BaseSession): Promise<any> {
+        const self = this;
+        let currentMiddlewareIndex: number = -1;
+        async function next() {
+            currentMiddlewareIndex++;
+            const currentMiddleware = self.middlewares[currentMiddlewareIndex];
+            if (currentMiddleware) {
+                const result = await currentMiddleware(session).catch((e) => {
+                    self.logger.error(`Error running ${self.name} middleware ${currentMiddleware.name}`);
+                    self.logger.error(e);
+                    return false;
+                });
+                if (result) await next();
+            } else {
+                await self.func(session).catch((e) => {
+                    self.logger.error(`Error running command ${self.name}`);
+                    self.logger.error(e);
+                });
+            }
+        }
+        await next();
     }
 }
