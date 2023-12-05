@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios'
-import { MessageSource } from '../messageSource'
+import { MessageSource } from '@ksm/websocket-botroot/messageSource'
 import { ButtonClickEvent } from './event/button-click'
 import { AudioMessage } from './message/audio'
 import { FileMessage } from './message/file'

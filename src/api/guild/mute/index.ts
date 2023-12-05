@@ -1,5 +1,5 @@
-import { RequestResponse } from "../../../type";
-import Rest from "../../../requestor";
+import { RequestResponse } from "@ksm/type";
+import Rest from "@ksm/requestor";
 import { RawListResponse } from "./type";
 
 export default class GuildMute {

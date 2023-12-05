@@ -1,4 +1,4 @@
-import { ActionMessageEvent, AudioMessageEvent, ButtonClickedEvent, CardMessageEvent, FileMessageEvent, ImageMessageEvent, MarkdownMessageEvent, PlainTextMessageEvent, SystemMessageEvent, VideoMessageEvent } from "../message/type";
+import { ActionMessageEvent, AudioMessageEvent, ButtonClickedEvent, CardMessageEvent, FileMessageEvent, ImageMessageEvent, MarkdownMessageEvent, PlainTextMessageEvent, SystemMessageEvent, VideoMessageEvent } from "@ksm/message/type";
 
 interface ConnectEvent {
     type: string,

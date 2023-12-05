@@ -1,5 +1,4 @@
-import Config from "../config";
-import { GuildType, NormalMessageType, WebSocket } from "../type";
+import { GuildType, NormalMessageType, WebSocket } from "@ksm/type";
 
 export namespace WebHook {
     type ChannelType = 'GROUP' | 'PERSON' | 'BOARDCAST' | 'WEBHOOK_CHALLENGE';

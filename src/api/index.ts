@@ -1,5 +1,5 @@
 import Logger from "bunyan";
-import Rest from "../requestor";
+import Rest from "@ksm/requestor";
 import Asset from "./asset";
 import Channel from "./channel";
 import DirectMessage from "./directMessage";

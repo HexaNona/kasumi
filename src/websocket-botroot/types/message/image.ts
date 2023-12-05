@@ -1,6 +1,6 @@
-import { ImageAttachment } from '../attachment/image'
-import { UserInGuildNonStandard } from '../common'
-import { MessageType } from '../MessageType'
+import { ImageAttachment } from '@ksm/websocket-botroot/types/attachment/image'
+import { UserInGuildNonStandard } from '@ksm/websocket-botroot/types/common'
+import { MessageType } from '@ksm/websocket-botroot/types/MessageType'
 import { MessageBase } from './base'
 
 export interface ImageMessage extends MessageBase {

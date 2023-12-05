@@ -1,4 +1,4 @@
-import { BriefChannel, MultiPageResponse } from "../../type";
+import { BriefChannel, MultiPageResponse } from "@ksm/type";
 
 
 export type RawChannelListResponse = MultiPageResponse<BriefChannel>;

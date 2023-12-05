@@ -1,9 +1,9 @@
-import Rest from "../../requestor";
-import { MessageType, RequestResponse, User } from "../../type";
+import Rest from "@ksm/requestor";
+import { MessageType, RequestResponse, User } from "@ksm/type";
 import { v4 as uuidv4 } from 'uuid';
-import { NonceDismatchError } from "../../error";
+import { NonceDismatchError } from "@ksm/error";
 import { RawListResponse } from "./type";
-import Card from "../../card";
+import Card from "@ksm/card";
 
 export default class DirectMessage {
     private rest: Rest;

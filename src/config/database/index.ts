@@ -1,5 +1,5 @@
-import { Kasumi } from "../../client";
-import { StorageItem } from "../type";
+import { Kasumi } from "@ksm/client";
+import { StorageItem } from "@ksm/config/type";
 
 export declare abstract class Database {
     /**

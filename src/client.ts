@@ -1,21 +1,21 @@
 import Logger from "bunyan";
 
-import API from "./api";
-import { RawEmisions } from './event/type';
-import { KasumiConfig } from "./type";
-import Event from './event';
-import Message from "./message";
-import WebSocket from "./websocket";
-import Config from "./config";
-import WebHook from "./webhook";
-import Plugin from "./plugin/plugin"
-import WebSocketSource from "./websocket-botroot";
-import { BaseReceiver, WebsocketReceiver } from "./websocket-kookts/event-receiver";
-import { BaseClient } from "./websocket-kookts";
+import API from "@ksm/api";
+import { RawEmisions } from '@ksm/event/type';
+import { KasumiConfig } from "@ksm/type";
+import Event from '@ksm/event';
+import Message from "@ksm/message";
+import WebSocket from "@ksm/websocket";
+import Config from "@ksm/config";
+import WebHook from "@ksm/webhook";
+import Plugin from "@ksm/plugin/plugin"
+import WebSocketSource from "@ksm/websocket-botroot";
+import { BaseReceiver, WebsocketReceiver } from "@ksm/websocket-kookts/event-receiver";
+import { BaseClient } from "@ksm/websocket-kookts";
 
 import EventEmitter2 from "eventemitter2";
-import { TokenNotProvidedError, UnknownConnectionType, UnknownInputTypeError } from "./error";
-import { MongoDB } from "./config/database/mongodb";
+import { TokenNotProvidedError, UnknownConnectionType, UnknownInputTypeError } from "@ksm/error";
+import { MongoDB } from "@ksm/config/database/mongodb";
 import * as Middlewares from "@ksm/plugin/middlewares";
 
 export interface Kasumi<CustomStorage extends {}> extends EventEmitter2 {

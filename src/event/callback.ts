@@ -1,4 +1,4 @@
-import Kasumi from '../client';
+import Kasumi from '@ksm/client';
 import { RawEmisions } from './type';
 
 type ReplaceReturnType<T extends (...a: any) => any, TNewReturn> = (...a: Parameters<T>) => TNewReturn;

@@ -2,7 +2,7 @@ import type { DefiniteStorage, ExtractProperty, GenericStorage, StorageItem, Str
 import * as fs from 'fs';
 import dotenv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
-import { KasumiConfig } from '../type';
+import { KasumiConfig } from '@ksm/type';
 import { Database } from './database';
 
 dotenvExpand.expand(dotenv.config());

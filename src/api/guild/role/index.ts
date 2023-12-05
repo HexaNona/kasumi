@@ -1,5 +1,5 @@
-import { RawMention, MultiPageResponse } from "../../../type";
-import Rest from "../../../requestor";
+import { RawMention, MultiPageResponse } from "@ksm/type";
+import Rest from "@ksm/requestor";
 import { RawGuildRoleManipulateResponse } from "./type";
 
 export default class GuildRole {

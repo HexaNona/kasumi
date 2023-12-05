@@ -1,7 +1,7 @@
 import { Collection, Db, MongoClient } from "mongodb";
 import { Database } from "..";
-import { StorageItem } from "../../type";
-import Kasumi from "../../../client";
+import { StorageItem } from "@ksm/config/type";
+import Kasumi from "@ksm/client";
 
 export interface CollectionItem {
     _id: string,

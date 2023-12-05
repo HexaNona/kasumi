@@ -1,4 +1,4 @@
-import Rest from "../../../requestor";
+import Rest from "@ksm/requestor";
 import { RawGuildBoostHistoryResponse } from "./type";
 
 export default class GuildBoost {

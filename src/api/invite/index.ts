@@ -1,5 +1,5 @@
-import { MultiPageResponse, RequestResponse } from "../../type";
-import Rest from "../../requestor";
+import { MultiPageResponse, RequestResponse } from "@ksm/type";
+import Rest from "@ksm/requestor";
 import { RawInviteCreateResponse, RawInviteListResponseItem } from "./type";
 
 export default class Inivte {

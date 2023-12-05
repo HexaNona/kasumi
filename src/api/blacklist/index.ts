@@ -1,5 +1,5 @@
-import { MultiPageResponse } from "../../type";
-import Rest from "../../requestor";
+import { MultiPageResponse } from "@ksm/type";
+import Rest from "@ksm/requestor";
 import { RawBlacklistListResponseItem } from "./type";
 
 export default class Blacklist {

@@ -1,6 +1,6 @@
 import Logger from "bunyan";
-import Kasumi from "../client";
-import { WebSocket, MessageType } from "../type";
+import Kasumi from "@ksm/client";
+import { WebSocket, MessageType } from "@ksm/type";
 import RawEmisions, { ActionMessageEvent, AudioMessageEvent, ButtonClickedEvent, CardMessageEvent, FileMessageEvent, ImageMessageEvent, MarkdownMessageEvent, PlainTextMessageEvent, SystemMessageEvent, VideoMessageEvent } from "./type";
 import EventEmitter2 from "eventemitter2";
 

@@ -1,7 +1,7 @@
-import Rest from "../../requestor";
+import Rest from "@ksm/requestor";
 import GuildBoost from "./boost";
 import GuildMute from "./mute";
-import { RequestResponse } from "../../type";
+import { RequestResponse } from "@ksm/type";
 import { RawGuildListResponse, RawGuildUserListResponse, RawGuildViewResponse } from "./type";
 import GuildEmoji from "./emoji";
 import GuildRole from "./role";

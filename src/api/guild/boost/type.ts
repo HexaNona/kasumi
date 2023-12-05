@@ -1,4 +1,4 @@
-import { MultiPageResponse, User } from "../../../type";
+import { MultiPageResponse, User } from "@ksm/type";
 
 export interface RawGuildBoostHIstoryResponseItem {
     user_id: string,

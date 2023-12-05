@@ -1,5 +1,5 @@
-import Kasumi from "../client";
-import { NormalMessageType, WebSocket, MessageType, User, GuildType } from "../type";
+import Kasumi from "@ksm/client";
+import { NormalMessageType, WebSocket, MessageType, User, GuildType } from "@ksm/type";
 
 export default interface RawEmisions {
     allMessages(event: unknown): void;

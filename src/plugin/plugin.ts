@@ -1,11 +1,11 @@
 import Logger from "bunyan";
-import Kasumi from "../client";
+import Kasumi from "@ksm/client";
 import BaseSession from "./session";
-import Card from "../card";
+import Card from "@ksm/card";
 import BaseCommand, { CommandFunction } from "./menu/baseCommand";
 import BaseMenu from "./menu/baseMenu";
-import { MarkdownMessageEvent, PlainTextMessageEvent } from "../message/type";
-import { MethodNotImplementedError } from "../error";
+import { MarkdownMessageEvent, PlainTextMessageEvent } from "@ksm/message/type";
+import { MethodNotImplementedError } from "@ksm/error";
 export default class Plugin extends BaseMenu {
     name = '';
     logger: Logger;

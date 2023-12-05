@@ -3,7 +3,7 @@ import { EventEmitter2 } from 'eventemitter2';
 import { BaseReceiver } from './event-receiver/base';
 import { WebsocketReceiver } from './event-receiver/websocket';
 import Logger from 'bunyan';
-import Kasumi from '../client';
+import Kasumi from '@ksm/client';
 
 export class BaseClient extends EventEmitter2 {
     axios: AxiosInstance;

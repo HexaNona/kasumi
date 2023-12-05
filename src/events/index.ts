@@ -1,4 +1,4 @@
-import Kasumi from "../client";
+import Kasumi from "@ksm/client";
 import Button from "./button";
 import Callback from "./callback";
 

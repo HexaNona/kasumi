@@ -1,11 +1,11 @@
 import Logger from 'bunyan';
-import Kasumi from '../client';
+import Kasumi from '@ksm/client';
 import express, { Express } from 'express';
 import { Server } from 'http';
 import bodyParser from 'body-parser';
 import crypto from 'crypto';
-import { WebHookStorage, WebHook as WebHookType } from './type';
-import { WebHookMissingConfigError } from '../error';
+import { WebHookStorage, WebHook as WebHookType } from '@ksm/webhook/type';
+import { WebHookMissingConfigError } from '@ksm/error';
 
 export default class WebHook {
     public logger: Logger;

@@ -1,7 +1,7 @@
-import Config from '../config';
-import Kasumi from '../client';
+import Config from '@ksm/config';
+import Kasumi from '@ksm/client';
 import crypto from 'crypto';
-import { ButtonClickedEvent } from '../message/type';
+import { ButtonClickedEvent } from '@ksm/message/type';
 
 interface sessionDetail {
     activator: string;

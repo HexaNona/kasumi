@@ -1,4 +1,4 @@
-import Rest from "../../../requestor";
+import Rest from "@ksm/requestor";
 import { RawJoinedChannelResponse } from "./type";
 
 export default class ChannelUser {

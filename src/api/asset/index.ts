@@ -1,7 +1,7 @@
-import Rest from "../../requestor";
+import Rest from "@ksm/requestor";
 import { RawAssetCreateResponse } from "./type";
 import FormData from "form-data";
-import { RequestResponse } from "../../type";
+import { RequestResponse } from "@ksm/type";
 
 export default class Asset {
     private rest: Rest;

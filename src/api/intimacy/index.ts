@@ -1,4 +1,4 @@
-import Rest from "../../requestor";
+import Rest from "@ksm/requestor";
 import { RawIntimacyIndexResponse } from "./type";
 
 export default class Intimacy {

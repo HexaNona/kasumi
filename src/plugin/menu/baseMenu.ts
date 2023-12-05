@@ -1,8 +1,8 @@
 import BaseCommand, { CommandFunction } from "./baseCommand";
-import Kasumi from "../../client";
-import Card from "../../card";
-import BaseSession from "../../plugin/session";
-import { UnknownInputTypeError } from "../../error";
+import Kasumi from "@ksm/client";
+import Card from "@ksm/card";
+import BaseSession from "@ksm/plugin/session";
+import { UnknownInputTypeError } from "@ksm/error";
 
 export default class BaseMenu extends BaseCommand<Kasumi<any>> {
     protected get promptSequence() {

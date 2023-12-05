@@ -1,7 +1,7 @@
 import { Atom, addChangeHandler, deref, swap } from '@libre/atom';
-import { RequestResponse } from '../../type';
+import { RequestResponse } from '@ksm/type';
 import WebSocket from 'ws';
-import { BaseClient } from '../base';
+import { BaseClient } from '@ksm/websocket-kookts/base';
 import { BaseReceiver } from './base';
 import {
     TimeoutKey,
@@ -19,7 +19,7 @@ import {
     KHelloPacket,
 } from './types';
 import { transform, inflate } from './websocket.helper';
-import { RawGatewayResponse } from '../../api/gateway/type';
+import { RawGatewayResponse } from '@ksm/api/gateway/type';
 
 export class WebsocketReceiver extends BaseReceiver {
     type = 'websocket-fsm';

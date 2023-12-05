@@ -1,5 +1,5 @@
-import { MultiPageResponse, Emoji } from "../../../type";
-import Rest from "../../../requestor";
+import { MultiPageResponse, Emoji } from "@ksm/type";
+import Rest from "@ksm/requestor";
 import FormData from "form-data";
 
 export default class GuildEmoji {

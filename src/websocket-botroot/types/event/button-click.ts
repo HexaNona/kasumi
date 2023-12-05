@@ -1,4 +1,4 @@
-import { User } from '../common'
+import { User } from '@ksm/websocket-botroot/types/common'
 
 export interface ButtonClickEvent {
   msgId: string

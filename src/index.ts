@@ -1,14 +1,14 @@
-import Kasumi from './client';
+import Kasumi from '@ksm/client';
 export default Kasumi;
 
-export { default as BaseMenu } from "./plugin/menu/baseMenu";
-export { default as BaseCommand, CommandFunction } from "./plugin/menu/baseCommand";
-export { default as BaseSession } from "./plugin/session";
-export { default as Card } from './card';
+export { default as BaseMenu } from "@ksm/plugin/menu/baseMenu";
+export { default as BaseCommand, CommandFunction } from "@ksm/plugin/menu/baseCommand";
+export { default as BaseSession } from "@ksm/plugin/session";
+export { default as Card } from '@ksm/card';
 
-export * from './config/type';
-export { default as Config } from './config';
+export * from '@ksm/config/type';
+export { default as Config } from '@ksm/config';
 
-export * from './event/type';
-export * from './message/type';
-export * from './type';
+export * from '@ksm/event/type';
+export * from '@ksm/message/type';
+export * from '@ksm/type';

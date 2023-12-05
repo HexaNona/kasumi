@@ -1,5 +1,5 @@
-import { MultiPageResponse } from "../../../type";
-import Rest from "../../../requestor";
+import { MultiPageResponse } from "@ksm/type";
+import Rest from "@ksm/requestor";
 import { BriefChatSession, FullChatSession } from "./type";
 
 export default class UserChat {

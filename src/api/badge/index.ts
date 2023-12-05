@@ -1,5 +1,5 @@
-import { RequestResponse } from "../../type";
-import Rest from "../../requestor";
+import { RequestResponse } from "@ksm/type";
+import Rest from "@ksm/requestor";
 
 export default class Badge {
     private rest: Rest;

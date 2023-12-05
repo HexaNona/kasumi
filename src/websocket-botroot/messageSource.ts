@@ -7,7 +7,7 @@
 import Logger from 'bunyan'
 import { EventEmitter } from 'events'
 import { cloneDeep } from 'lodash'
-import Kasumi from '../client'
+import Kasumi from '@ksm/client'
 import { KHEventPacket } from './types/kaiheila/packet'
 
 export interface MessageSource extends EventEmitter {

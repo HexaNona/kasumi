@@ -1,9 +1,9 @@
-import Rest from "../../requestor";
-import { MessageType, Message as MessageInterface, User, RequestResponse } from "../../type";
+import Rest from "@ksm/requestor";
+import { MessageType, Message as MessageInterface, User, RequestResponse } from "@ksm/type";
 import { v4 as uuidv4 } from 'uuid';
-import { NonceDismatchError } from "../../error";
+import { NonceDismatchError } from "@ksm/error";
 import { RawMessageListResponse } from "./type";
-import Card from "../../card";
+import Card from "@ksm/card";
 
 export default class Message {
     private rest: Rest;
