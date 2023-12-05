@@ -1,18 +1,20 @@
 import Logger from "bunyan";
-import { PlainTextMessageEvent, MarkdownMessageEvent, ButtonClickedEvent } from "../../message/type";
-import Kasumi from "../../client";
-import { CommandNameNotPresentErorr, MethodNotImplementedError } from "../../error";
-import BaseSession from "../session";
+import { PlainTextMessageEvent, MarkdownMessageEvent, ButtonClickedEvent } from "@ksm/message/type"
+import Kasumi from "@ksm/client";
+import { CommandNameNotPresentErorr, MethodNotImplementedError } from "@ksm/error";
+import BaseSession from "@ksm/plugin/session";
+import { KasumiMiddleware } from "@ksm/plugin/middlewares/type";
+import { AccessControl } from "@ksm/plugin/middlewares/access-control";
 
 export type CommandFunction<T, K> = (session: T) => Promise<K>
 
 export default class BaseCommand<T extends Kasumi<any> = Kasumi> {
     name: string = "";
-    protected _isInit = false;
+    protected _finishedInit = false;
     protected client!: T;
     protected loggerSequence: string[] = [];
     get isInit() {
-        return this._isInit;
+        return this._finishedInit;
     }
     description?: string;
 
@@ -23,7 +25,16 @@ export default class BaseCommand<T extends Kasumi<any> = Kasumi> {
         this.client = client;
         this.loggerSequence = loggerSequence;
         this.logger = this.client.getLogger(...this.loggerSequence);
-        this._isInit = true;
+        this._finishedInit = true;
+        this.ready();
+    }
+
+    ready() {
+        this.use(AccessControl.global.group.middleware)
+    }
+
+    get hierarchyName() {
+        return this.loggerSequence.join(' ');
     }
 
     async func(session: BaseSession): Promise<any> {
@@ -43,9 +54,9 @@ export default class BaseCommand<T extends Kasumi<any> = Kasumi> {
         } else return this.logger.warn("Executed command with wrong arguments");
     }
 
-    protected middlewares: ((session: BaseSession) => Promise<boolean>)[] = [];
+    protected middlewares: KasumiMiddleware[] = [];
 
-    use(...middleware: ((session: BaseSession) => Promise<boolean>)[]) {
+    use(...middleware: KasumiMiddleware[]) {
         this.middlewares.push(...middleware);
     }
 
@@ -56,7 +67,7 @@ export default class BaseCommand<T extends Kasumi<any> = Kasumi> {
             currentMiddlewareIndex++;
             const currentMiddleware = self.middlewares[currentMiddlewareIndex];
             if (currentMiddleware) {
-                const result = await currentMiddleware(session).catch((e) => {
+                const result = await currentMiddleware(session, self).catch((e) => {
                     self.logger.error(`Error running ${self.name} middleware ${currentMiddleware.name}`);
                     self.logger.error(e);
                     return false;

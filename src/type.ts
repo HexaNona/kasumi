@@ -49,15 +49,18 @@ export enum NotificationSetting {
     Block = 3
 }
 
-export interface User {
+export interface BreifUser {
     id: string,
     username: string,
-    nickname: string,
     identify_num: string,
+    avatar: string
+}
+
+export interface User extends BreifUser {
+    nickname: string,
     online: boolean,
     bot: boolean,
     status: UserStatus,
-    avatar: string,
     vip_avatar: string,
     mobile_verified: boolean,
     roles: number[]

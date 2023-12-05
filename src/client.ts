@@ -8,7 +8,7 @@ import Message from "./message";
 import WebSocket from "./websocket";
 import Config from "./config";
 import WebHook from "./webhook";
-import Plugin from "./plugin"
+import Plugin from "./plugin/plugin"
 import WebSocketSource from "./websocket-botroot";
 import { BaseReceiver, WebsocketReceiver } from "./websocket-kookts/event-receiver";
 import { BaseClient } from "./websocket-kookts";
@@ -16,7 +16,7 @@ import { BaseClient } from "./websocket-kookts";
 import EventEmitter2 from "eventemitter2";
 import { TokenNotProvidedError, UnknownConnectionType, UnknownInputTypeError } from "./error";
 import { MongoDB } from "./config/database/mongodb";
-import { DefiniteStorage, GenericStorage } from "index";
+import * as Middlewares from "@ksm/plugin/middlewares";
 
 export interface Kasumi<CustomStorage extends {}> extends EventEmitter2 {
     on<T extends keyof RawEmisions>(event: T, listener: RawEmisions[T]): this;
@@ -32,6 +32,8 @@ export class Kasumi<CustomStorage extends {} = {}> extends EventEmitter2 impleme
     websocket?: WebSocket | WebSocketSource | BaseReceiver
     webhook?: WebHook;
     logger: Logger;
+
+    middlewares = Middlewares;
 
     /**
      * Profile of the current bot
@@ -109,10 +111,12 @@ export class Kasumi<CustomStorage extends {} = {}> extends EventEmitter2 impleme
         this.message = new Message(this);
 
         this.plugin = new Plugin(this);
-        this.plugin.use(this.plugin.mentionOnlyCommandMenuMiddleware);
+        this.plugin.use(this.plugin.commandMenuMiddleware);
 
         this.events = new Event(this);
         this.API = new API(this.TOKEN, this.getLogger('requestor'), this.config.getSync('kasumi::config.customEndpoint'));
+
+        this.middlewares.AccessControl.new(this);
 
         this.on('message.text', (event) => {
             this.plugin.messageProcessing(event.content, event).catch((e) => {

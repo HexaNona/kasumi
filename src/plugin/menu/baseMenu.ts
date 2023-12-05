@@ -25,7 +25,7 @@ export default class BaseMenu extends BaseCommand<Kasumi<any>> {
         this.loggerSequence = loggerSequence;
         this.logger = this.client.getLogger('plugin', ...this.loggerSequence);
         this.load(...this.__raw_commands);
-        this._isInit = true;
+        this._finishedInit = true;
     }
     load(...commands: Array<BaseMenu | BaseCommand<Kasumi<any>>>) {
         for (const command of commands) {
