@@ -8,6 +8,9 @@
             "ES2022"
         ],
         "baseUrl": "./src",
+        "paths": {
+            "@ksm/*": [ "./*" ]
+        },
         "rootDirs": [
             "src"
         ],
