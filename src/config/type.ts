@@ -25,6 +25,8 @@ export interface DefiniteStorage {
     'kasumi::config.mongoConnectionString'?: string;
     'kasumi::config.mongoDatabaseName'?: string;
     'kasumi::config.mongoCollectionName'?: string;
+    'kasumi::middleware.accessControl.userGroup.enable'?: boolean;
+    'kasumi::middleware.commandMenu.enable'?: boolean;
     'kasumi::config.zDummy': StorageItem | undefined; // Hack for type checking :(
 }
 

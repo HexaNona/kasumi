@@ -1,13 +1,14 @@
 import Logger from "bunyan";
 import Kasumi from "@ksm/client";
 import BaseSession from "./session";
-import Card from "@ksm/card";
-import BaseCommand, { CommandFunction } from "./menu/baseCommand";
+import BaseCommand from "./menu/baseCommand";
 import BaseMenu from "./menu/baseMenu";
 import { MarkdownMessageEvent, PlainTextMessageEvent } from "@ksm/message/type";
-import { MethodNotImplementedError } from "@ksm/error";
 export default class Plugin extends BaseMenu {
     name = '';
+
+    readonly type = 'plugin';
+
     logger: Logger;
     constructor(client: Kasumi<any>, ...commands: Array<BaseMenu | BaseCommand>) {
         super(...commands)
@@ -50,63 +51,49 @@ export default class Plugin extends BaseMenu {
         return this.prefix.has(prefix);
     }
     async messageProcessing(content: string, event: PlainTextMessageEvent | MarkdownMessageEvent) {
-        const session = new BaseSession(content.trim().split(" "), event, this.client),
-            self = this;
-        let currentMiddlewareIndex: number = -1;
-        async function next() {
-            currentMiddlewareIndex++;
-            const currentMiddleware = self.middlewares[currentMiddlewareIndex];
+        let trigger, commands: BaseCommand[] = [this], session: BaseSession = new BaseSession(content.trim().split(" "), event, this.client);;
+        const prefix = [...this.prefix].find(v => {
+            return content.startsWith(v)
+        })
+        if (prefix) {
+            content = content.replace(prefix, '');
+            const targetHierachy = Object.entries(this.fullHierachyCommands()).filter(v => {
+                return content.startsWith(v[0]);
+            }).sort((a, b) => {
+                return b[0].length - a[0].length;
+            })[0];
+            if (targetHierachy) {
+                [trigger, commands] = targetHierachy;
+                content = content.replace(trigger, '');
+                session = new BaseSession(content.trim().split(" "), event, this.client);
+            }
+        }
+
+        async function next(command: BaseCommand, currentMiddlewareIndex: number, commands: BaseCommand[]): Promise<boolean> {
+            const currentMiddleware = command.middlewares[currentMiddlewareIndex];
             if (currentMiddleware) {
-                const result = await currentMiddleware(session, self).catch((e) => {
-                    self.logger.error(`Error running main plugin middleware ${currentMiddleware.name}`);
-                    self.logger.error(e);
+                const result = await currentMiddleware(session, commands).catch((e) => {
+                    command.logger.error(`Error running command ${currentMiddleware.name}'s middleware`);
+                    command.logger.error(e);
                     return false;
                 });
-                if (result) await next();
-            } else {
-                await self.processMain(session).catch((e) => {
-                    self.logger.error(`Error running main plugin`);
-                    self.logger.error(e);
+                if (result) return await next(command, currentMiddlewareIndex + 1, commands);
+                else return false;
+            } else return true
+        }
+        for (let i = 0; i < commands.length; ++i) {
+            const command = commands[i];
+            const result = await next(command, 0, commands).catch((e) => {
+                this.logger.error(`Error processing middlewares`);
+                this.logger.error(e);
+            });
+            if (result && command && !(command instanceof BaseMenu)) {
+                await command.exec(session).catch((e) => {
+                    command?.logger.error(`Error running command ${command.hierarchyName}`);
+                    command?.logger.error(e);
                 });
-            }
+            } else break;
         }
-        await next();
-    }
-
-    async commandMenuMiddleware(session: BaseSession): Promise<boolean> {
-        if (session.args[0] == `(met)${session.client.me.userId}(met)` && session.args.length == 1) { // Message is "@Bot"
-            const card = new Card()
-                .addTitle("命令列表")
-                .addDivider();
-            const commandList = session.client.plugin.__command_list;
-            for (const commandName of commandList) {
-                const command = session.client.plugin.__commands[commandName];
-                if (command && commandName == command.name) {
-                    let text = `\`\`\`plain\n${session.client.plugin.prefix.keys().next().value}${command.name}\n\`\`\``;
-                    if (command.description) text += '\n' + command.description;
-                    else text += '\n' + '(font)无介绍(font)[secondary]';
-                    card.addText(text);
-                }
-            }
-            await session.reply(card);
-            return false;
-        }
-        return true;
-    }
-
-    async processMain(session: BaseSession) {
-        const commandName = Object.keys(this.__commands).find(k => {
-            const prefix = [...this.prefix].find(v => session.args[0].startsWith(v))
-            return session.args[0] == prefix + k;
-        });
-        let command
-        if (commandName && (command = this.__commands[commandName])) {
-            command.exec(session.args.splice(1), session.event, session.client);
-        }
-    }
-
-    func: CommandFunction<BaseSession, any> = async () => {
-        throw new MethodNotImplementedError();
     }
 
     /**

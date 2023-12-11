@@ -4,14 +4,35 @@ import Kasumi from "@ksm/client";
 import { CommandNameNotPresentErorr, MethodNotImplementedError } from "@ksm/error";
 import BaseSession from "@ksm/plugin/session";
 import { KasumiMiddleware } from "@ksm/plugin/middlewares/type";
-import { AccessControl } from "@ksm/plugin/middlewares/access-control";
+import Plugin from "..";
+import BaseMenu from "./baseMenu";
+import crypto from 'crypto';
+import hash from 'object-hash';
+import EventEmitter2 from "eventemitter2";
 
 export type CommandFunction<T, K> = (session: T) => Promise<K>
 
-export default class BaseCommand<T extends Kasumi<any> = Kasumi> {
+export default class BaseCommand<T extends Kasumi<any> = Kasumi<any>> extends EventEmitter2 {
+    readonly UUID = crypto.randomUUID();
+    hashCode() {
+        return hash(this.toJSON(), { algorithm: 'sha256', encoding: 'hex', ignoreUnknown: true });
+    }
+
+    toJSON() {
+        return {
+            name: this.name,
+            hierarchyName: this.hierarchyName,
+            type: this.type,
+            description: this.description,
+            middlewareCount: this.middlewares.length
+        }
+    }
+
     name: string = "";
+
+    readonly type: 'plugin' | 'menu' | 'command' = 'command';
     protected _finishedInit = false;
-    protected client!: T;
+    client!: T;
     protected loggerSequence: string[] = [];
     get isInit() {
         return this._finishedInit;
@@ -26,11 +47,8 @@ export default class BaseCommand<T extends Kasumi<any> = Kasumi> {
         this.loggerSequence = loggerSequence;
         this.logger = this.client.getLogger(...this.loggerSequence);
         this._finishedInit = true;
-        this.ready();
-    }
 
-    ready() {
-        this.use(AccessControl.global.group.middleware)
+        this.emit('ready');
     }
 
     get hierarchyName() {
@@ -44,7 +62,7 @@ export default class BaseCommand<T extends Kasumi<any> = Kasumi> {
     async exec(args: string[], event: PlainTextMessageEvent | MarkdownMessageEvent | ButtonClickedEvent, client: Kasumi<any>): Promise<any>;
     async exec(sessionOrArgs: BaseSession | string[], event?: PlainTextMessageEvent | MarkdownMessageEvent | ButtonClickedEvent, client?: Kasumi<any>) {
         if (sessionOrArgs instanceof BaseSession) {
-            return this.run(structuredClone(sessionOrArgs)).catch((e) => {
+            return this.run(sessionOrArgs).catch((e) => {
                 this.logger.error(e);
             })
         } else if (event && client) {
@@ -54,32 +72,25 @@ export default class BaseCommand<T extends Kasumi<any> = Kasumi> {
         } else return this.logger.warn("Executed command with wrong arguments");
     }
 
-    protected middlewares: KasumiMiddleware[] = [];
+    protected _middlewares: KasumiMiddleware[] = [];
+
+    get middlewares() { return [...this._middlewares] }
 
     use(...middleware: KasumiMiddleware[]) {
-        this.middlewares.push(...middleware);
+        this._middlewares.push(...middleware);
     }
 
     protected async run(session: BaseSession): Promise<any> {
-        const self = this;
-        let currentMiddlewareIndex: number = -1;
-        async function next() {
-            currentMiddlewareIndex++;
-            const currentMiddleware = self.middlewares[currentMiddlewareIndex];
-            if (currentMiddleware) {
-                const result = await currentMiddleware(session, self).catch((e) => {
-                    self.logger.error(`Error running ${self.name} middleware ${currentMiddleware.name}`);
-                    self.logger.error(e);
-                    return false;
-                });
-                if (result) await next();
-            } else {
-                await self.func(session).catch((e) => {
-                    self.logger.error(`Error running command ${self.name}`);
-                    self.logger.error(e);
-                });
-            }
-        }
-        await next();
+        return this.func(session);
+    }
+
+    isPlugin(): this is Plugin {
+        return this.type == 'plugin';
+    }
+    isMenu(): this is BaseMenu {
+        return this.type == 'menu';
+    }
+    isCommand(): this is BaseCommand {
+        return this.type == 'command';
     }
 }

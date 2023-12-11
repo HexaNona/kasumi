@@ -1,10 +1,11 @@
-import BaseCommand, { CommandFunction } from "./baseCommand";
+import BaseCommand from "./baseCommand";
 import Kasumi from "@ksm/client";
-import Card from "@ksm/card";
 import BaseSession from "@ksm/plugin/session";
-import { UnknownInputTypeError } from "@ksm/error";
+import { MethodNotAllowedError, UnknownInputTypeError } from "@ksm/error";
 
 export default class BaseMenu extends BaseCommand<Kasumi<any>> {
+    readonly type: 'plugin' | 'menu' = 'menu';
+
     protected get promptSequence() {
         return this.loggerSequence;
     }
@@ -26,6 +27,8 @@ export default class BaseMenu extends BaseCommand<Kasumi<any>> {
         this.logger = this.client.getLogger('plugin', ...this.loggerSequence);
         this.load(...this.__raw_commands);
         this._finishedInit = true;
+
+        this.emit('ready');
     }
     load(...commands: Array<BaseMenu | BaseCommand<Kasumi<any>>>) {
         for (const command of commands) {
@@ -33,6 +36,7 @@ export default class BaseMenu extends BaseCommand<Kasumi<any>> {
         }
     }
     addCommand(command: BaseMenu | BaseCommand<Kasumi<any>>) {
+        this._hierachyCacheUpToDate = false;
         if (command instanceof BaseMenu) {
             this.logger.debug(`Loaded menu: ${command.name}`);
             this.__commands[command.name] = command;
@@ -44,6 +48,7 @@ export default class BaseMenu extends BaseCommand<Kasumi<any>> {
         if (!command.isInit) command.init(this.client, [...this.loggerSequence, command.name]);
     }
     addAlias(command: BaseMenu | BaseCommand<Kasumi<any>>, ...aliases: string[]) {
+        this._hierachyCacheUpToDate = false;
         if (command instanceof BaseCommand) {
             if (!this.__commands[command.name]) this.addCommand(command);
             for (const alias of aliases) {
@@ -51,7 +56,7 @@ export default class BaseMenu extends BaseCommand<Kasumi<any>> {
                     this.__commands[alias] = command;
                     command.logger.debug(`Loaded alias ${alias}`);
                 } else {
-                    command.logger.warn(`Duplicated trigger ${alias}`);
+                    command.logger.warn(`Duplicated trigger in alias ${alias}`);
                 }
             }
         } else throw new UnknownInputTypeError(typeof command, 'BaseMenu | BaseCommand');
@@ -60,32 +65,45 @@ export default class BaseMenu extends BaseCommand<Kasumi<any>> {
         return Object.keys(this.__commands)
     }
     async func(session: BaseSession): Promise<void> {
-        let splitContent = session.args, command;
-        const commandName = Object.keys(this.__commands).find(k => splitContent[0] == k);
-        if (commandName && (command = this.__commands[commandName])) {
-            command.exec(session.args.splice(1), session.event, session.client);
-        } else {
-            const card = new Card();
-            if (splitContent[0]) card.addTitle("命令未找到")
-            else card.addTitle("命令列表");
-            card.addDivider();
-            const list = this.__command_list;
-            if (list.length) {
-                card.addText(`(font)${list.length} 个可用命令(font)[success]`);
-                for (const commandName of list) {
-                    const command = this.__commands[commandName];
-                    if (command && commandName == command.name) {
-                        let text = `\`\`\`plain\n${this.client.plugin.primaryPrefix}${this.promptSequence.join(" ")} ${command.name}\n\`\`\``;
-                        if (command.description) text += '\n' + command.description;
-                        else text += '\n' + '(font)无命令介绍(font)[secondary]';
-                        card.addText(text);
-                    }
+        throw new MethodNotAllowedError('cannot invoke func in BaseMenu');
+    }
+
+    menus(): [string, BaseMenu][] {
+        return Object.keys(this.__commands).filter((v) => {
+            return this.__commands[v].isMenu();
+        }).map(v => [v, this.__commands[v] as BaseMenu]);
+    }
+    commands(): [string, BaseCommand][] {
+        return Object.keys(this.__commands).filter((v) => {
+            return this.__commands[v].isCommand();
+        }).map(v => [v, this.__commands[v]]);
+    }
+
+    private _fullHierachyCommands?: { [key: string]: BaseCommand[] } = {};
+    private _hierachyCacheUpToDate = false;
+    fullHierachyCommands() {
+        if (this._hierachyCacheUpToDate && this._fullHierachyCommands) return this._fullHierachyCommands;
+        const dfs = (item: BaseMenu, path: [string, BaseCommand][] = []) => {
+            const menus = item.menus();
+            const commands = item.commands();
+            let res: { [key: string]: BaseCommand[] } = {};
+            for (const menu of menus) {
+                res = {
+                    ...res,
+                    ...dfs(menu[1], path.concat([menu])),
+                    [path.concat([menu]).map(v => v[0]).join(" ")]: Array().concat(this, path.concat([menu]).map(v => v[1]))
                 }
-            } else {
-                card.addText("(font)菜单下没有可用命令(font)[danger]");
             }
-            const { err } = await session.reply(card);
-            if (err) this.logger.error(err);
+            for (const command of commands) {
+                res = {
+                    ...res,
+                    [path.concat([command]).map(v => v[0]).join(" ")]: Array().concat(this, path.concat([command]).map(v => v[1]))
+                }
+            }
+            return res;
         }
+        let commands: { [key: string]: BaseCommand[] } = dfs(this);
+        this._hierachyCacheUpToDate = true;
+        return this._fullHierachyCommands = commands;
     }
 }

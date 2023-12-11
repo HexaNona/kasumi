@@ -14,7 +14,7 @@ import { BaseReceiver, WebsocketReceiver } from "@ksm/websocket-kookts/event-rec
 import { BaseClient } from "@ksm/websocket-kookts";
 
 import EventEmitter2 from "eventemitter2";
-import { TokenNotProvidedError, UnknownConnectionType, UnknownInputTypeError } from "@ksm/error";
+import { TokenNotProvidedError, UnknownConnectionType } from "@ksm/error";
 import { MongoDB } from "@ksm/config/database/mongodb";
 import * as Middlewares from "@ksm/plugin/middlewares";
 
@@ -111,12 +111,9 @@ export class Kasumi<CustomStorage extends {} = {}> extends EventEmitter2 impleme
         this.message = new Message(this);
 
         this.plugin = new Plugin(this);
-        this.plugin.use(this.plugin.commandMenuMiddleware);
 
         this.events = new Event(this);
         this.API = new API(this.TOKEN, this.getLogger('requestor'), this.config.getSync('kasumi::config.customEndpoint'));
-
-        this.middlewares.AccessControl.new(this);
 
         this.on('message.text', (event) => {
             this.plugin.messageProcessing(event.content, event).catch((e) => {
@@ -139,6 +136,15 @@ export class Kasumi<CustomStorage extends {} = {}> extends EventEmitter2 impleme
             ]
         });
     }
+    async init() {
+        if (await this.config.getOne('kasumi::middleware.accessControl.userGroup.enable')) {
+            this.middlewares.AccessControl.new(this);
+            this.plugin.use(this.middlewares.AccessControl.global.group.middleware);
+        }
+        if (await this.config.getOne('kasumi::middleware.commandMenu.enable') !== false) {
+            this.plugin.use(this.middlewares.CommandMenu.middleware);
+        }
+    }
     async fetchMe() {
         this.config.getSync("kasumi::config.connection");
         const { err, data } = await this.API.user.me();
@@ -160,6 +166,7 @@ export class Kasumi<CustomStorage extends {} = {}> extends EventEmitter2 impleme
     }
     async connect() {
         if (!(await this.fetchMe())) return;
+        await this.init();
         const connection = (await this.config.getOne('kasumi::config.connection'));
         if (connection == 'webhook') {
             this.webhook = new WebHook(this);

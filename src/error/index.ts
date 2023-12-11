@@ -28,6 +28,12 @@ export class MethodNotImplementedError extends Error {
     }
 }
 
+export class MethodNotAllowedError extends Error {
+    constructor(detail: string = 'no detail given') {
+        super(`This method is not allowed: ${detail}`);
+    }
+}
+
 export class UnknownInputTypeError extends Error {
     constructor(received: string, required: string) {
         super(`Input requires "${required}", received "${received}" instead`);

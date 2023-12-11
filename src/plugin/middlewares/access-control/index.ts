@@ -61,31 +61,38 @@ export namespace AccessControl {
         enable() { this._enabled = true; }
         disable() { this._enabled = false; }
 
-        setUser(user: BreifUser, group?: AccessControl.UserGroup) {
-            this.client.config.set(`kasumi::rateControl.user.${user.id}`, group)
+        /**
+         * Assign a group to a user
+         * @param user User ID
+         * @param group The group to assign to the user
+         */
+        assignUser(user: string, group?: AccessControl.UserGroup.Pattern) {
+            this.client.config.set(`kasumi::middleware.accessControl.userGroup.user.${user}`, group)
         }
         async getUser(user: BreifUser) {
-            const group = await this.client.config.getOne(`kasumi::rateControl.user.${user.id}`);
+            const group = await this.client.config.getOne(`kasumi::middleware.accessControl.userGroup.user.${user.id}`);
             return group || this.defaultUserGroup;
         }
 
         private levels: Map<string, number> = new Map();
 
-        private getCommandName(command: BaseCommand | string) {
-            if (typeof command == 'string') return command;
-            else return command.hierarchyName;
+        private getCommandIdentifier(command: BaseCommand) {
+            return command.hashCode();
         }
 
-        getCommandLevel(command: BaseCommand | string) {
-            return this.levels.get(this.getCommandName(command)) || this.defaultCommandLevel;
+        async getCommandLevel(command: BaseCommand): Promise<number> {
+            return (await this.client.config.getOne(`kasumi::middleware.accessControl.userGroup.command.${this.getCommandIdentifier(command)}`)).level || this.defaultCommandLevel;
         }
-        setCommandLevel(command: BaseCommand | string, level: number) {
-            this.levels.set(this.getCommandName(command), level);
+        setCommandLevel(command: BaseCommand, level: number) {
+            this.client.config.set(`kasumi::middleware.accessControl.userGroup.command.${this.getCommandIdentifier(command)}`, {
+                name: command.hierarchyName,
+                level
+            })
             return this;
         }
 
-        middleware: KasumiMiddleware = async (session, command) => {
-            const level = this.getCommandLevel(command);
+        middleware: KasumiMiddleware = async (session, commands) => {
+            const level = (await Promise.all(commands.map(v => this.getCommandLevel(v)))).sort((a, b) => { return b - a }).at(0) || this.defaultCommandLevel;
             const userGroup = await this.getUser(session.author);
             console.log(level, userGroup);
             if (userGroup.level >= level) return true;
@@ -97,7 +104,8 @@ export namespace AccessControl {
     }
     export namespace UserGroup {
         export interface KasumiConfig {
-            [key: `kasumi::rateControl.user.${string}`]: UserGroup.Pattern;
+            [key: `kasumi::middleware.accessControl.userGroup.user.${string}`]: UserGroup.Pattern;
+            [key: `kasumi::middleware.accessControl.userGroup.command.${string}`]: UserGroup.Pattern;
         }
         export interface Pattern {
             name: string,
