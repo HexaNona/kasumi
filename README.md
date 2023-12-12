@@ -4,9 +4,15 @@
 
 Yet another TypeScript framework to build KOOK chatbots. **Requires Node 18+.**
 
-## Documentation
+## Usage
 
-Docs can be found on the [wiki](https://kasumi.js.org/).
+Install via npm
+
+```sh
+npm i --save kasumi.js
+```
+
+And see usage details on the [wiki](https://kasumi.js.org/).
 
 ## TODO
 
