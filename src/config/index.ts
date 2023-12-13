@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
 import { KasumiConfig } from '@ksm/type';
 import { Database } from './database';
+import JSON5 from 'json5';
 
 dotenvExpand.expand(dotenv.config());
 
@@ -38,7 +39,8 @@ export default class Config<CustomStorage extends {}> {
         const path = inputPath || configPath;
         if (path) {
             if (fs.existsSync(path)) {
-                this.file = require(path);
+                const data = fs.readFileSync(path, { encoding: 'utf-8' });
+                this.file = JSON5.parse(data);
                 for (const key in this.file) {
                     this.set(key, this.file[key]);
                 }
