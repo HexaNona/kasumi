@@ -94,7 +94,6 @@ export namespace AccessControl {
         middleware: KasumiMiddleware = async (session, commands) => {
             const level = (await Promise.all(commands.map(v => this.getCommandLevel(v)))).sort((a, b) => { return b - a }).at(0) || this.defaultCommandLevel;
             const userGroup = await this.getUser(session.author);
-            console.log(level, userGroup);
             if (userGroup.level >= level) return true;
             else {
                 await session.reply(`您所在的权限组（${userGroup.name}）无法使用此命令！`);
