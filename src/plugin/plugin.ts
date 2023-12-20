@@ -87,12 +87,13 @@ export default class Plugin extends BaseMenu {
                 this.logger.error(`Error processing middlewares`);
                 this.logger.error(e);
             });
-            if (result && command && !(command instanceof BaseMenu)) {
+            if (!result) break;
+            if (command && !(command instanceof BaseMenu)) {
                 await command.exec(session).catch((e) => {
                     command?.logger.error(`Error running command ${command.hierarchyName}`);
                     command?.logger.error(e);
                 });
-            } else break;
+            }
         }
     }
 
