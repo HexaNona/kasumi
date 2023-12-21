@@ -51,48 +51,50 @@ export default class Plugin extends BaseMenu {
         return this.prefix.has(prefix);
     }
     async messageProcessing(content: string, event: PlainTextMessageEvent | MarkdownMessageEvent) {
-        let trigger, commands: BaseCommand[] = [this], session: BaseSession = new BaseSession(content.trim().split(" "), event, this.client);;
+        content = content.trim();
+        let trigger, commands: BaseCommand[], session: BaseSession;
         const prefix = [...this.prefix].find(v => {
             return content.startsWith(v)
         })
         if (prefix) {
             content = content.replace(prefix, '');
             const targetHierachy = Object.entries(this.fullHierachyCommands()).filter(v => {
-                return content.startsWith(v[0]);
+                return content.split(" ")[0] == v[0];
             }).sort((a, b) => {
                 return b[0].length - a[0].length;
             })[0];
             if (targetHierachy) {
                 [trigger, commands] = targetHierachy;
-                content = content.replace(trigger, '');
+                content = content.replace(trigger.trim() + ' ', '');
                 session = new BaseSession(content.trim().split(" "), event, this.client);
-            }
-        }
 
-        async function next(command: BaseCommand, currentMiddlewareIndex: number, commands: BaseCommand[]): Promise<boolean> {
-            const currentMiddleware = command.middlewares[currentMiddlewareIndex];
-            if (currentMiddleware) {
-                const result = await currentMiddleware(session, commands).catch((e) => {
-                    command.logger.error(`Error running command ${currentMiddleware.name}'s middleware`);
-                    command.logger.error(e);
-                    return false;
-                });
-                if (result) return await next(command, currentMiddlewareIndex + 1, commands);
-                else return false;
-            } else return true
-        }
-        for (let i = 0; i < commands.length; ++i) {
-            const command = commands[i];
-            const result = await next(command, 0, commands).catch((e) => {
-                this.logger.error(`Error processing middlewares`);
-                this.logger.error(e);
-            });
-            if (!result) break;
-            if (command && !(command instanceof BaseMenu)) {
-                await command.exec(session).catch((e) => {
-                    command?.logger.error(`Error running command ${command.hierarchyName}`);
-                    command?.logger.error(e);
-                });
+                for (let i = 0; i < commands.length; ++i) {
+                    const command = commands[i];
+                    const result = await next(command, 0, commands).catch((e) => {
+                        this.logger.error(`Error processing middlewares`);
+                        this.logger.error(e);
+                    });
+                    if (!result) break;
+                    if (command && !(command instanceof BaseMenu)) {
+                        await command.exec(session).catch((e) => {
+                            command?.logger.error(`Error running command ${command.hierarchyName}`);
+                            command?.logger.error(e);
+                        });
+                    }
+                }
+
+                async function next(command: BaseCommand, currentMiddlewareIndex: number, commands: BaseCommand[]): Promise<boolean> {
+                    const currentMiddleware = command.middlewares[currentMiddlewareIndex];
+                    if (currentMiddleware) {
+                        const result = await currentMiddleware(session, commands).catch((e) => {
+                            command.logger.error(`Error running command ${currentMiddleware.name}'s middleware`);
+                            command.logger.error(e);
+                            return false;
+                        });
+                        if (result) return await next(command, currentMiddlewareIndex + 1, commands);
+                        else return false;
+                    } else return true
+                }
             }
         }
     }
