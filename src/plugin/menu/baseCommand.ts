@@ -12,7 +12,17 @@ import EventEmitter2 from "eventemitter2";
 
 export type CommandFunction<T, K> = (session: T) => Promise<K>
 
-export default class BaseCommand<T extends Kasumi<any> = Kasumi<any>> extends EventEmitter2 {
+interface CommandEvents {
+    ready: () => void;
+    exec: (session: BaseSession) => Promise<void> | void;
+}
+
+export interface BaseCommand extends EventEmitter2 {
+    on<T extends keyof CommandEvents>(event: T, listener: CommandEvents[T]): this;
+    emit<T extends keyof CommandEvents>(event: T, ...args: Parameters<CommandEvents[T]>): boolean;
+}
+
+export class BaseCommand<T extends Kasumi<any> = Kasumi<any>> extends EventEmitter2 {
     readonly UUID = crypto.randomUUID();
     hashCode() {
         return hash(this.toJSON(), { algorithm: 'sha256', encoding: 'hex', ignoreUnknown: true });
@@ -62,10 +72,12 @@ export default class BaseCommand<T extends Kasumi<any> = Kasumi<any>> extends Ev
     async exec(args: string[], event: PlainTextMessageEvent | MarkdownMessageEvent | ButtonClickedEvent, client: Kasumi<any>): Promise<any>;
     async exec(sessionOrArgs: BaseSession | string[], event?: PlainTextMessageEvent | MarkdownMessageEvent | ButtonClickedEvent, client?: Kasumi<any>) {
         if (sessionOrArgs instanceof BaseSession) {
+            this.emit('exec', sessionOrArgs);
             return this.run(sessionOrArgs).catch((e) => {
                 this.logger.error(e);
             })
         } else if (event && client) {
+            this.emit('exec', new BaseSession(sessionOrArgs, event, client));
             return this.run(new BaseSession(sessionOrArgs, event, client)).catch((e) => {
                 this.logger.error(e);
             })
@@ -94,3 +106,5 @@ export default class BaseCommand<T extends Kasumi<any> = Kasumi<any>> extends Ev
         return this.type == 'command';
     }
 }
+
+export default BaseCommand;
