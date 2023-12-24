@@ -34,7 +34,7 @@ export default class WebSocket {
         else return this.getNextItemFromQueue(type, timeout, lastTimestamp);
     }
 
-    private __interval?: NodeJS.Timer;
+    private __interval?: NodeJS.Timeout;
 
     private async connectWebSocket(resume: boolean = false) {
         this.state = WebSocketType.State.ConnectGateway;

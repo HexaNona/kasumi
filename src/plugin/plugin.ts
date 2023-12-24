@@ -59,7 +59,10 @@ export default class Plugin extends BaseMenu {
         if (prefix) {
             content = content.replace(prefix, '');
             const targetHierachy = Object.entries(this.fullHierachyCommands()).filter(v => {
-                return content.split(" ")[0] == v[0];
+                if (content.length == v[0].length)
+                    return content.startsWith(v[0]);
+                else
+                    return content.startsWith(v[0] + ' ');
             }).sort((a, b) => {
                 return b[0].length - a[0].length;
             })[0];
