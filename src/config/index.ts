@@ -134,7 +134,7 @@ export default class Config<CustomStorage extends {}> {
     public set<P extends StringKeyOf<CustomStorage>>(key: P, value: ExtractProperty<P, CustomStorage>): this;
     public set<K extends StringKeyOf<GenericStorage>>(key: K, value: StorageItem | undefined): this;
     public set(key: string, value: any) {
-        if (!value) return this.delete(key);
+        if (value === undefined || value === null) return this.delete(key);
         this.map.set(key, value);
         if (this.hasDatabase()) this.database.addToSetQueue(key, value);
         return this;
