@@ -48,13 +48,13 @@ export default class Button {
             const data = JSON.parse(event.value);
             if (data.sessionId) {
                 const { sessionId } = data;
-                const sessionDetail = await this.client.config.getOne(Config.join("kasumi", "event", "button", sessionId)) as (sessionDetail | undefined)
+                const sessionDetail = await this.client.config.getOne(Config.join("kasumi", "events", "button", sessionId)) as (sessionDetail | undefined)
                 if (sessionDetail) {
                     const cb = this.getActivator(sessionDetail.activator);
                     if (cb) {
                         await cb(event, sessionDetail.data);
                         if (sessionDetail.once) {
-                            this.client.config.delete(Config.join("kasumi", "event", "button", sessionId));
+                            this.client.config.delete(Config.join("kasumi", "events", "button", sessionId));
                         }
                         return true;
                     } else return false
