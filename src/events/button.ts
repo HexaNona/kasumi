@@ -48,9 +48,8 @@ export default class Button {
             const data = JSON.parse(event.value);
             if (data.sessionId) {
                 const { sessionId } = data;
-                await this.client.config.getOne(Config.join("kasumi", "event", "button", sessionId))
-                if (this.client.config.hasSync(Config.join("kasumi", "event", "button", sessionId))) {
-                    const sessionDetail = this.client.config.getSync(Config.join("kasumi", "event", "button", sessionId)) as sessionDetail;
+                const sessionDetail = await this.client.config.getOne(Config.join("kasumi", "event", "button", sessionId)) as (sessionDetail | undefined)
+                if (sessionDetail) {
                     const cb = this.getActivator(sessionDetail.activator);
                     if (cb) {
                         await cb(event, sessionDetail.data);
