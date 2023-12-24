@@ -9,6 +9,6 @@ export { default as Card } from '@ksm/card';
 export * from '@ksm/config/type';
 export { default as Config } from '@ksm/config';
 
-export * from '@ksm/event/type';
+export * from '@ksm/events/type';
 export * from '@ksm/message/type';
 export * from '@ksm/type';

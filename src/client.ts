@@ -1,9 +1,9 @@
 import Logger from "bunyan";
 
 import API from "@ksm/api";
-import { RawEmisions } from '@ksm/event/type';
+import { RawEmisions } from '@ksm/events/type';
 import { KasumiConfig } from "@ksm/type";
-import Event from '@ksm/event';
+import Event from '@ksm/events';
 import Message from "@ksm/message";
 import WebSocket from "@ksm/websocket";
 import Config from "@ksm/config";
