@@ -5,7 +5,6 @@ const {
     BaseCommand,
     BaseSession,
     Card,
-    Kasumi,
     BaseMessageEvent,
     SystemMessageEvent,
     ButtonClickedEvent,
@@ -48,4 +47,4 @@ export {
     pkg as package
 }
 
-export default Kasumi;
+export default pkg.default;
