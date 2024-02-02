@@ -5,7 +5,7 @@ const {
     BaseCommand,
     BaseSession,
     Card,
-    Kasumi,
+    default: Kasumi,
     BaseMessageEvent,
     SystemMessageEvent,
     ButtonClickedEvent,
