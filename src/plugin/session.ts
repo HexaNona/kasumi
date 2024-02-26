@@ -1,10 +1,10 @@
 import { PlainTextMessageEvent, MarkdownMessageEvent, ButtonClickedEvent } from "@ksm/message/type";
 import Kasumi from "@ksm/client";
 import { GuildType, MessageType } from "@ksm/type";
-import Card from "@ksm/card";
+import { Card } from "@ksm/card";
 import { User } from "@ksm/type";
 
-export default class BaseSession {
+export class BaseSession {
     args: string[];
     event: PlainTextMessageEvent | MarkdownMessageEvent | ButtonClickedEvent
     client: Kasumi<any>;

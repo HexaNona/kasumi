@@ -1,7 +1,7 @@
 import Kasumi from '@ksm/client';
 import { BreifUser } from "@ksm/type";
 import { KasumiMiddleware } from '@ksm/plugin/middlewares/type';
-import BaseCommand from '@ksm/plugin/menu/baseCommand';
+import { BaseCommand } from '@ksm/plugin/menu/baseCommand';
 
 export class AccessControl {
     private client: Kasumi<any>;

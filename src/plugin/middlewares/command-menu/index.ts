@@ -1,8 +1,5 @@
-import Card from "@ksm/card";
-import { BaseCommand } from "@ksm/index";
-import Plugin from "@ksm/plugin";
-import BaseSession from "@ksm/plugin/session";
-import BaseMenu from "@ksm/plugin/menu/baseMenu";
+import { Card } from "@ksm/card";
+import { Plugin, BaseCommand, BaseSession, BaseMenu } from "@ksm/plugin";
 
 export class CommandMenu {
     static async middleware(session: BaseSession, commands: BaseCommand[]): Promise<boolean> {

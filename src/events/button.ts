@@ -1,4 +1,4 @@
-import Config from '@ksm/config';
+import { Config } from '@ksm/config';
 import Kasumi from '@ksm/client';
 import crypto from 'crypto';
 import { ButtonClickedEvent } from '@ksm/message/type';

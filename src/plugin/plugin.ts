@@ -1,10 +1,10 @@
 import Logger from "bunyan";
 import Kasumi from "@ksm/client";
-import BaseSession from "./session";
-import BaseCommand from "./menu/baseCommand";
-import BaseMenu from "./menu/baseMenu";
+import { BaseSession } from "./session";
+import { BaseCommand } from "./menu/baseCommand";
+import { BaseMenu } from "./menu/baseMenu";
 import { MarkdownMessageEvent, PlainTextMessageEvent } from "@ksm/message/type";
-export default class Plugin extends BaseMenu {
+export class Plugin extends BaseMenu {
     name = '';
 
     readonly type = 'plugin';

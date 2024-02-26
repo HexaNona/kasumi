@@ -1,9 +1,9 @@
-import BaseCommand from "./baseCommand";
+import { BaseCommand } from "./baseCommand";
 import Kasumi from "@ksm/client";
-import BaseSession from "@ksm/plugin/session";
+import { BaseSession } from "@ksm/plugin/session";
 import { MethodNotAllowedError, UnknownInputTypeError } from "@ksm/error";
 
-export default class BaseMenu extends BaseCommand<Kasumi<any>> {
+export class BaseMenu extends BaseCommand<Kasumi<any>> {
     readonly type: 'plugin' | 'menu' = 'menu';
 
     protected get promptSequence() {

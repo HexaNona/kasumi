@@ -2,10 +2,10 @@ import Logger from "bunyan";
 import { PlainTextMessageEvent, MarkdownMessageEvent, ButtonClickedEvent } from "@ksm/message/type"
 import Kasumi from "@ksm/client";
 import { CommandNameNotPresentErorr, MethodNotImplementedError } from "@ksm/error";
-import BaseSession from "@ksm/plugin/session";
+import { BaseSession } from "@ksm/plugin/session";
 import { KasumiMiddleware } from "@ksm/plugin/middlewares/type";
-import Plugin from "..";
-import BaseMenu from "./baseMenu";
+import { Plugin } from "../plugin";
+import { BaseMenu } from "./baseMenu";
 import crypto from 'crypto';
 import hash from 'object-hash';
 import EventEmitter2 from "eventemitter2";
@@ -106,5 +106,3 @@ export class BaseCommand<T extends Kasumi<any> = Kasumi<any>> extends EventEmitt
         return this.type == 'command';
     }
 }
-
-export default BaseCommand;
