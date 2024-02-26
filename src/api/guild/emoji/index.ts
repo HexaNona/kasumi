@@ -14,7 +14,7 @@ export default class GuildEmoji {
      * @param page Page number
      * @param pageSize Page size
      */
-    list(guildId: string, page: number = 1, pageSize: number = 50) {
+    list(guildId: string, page?: number, pageSize?: number) {
         return this.rest.multiPageRequest<MultiPageResponse<Emoji>>('/guild-emoji/list', page, pageSize, {
             guild_id: guildId
         });

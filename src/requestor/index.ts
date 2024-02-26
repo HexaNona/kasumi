@@ -71,7 +71,7 @@ export default class Rest {
             return { err };
         }
     }
-    async *multiPageRequest<T extends MultiPageResponse<any>>(endpoint: string, page: number, pageSize: number, params?: any) {
+    async *multiPageRequest<T extends MultiPageResponse<any>>(endpoint: string, page?: number, pageSize?: number, params?: any) {
         let res = (await this.get(endpoint, {
             page, page_size: pageSize,
             ...params
@@ -79,7 +79,7 @@ export default class Rest {
         let { err, data } = res;
         yield res;
         if (!data || err) return;
-        for (let currentPage = page + 1; currentPage <= data.meta.page_total; ++currentPage) {
+        for (let currentPage = data.meta.page + 1; currentPage <= data.meta.page_total; ++currentPage) {
             res = await this.get(endpoint, { page: currentPage, page_size: pageSize });
             yield res;
             let { err, data } = res;

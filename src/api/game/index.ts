@@ -13,7 +13,7 @@ export default class Game {
      * @param page Page number
      * @param pageSize Page size
      */
-    list(type?: 'user' | 'system' | 'all', page = 1, pageSize = 50) {
+    list(type?: 'user' | 'system' | 'all', page?: number, pageSize?: number) {
         return this.rest.multiPageRequest<MultiPageResponse<GameType>>('/game', page, pageSize, {
             type: type == 'user' ? 1 : (type == 'system' ? 2 : 0),
         })

@@ -11,7 +11,7 @@ export default class Inivte {
     /**
      * Get a list of invitations
      */
-    list({ guildId, channelId, page = 1, pageSize = 50 }: {
+    list({ guildId, channelId, page, pageSize = 50 }: {
         /**
          * Guild ID. At least one of guild ID and channel ID is reqiured
          */
@@ -23,11 +23,11 @@ export default class Inivte {
         /**
          * Page number
          */
-        page: number,
+        page?: number,
         /**
          * Page size
          */
-        pageSize: number
+        pageSize?: number
     }) {
         return this.rest.multiPageRequest<MultiPageResponse<RawInviteListResponseItem>>('/invite/list', page, pageSize, {
             guild_id: guildId,
