@@ -1,5 +1,15 @@
-export type Theme = "primary" | "secondary" | "info" | "warning" | "danger" | "success";
-export type Size = 'lg' | 'sm';
+export enum Theme {
+    PRIMARY = "primary",
+    SECONDARY = "secondary",
+    INFO = "info",
+    WARNING = "warning",
+    DANGER = "danger",
+    SUCCESS = "success"
+}
+export enum Size {
+    LARGE = "lg",
+    SMALL = "sm"
+}
 
 export interface Card {
     type: "card",
@@ -25,39 +35,64 @@ export type Modules =
     Modules.Countdown;
 
 export namespace Modules {
-    export interface Text {
-        type: "section";
-        text: Parts.Text;
+    export enum Types {
+        TEXT = "section",
+        IMAGE = "container",
+        MULTIPLE_IMAGE = "image-group",
+        TITLE = "header",
+        DIVIDER = "divider",
+        ACTION_GROUP = "action-group",
+        CONTEXT = "context",
+        FILE = "file",
+        AUDIO = "audio",
+        VIDEO = "video",
+        COUNTDOWN = "countdown"
     }
-    export interface MultiRowText {
-        type: "section";
-        text: {
-            type: "paragraph";
-            cols: 1 | 2 | 3;
-            fields: Parts.Text[];
-        }
+    export enum AccessoryModes {
+        LEFT = "left",
+        RIGHT = "right"
+    }
+    export enum CountdownModes {
+        DAY = "day",
+        HOURS = "hour",
+        SECONDS = "second"
+    }
+
+    interface Base {
+        type: Types
+    }
+    export interface Text extends Base {
+        type: Types.TEXT;
+        text: Parts.Text;
+
+        mode?: AccessoryModes;
+        accessory?: Parts.Button | Parts.Accessory.Image;
+    }
+    export interface MultiRowText extends Base {
+        type: Types.TEXT;
+        text: Parts.MultiRowText;
     }
     export interface TextWithAccessory extends Text {
-        mode: "left" | "right";
+        mode: AccessoryModes;
         accessory: Parts.Button | Parts.Accessory.Image;
     }
-    export interface Image {
-        type: "container";
+    export interface Image extends Base {
+        type: Types.IMAGE;
         elements: Parts.Image[];
     }
-    export interface MultiImage {
-        type: "image-group";
+    export interface MultiImage extends Base {
+        type: Types.MULTIPLE_IMAGE;
         elements: Parts.Image[];
     }
-    export interface Title {
-        type: "header";
+    export interface Title extends Base {
+        type: Types.TITLE;
         text: Parts.PlainText;
     }
-    export interface Divider {
-        type: "divider";
+    export interface Divider extends Base {
+        type: Types.DIVIDER;
     }
-    export interface Button {
-        type: "action-group";
+    export interface Button extends Base {
+        type: Types.ACTION_GROUP;
         elements: [
             Parts.Button,
             Parts.Button?,
@@ -65,55 +100,73 @@ export namespace Modules {
             Parts.Button?
         ];
     }
-    export interface Context {
-        type: "context",
+    export interface Context extends Base {
+        type: Types.CONTEXT,
         elements: Array<Parts.Text | Parts.Image>
     }
-    export interface File {
-        type: "file",
+    export interface File extends Base {
+        type: Types.FILE,
         title: string,
         src: string,
         size: string
     }
-    export interface Audio {
-        type: "audio",
+    export interface Audio extends Base {
+        type: Types.AUDIO,
         title: string,
         src: string,
         cover: string
     }
-    export interface Video {
-        type: "video",
+    export interface Video extends Base {
+        type: Types.VIDEO,
         title: string,
         src: string
     }
-    export interface Countdown {
-        type: "countdown",
-        mode: "second" | "hour" | "day",
+    export interface Countdown extends Base {
+        type: Types.COUNTDOWN,
+        mode: CountdownModes,
         endTime: number
     }
 }
 export namespace Parts {
+    export enum TextType {
+        KMARKDOWN = 'kmarkdown',
+        PLAIN_TEXT = 'plain-text',
+        MULTI_ROW = 'paragraph'
+    }
+    export enum ButtonClickType {
+        REDIRECT_URL = "link",
+        RETURN_VALUE = 'return-val'
+    }
+    export enum AccessoryType {
+        IMAGE = "image",
+        BUTTON = "button"
+    }
     export interface Text {
-        type: 'kmarkdown' | 'plain-text';
+        type: TextType;
         content: string;
     }
+    export interface MultiRowText {
+        type: TextType.MULTI_ROW;
+        cols: 1 | 2 | 3;
+        fields: Parts.Text[];
+    }
     export interface MarkdownText extends Text {
-        type: 'kmarkdown';
+        type: TextType.KMARKDOWN;
     }
     export interface PlainText extends Text {
-        type: 'plain-text';
+        type: TextType.PLAIN_TEXT
     }
     export interface Image {
-        type: 'image';
+        type: AccessoryType.IMAGE;
         src: string;
         alt?: string;
     }
     export interface Button {
-        type: "button";
+        type: AccessoryType.BUTTON;
         theme: Theme;
-        value?: string;
-        click?: "" | "link" | "return-val";
         text: Parts.Text;
+        value?: string;
+        click?: ButtonClickType;
     }
     export namespace Accessory {
         export interface Image extends Parts.Image {
