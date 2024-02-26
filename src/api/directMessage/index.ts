@@ -1,14 +1,17 @@
 import Rest from "@ksm/requestor";
-import { MessageType, RequestResponse, User } from "@ksm/type";
+import { MessageType, Message as MessageInterface, RequestResponse, User } from "@ksm/type";
 import { v4 as uuidv4 } from 'uuid';
 import { NonceDismatchError } from "@ksm/error";
 import { RawListResponse } from "./type";
-import Card from "@ksm/card";
+import { Card } from "@ksm/card";
+import UserChat from "./chat";
 
 export default class DirectMessage {
     private rest: Rest;
+    chat: UserChat
     constructor(rest: Rest) {
         this.rest = rest;
+        this.chat = new UserChat(rest);
     }
     /**
      * Get message list of a private chat
@@ -20,18 +23,34 @@ export default class DirectMessage {
      * @returns Array of message items
      */
     public async list(
-        channelId: string,
-        page?: number,
-        pageSize?: number,
-        messageId?: string,
-        mode?: 'before' | 'around' | 'after'
+        { userId, messageId, page, pageSize, chatCode, mode }: {
+            userId: string,
+            messageId?: string,
+            page?: number,
+            pageSize?: number,
+            chatCode?: string,
+            mode?: 'before' | 'around' | 'after'
+        }
     ): Promise<RequestResponse<RawListResponse>> {
         return this.rest.get('/direct-message/list', {
-            target_id: channelId,
+            target_id: userId,
+            chat_code: userId == undefined ? chatCode : undefined,
             msg_id: messageId,
             flag: mode,
             page: page,
             page_size: pageSize
+        })
+    }
+
+    /**
+     * View a message by ID
+     * @param messageId ID of the requesting message
+     * @returns The requested message item
+     */
+    public async view(messageId: string, chatCode: string) {
+        return this.rest.get<MessageInterface>('/direct-message/view', {
+            msg_id: messageId,
+            chat_code: chatCode
         })
     }
 

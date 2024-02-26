@@ -3,7 +3,7 @@ import { MessageType, Message as MessageInterface, User, RequestResponse } from 
 import { v4 as uuidv4 } from 'uuid';
 import { NonceDismatchError } from "@ksm/error";
 import { RawMessageListResponse } from "./type";
-import Card from "@ksm/card";
+import { Card } from "@ksm/card";
 
 export default class Message {
     private rest: Rest;

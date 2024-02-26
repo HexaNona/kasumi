@@ -13,7 +13,7 @@ export default class UserChat {
      * @param page Page number
      * @param pageSize Page size
      */
-    list(page: number, pageSize: number) {
+    list(page: number = 1, pageSize: number = 50) {
         return this.rest.multiPageRequest<MultiPageResponse<BriefChatSession>>('/user-chat/list', page, pageSize);
     }
 
