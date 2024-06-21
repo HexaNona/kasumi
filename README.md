@@ -1,5 +1,5 @@
 <p align="center">
-  <img height="70" src="./assets/kasumi-uwu.svg">
+  <img style="width: 60%" src="./assets/kasumi-uwu.svg">
 </p>
 
 Yet another TypeScript framework to build KOOK chatbots. **Requires Node 18+.**
