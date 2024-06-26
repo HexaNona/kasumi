@@ -72,7 +72,7 @@ export default class Game {
         return this.rest.post('/game/activity', {
             singer: artist,
             music_name: title,
-            data_type: 1
+            data_type: 2
         });
     }
 
