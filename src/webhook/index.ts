@@ -21,7 +21,7 @@ export default class WebHook {
         this.client = client;
         this.logger = this.client.getLogger('webhook');
         this.express = express();
-        this.express.use(bodyParser.json());
+        this.express.use(bodyParser.json({ limit: "50mb" }));
         this.express.post('/', (req, res) => {
             const body: { encrypt: string } = req.body;
             if (body.encrypt) {
