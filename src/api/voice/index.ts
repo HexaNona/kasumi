@@ -21,9 +21,9 @@ export default class Voice {
             rtcpMux = true,
         }: {
             password?: string;
-            audioSSRC: number;
-            audioPT: number;
-            rtcpMux: boolean;
+            audioSSRC?: number;
+            audioPT?: number;
+            rtcpMux?: boolean;
         }
     ) {
         return this.rest.post<IAudioJoinResponse>("/voice/join", {

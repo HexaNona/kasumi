@@ -12,6 +12,7 @@ import Badge from "./badge";
 import Blacklist from "./blacklist";
 import Intimacy from "./intimacy";
 import Inivte from "./invite";
+import Voice from "./voice";
 
 export default class API {
     rest: Rest;
@@ -28,6 +29,7 @@ export default class API {
     invite: Inivte;
     message: Message;
     user: User;
+    voice: Voice;
     constructor(token: string, logger: Logger, customEndpoint?: string) {
         this.rest = new Rest(token, logger, customEndpoint);
 
@@ -43,5 +45,6 @@ export default class API {
         this.invite = new Inivte(this.rest);
         this.message = new Message(this.rest);
         this.user = new User(this.rest);
+        this.voice = new Voice(this.rest);
     }
 }
