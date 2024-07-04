@@ -8,7 +8,7 @@ class CardBuilderNotCompleteError extends Error {
 }
 
 abstract class Builder<T extends Card | Builder<any>> {
-    constructor(protected parent: T) { };
+    constructor(protected parent: T) {}
     protected abstract finishCondition(): boolean;
     protected abstract build(): void;
     end() {
@@ -20,7 +20,7 @@ abstract class Builder<T extends Card | Builder<any>> {
 export class CardBuilder extends Builder<Card> {
     constructor(protected card = new Card()) {
         super(card);
-    };
+    }
     theme(theme: Theme) {
         this.card.setTheme(theme);
         return this;
@@ -32,8 +32,10 @@ export class CardBuilder extends Builder<Card> {
     module() {
         return new ModulesBuilder(this);
     }
-    protected finishCondition(): boolean { return true; }
-    protected build(): void { }
+    protected finishCondition(): boolean {
+        return true;
+    }
+    protected build(): void {}
     end(): Card {
         return this.card;
     }
@@ -72,14 +74,16 @@ export class ModulesBuilder extends Builder<CardBuilder> {
     }
 }
 
-abstract class ModuleBuilder<T extends Modules> extends Builder<ModulesBuilder> {
+abstract class ModuleBuilder<
+    T extends Modules,
+> extends Builder<ModulesBuilder> {
     protected module: Partial<T> = {};
     protected isModuleFilled(payload: Partial<T>): payload is T {
         return payload && this.finishCondition();
     }
     protected build(): void {
         if (this.isModuleFilled(this.module)) {
-            this.parent['modules'].push(this.module);
+            this.parent["modules"].push(this.module);
         }
     }
 }
@@ -102,8 +106,8 @@ class CountdownModuleBuilder extends ModuleBuilder<Modules.Countdown> {
         this.module = {
             type: Modules.Types.COUNTDOWN,
             mode: this._mode,
-            endTime: this._time
-        }
+            endTime: this._time,
+        };
         super.build();
     }
 }
@@ -116,10 +120,14 @@ class ContextModuleBuilder extends ModuleBuilder<Modules.Context> {
         return new ImagePartBuilder(this);
     }
     protected finishCondition(): boolean {
-        return this.module.elements?.length != undefined && this.module.elements?.length > 0 && this.module.elements?.length <= 9;
+        return (
+            this.module.elements?.length != undefined &&
+            this.module.elements?.length > 0 &&
+            this.module.elements?.length <= 9
+        );
     }
     protected build(): void {
-        this.module.type = Modules.Types.CONTEXT
+        this.module.type = Modules.Types.CONTEXT;
         super.build();
     }
 }
@@ -129,7 +137,11 @@ class ImageModuleBuilder extends ModuleBuilder<Modules.Image> {
         return new ImagePartBuilder(this);
     }
     protected finishCondition(): boolean {
-        return this.module.elements?.length != undefined && this.module.elements?.length > 0 && this.module.elements?.length <= 9;
+        return (
+            this.module.elements?.length != undefined &&
+            this.module.elements?.length > 0 &&
+            this.module.elements?.length <= 9
+        );
     }
     protected build(): void {
         this.module.type = Modules.Types.IMAGE;
@@ -142,7 +154,11 @@ class MutliImageModuleBuilder extends ModuleBuilder<Modules.MultiImage> {
         return new ImagePartBuilder(this);
     }
     protected finishCondition(): boolean {
-        return this.module.elements?.length != undefined && this.module.elements?.length > 0 && this.module.elements?.length <= 9;
+        return (
+            this.module.elements?.length != undefined &&
+            this.module.elements?.length > 0 &&
+            this.module.elements?.length <= 9
+        );
     }
     protected build(): void {
         this.module.type = Modules.Types.MULTIPLE_IMAGE;
@@ -156,7 +172,7 @@ class DividerModuleBuilder extends ModuleBuilder<Modules.Divider> {
     }
     protected build(): void {
         this.module = {
-            type: Modules.Types.DIVIDER
+            type: Modules.Types.DIVIDER,
         };
         super.build();
     }
@@ -173,8 +189,10 @@ class TextModuleBuilder extends ModuleBuilder<Modules.Text> {
         return new ButtonAccessoryBuilder(this);
     }
     protected finishCondition(): boolean {
-        return this.module.type == Modules.Types.TEXT &&
-            typeof this.module.text == 'string';
+        return (
+            this.module.type == Modules.Types.TEXT &&
+            typeof this.module.text == "string"
+        );
     }
     protected build(): void {
         this.module.type = Modules.Types.TEXT;
@@ -210,8 +228,9 @@ class ButtonAccessoryBuilder extends Builder<TextModuleBuilder> {
                 this.useStrictUrlMatching &&
                 this._click == Parts.ButtonClickType.REDIRECT_URL
             ) ||
-            this.strictUrlMatchingRegex.test(this._value) &&
-            (this.module.text != undefined && typeof this.module.text.content == 'string')
+            (this.strictUrlMatchingRegex.test(this._value) &&
+                this.module.text != undefined &&
+                typeof this.module.text.content == "string")
         );
     }
     private hasText(payload: any): payload is Parts.Text {
@@ -225,16 +244,21 @@ class ButtonAccessoryBuilder extends Builder<TextModuleBuilder> {
                 theme: this._theme,
                 value: this._value,
                 click: this._click,
-                text: this.module.text
-            }
+                text: this.module.text,
+            };
         }
     }
 }
 
-
-class ImagePartBuilder extends Builder<TextModuleBuilder | ImageModuleBuilder | MutliImageModuleBuilder | ContextModuleBuilder> {
+class ImagePartBuilder extends Builder<
+    | TextModuleBuilder
+    | ImageModuleBuilder
+    | MutliImageModuleBuilder
+    | ContextModuleBuilder
+> {
     private useStrictUrlMatching = false;
-    private strictUrlMatchingRegex = /https?:\/\/img\.kookapp\.cn\/(?:assets|attachments|avatars)\/\d{4}-\d{2}\/.+\.(?:jpg|png|gif|webp)/;
+    private strictUrlMatchingRegex =
+        /https?:\/\/img\.kookapp\.cn\/(?:assets|attachments|avatars)\/\d{4}-\d{2}\/.+\.(?:jpg|png|gif|webp)/;
     protected _mode = Modules.AccessoryModes.LEFT;
     private _url = "";
     protected _size = Size.LARGE;
@@ -248,9 +272,11 @@ class ImagePartBuilder extends Builder<TextModuleBuilder | ImageModuleBuilder | 
         this._alt = alt;
     }
     protected finishCondition(): boolean {
-        return this._url != undefined &&
+        return (
+            this._url != undefined &&
             (!this.useStrictUrlMatching ||
-                this.strictUrlMatchingRegex.test(this._url));
+                this.strictUrlMatchingRegex.test(this._url))
+        );
     }
     protected build(): void {
         if (this.parent instanceof TextModuleBuilder) {
@@ -260,15 +286,16 @@ class ImagePartBuilder extends Builder<TextModuleBuilder | ImageModuleBuilder | 
                 src: this._url,
                 alt: this._alt,
                 size: this._size,
-                circle: this._isCircle
-            }
+                circle: this._isCircle,
+            };
         } else {
-            if (!this.parent["module"].elements) this.parent["module"].elements = [];
+            if (!this.parent["module"].elements)
+                this.parent["module"].elements = [];
             this.parent["module"].elements.push({
                 type: Parts.AccessoryType.IMAGE,
                 src: this._url,
-                alt: this._alt
-            })
+                alt: this._alt,
+            });
         }
     }
 }
@@ -293,8 +320,10 @@ class TitleModuleBuilder extends ModuleBuilder<Modules.Title> {
         return new PlainTextPartBuilder(this);
     }
     protected finishCondition(): boolean {
-        return this.module.type == Modules.Types.TITLE &&
-            typeof this.module.text == 'string';
+        return (
+            this.module.type == Modules.Types.TITLE &&
+            typeof this.module.text == "string"
+        );
     }
     protected build(): void {
         this.module.type = Modules.Types.TITLE;
@@ -304,11 +333,8 @@ class TitleModuleBuilder extends ModuleBuilder<Modules.Title> {
     }
 }
 
-
 class PlainTextPartBuilder extends Builder<
-    TextModuleBuilder |
-    TitleModuleBuilder |
-    ButtonAccessoryBuilder
+    TextModuleBuilder | TitleModuleBuilder | ButtonAccessoryBuilder
 > {
     protected _type?: Parts.TextType = Parts.TextType.PLAIN_TEXT;
     protected _content?: string;
@@ -318,28 +344,29 @@ class PlainTextPartBuilder extends Builder<
     }
     protected finishCondition(): boolean {
         return (
-            this._type == Parts.TextType.KMARKDOWN ||
-            this._type == Parts.TextType.PLAIN_TEXT
-        ) && typeof this._content == 'string'
+            (this._type == Parts.TextType.KMARKDOWN ||
+                this._type == Parts.TextType.PLAIN_TEXT) &&
+            typeof this._content == "string"
+        );
     }
     protected build(): void {
         if (this._type && this._content) {
-            this.parent
+            this.parent;
             if (this.parent instanceof TitleModuleBuilder) {
-                this.parent['module'].text = {
+                this.parent["module"].text = {
                     type: Parts.TextType.PLAIN_TEXT,
-                    content: this._content
-                }
+                    content: this._content,
+                };
             } else if (this.parent instanceof ButtonAccessoryBuilder) {
-                this.parent['module'].text = {
+                this.parent["module"].text = {
                     type: this._type,
-                    content: this._content
-                }
+                    content: this._content,
+                };
             } else {
-                this.parent['module'].text = {
+                this.parent["module"].text = {
                     type: this._type,
-                    content: this._content
-                }
+                    content: this._content,
+                };
             }
         }
     }

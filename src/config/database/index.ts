@@ -24,11 +24,11 @@ export declare abstract class Database {
      * Download single entry from database
      * @param key Key of entry
      */
-    get<T extends string>(...keys: T[]): Promise<{
-        [key in T]: StorageItem
+    get<T extends string>(
+        ...keys: T[]
+    ): Promise<{
+        [key in T]: StorageItem;
     }>;
-
-
 
     /**
      * Check if single entry exists in database
@@ -38,12 +38,10 @@ export declare abstract class Database {
 
     /**
      * Sync whole object to database
-     * 
+     *
      * @param config Config object
      */
-    sync(config: {
-        [key: string]: StorageItem | null
-    }): Promise<void>;
+    sync(config: { [key: string]: StorageItem | null }): Promise<void>;
 
     /**
      * Initialize database in config

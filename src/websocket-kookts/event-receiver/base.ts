@@ -1,6 +1,6 @@
-import { BaseClient } from '..';
+import { BaseClient } from "..";
 // import { parsePacket } from './packet-parser';
-import { KEventPacket } from './types';
+import { KEventPacket } from "./types";
 
 abstract class BaseReceiver {
     client: BaseClient;
@@ -12,7 +12,8 @@ abstract class BaseReceiver {
     abstract connect(): Promise<void>;
 
     protected onEventArrive(packet: KEventPacket): void {
-        if (this.client.kasumi.DISABLE_SN_ORDER_CHECK) { // Disable SN order check per config
+        if (this.client.kasumi.DISABLE_SN_ORDER_CHECK) {
+            // Disable SN order check per config
             this.sn = packet.sn;
             return this.client.kasumi.message.recievedMessage(packet as any);
         }
@@ -25,11 +26,17 @@ abstract class BaseReceiver {
             while (this.buffer.length > 0 && this.buffer[0].sn < this.sn + 1) {
                 this.buffer.shift();
             }
-            while (this.buffer.length > 0 && this.buffer[0].sn === this.sn + 1) {
+            while (
+                this.buffer.length > 0 &&
+                this.buffer[0].sn === this.sn + 1
+            ) {
                 const packet = this.buffer.shift() as KEventPacket;
                 // this.emit('message', cloneDeep(packet.d));
                 this.eventProcess(packet);
-                while (this.buffer.length > 0 && this.buffer[0].sn < this.sn + 1) {
+                while (
+                    this.buffer.length > 0 &&
+                    this.buffer[0].sn < this.sn + 1
+                ) {
                     this.buffer.shift();
                 }
             }
@@ -42,10 +49,13 @@ abstract class BaseReceiver {
         // this.client.emit('raw', packet.d);
         // const result = parsePacket(packet.d, this.client);
         const event = packet.d;
-        this.client.logger.trace(`Recieved message "${event.content}" from ${event.author_id}, ID = ${event.msg_id}`, {
-            cur_sn: this.sn,
-            msg_sn: packet.sn
-        });
+        this.client.logger.trace(
+            `Recieved message "${event.content}" from ${event.author_id}, ID = ${event.msg_id}`,
+            {
+                cur_sn: this.sn,
+                msg_sn: packet.sn,
+            }
+        );
         this.client.kasumi.message.recievedMessage(packet as any);
         // this.client.emit(result.type, result);
     }

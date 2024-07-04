@@ -8,9 +8,9 @@ import {
     StateTransfer,
     TimeoutKey,
     TimeoutKeys,
-} from './types';
-import { promisify } from 'util';
-import { inflate as inflateRaw } from 'zlib';
+} from "./types";
+import { promisify } from "util";
+import { inflate as inflateRaw } from "zlib";
 export const inflate = promisify(inflateRaw);
 
 export const backoffDelay = (
@@ -28,28 +28,28 @@ const clearAllTimeoutsEffects = TimeoutKeys.map(clearTimeoutEffect);
 
 const scheduleConnect = (state: State) =>
     Effects.SCHEDULE_TIMEOUT({
-        key: 'connect',
+        key: "connect",
         timeoutMillis: backoffDelay(2, state.retryCount, 1, 60) * 1000,
         onTimeout: Actions.PULL_GATEWAY(),
     });
 
 const waitForHello = (state: State) =>
     Effects.SCHEDULE_TIMEOUT({
-        key: 'hello',
+        key: "hello",
         timeoutMillis: state.helloTimeoutMillis,
         onTimeout: Actions.HELLO_TIMEOUT(),
     });
 
 const schedulePing = (state: State) =>
     Effects.SCHEDULE_TIMEOUT({
-        key: 'ping',
+        key: "ping",
         timeoutMillis: state.heartbeatIntervalMillis,
         onTimeout: Actions.PING_TIMEOUT(),
     });
 
 const waitForPong = (state: State) =>
     Effects.SCHEDULE_TIMEOUT({
-        key: 'pong',
+        key: "pong",
         timeoutMillis: state.heartbeatTimeoutMillis,
         onTimeout: Actions.PONG_TIMEOUT(),
     });
@@ -94,7 +94,7 @@ export function transform(action: Action, state: State): [State, Effect[]] {
                 ],
                 OPEN: () => [
                     States.OPEN({ ...state, retryCount: 0 }),
-                    [clearTimeoutEffect('hello'), schedulePing(state)],
+                    [clearTimeoutEffect("hello"), schedulePing(state)],
                 ],
                 default: () => [state, []],
             }),
@@ -102,7 +102,11 @@ export function transform(action: Action, state: State): [State, Effect[]] {
             Actions.match(action, {
                 PING_TIMEOUT: () => [
                     state,
-                    [clearTimeoutEffect('ping'), Effects.SEND_PING(), waitForPong(state)],
+                    [
+                        clearTimeoutEffect("ping"),
+                        Effects.SEND_PING(),
+                        waitForPong(state),
+                    ],
                 ],
                 PONG_TIMEOUT: () => [
                     state,
@@ -114,8 +118,8 @@ export function transform(action: Action, state: State): [State, Effect[]] {
                 HEARTBEAT: () => [
                     state,
                     [
-                        clearTimeoutEffect('ping'),
-                        clearTimeoutEffect('pong'),
+                        clearTimeoutEffect("ping"),
+                        clearTimeoutEffect("pong"),
                         schedulePing(state),
                     ],
                 ],
@@ -131,7 +135,10 @@ export function transform(action: Action, state: State): [State, Effect[]] {
         CLOSED: () =>
             Actions.match(action, {
                 RECONNECT: () => [
-                    States.RECONNECTING({ ...state, retryCount: state.retryCount + 1 }),
+                    States.RECONNECTING({
+                        ...state,
+                        retryCount: state.retryCount + 1,
+                    }),
                     [scheduleConnect(state)],
                 ],
                 default: () => [state, []],

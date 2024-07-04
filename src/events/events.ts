@@ -3,7 +3,6 @@ import Button from "./button";
 import Callback from "./callback";
 
 export class Event {
-
     private client: Kasumi<any>;
 
     callback: Callback;

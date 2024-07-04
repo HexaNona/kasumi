@@ -1,2 +1,2 @@
-export { Event } from './events';
-export * from './type';
+export { Event } from "./events";
+export * from "./type";

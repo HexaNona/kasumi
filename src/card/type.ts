@@ -4,35 +4,35 @@ export enum Theme {
     INFO = "info",
     WARNING = "warning",
     DANGER = "danger",
-    SUCCESS = "success"
+    SUCCESS = "success",
 }
 export enum Size {
     LARGE = "lg",
-    SMALL = "sm"
+    SMALL = "sm",
 }
 
 export interface Card {
-    type: "card",
-    theme: Theme,
-    size: Size,
-    modules: Array<Modules>
+    type: "card";
+    theme: Theme;
+    size: Size;
+    modules: Array<Modules>;
 }
-export type CardMessage = Array<Card>
+export type CardMessage = Array<Card>;
 
 export type Modules =
-    Modules.Text |
-    Modules.MultiRowText |
-    Modules.TextWithAccessory |
-    Modules.Image |
-    Modules.MultiImage |
-    Modules.Title |
-    Modules.Divider |
-    Modules.Button |
-    Modules.Context |
-    Modules.File |
-    Modules.Audio |
-    Modules.Video |
-    Modules.Countdown;
+    | Modules.Text
+    | Modules.MultiRowText
+    | Modules.TextWithAccessory
+    | Modules.Image
+    | Modules.MultiImage
+    | Modules.Title
+    | Modules.Divider
+    | Modules.Button
+    | Modules.Context
+    | Modules.File
+    | Modules.Audio
+    | Modules.Video
+    | Modules.Countdown;
 
 export namespace Modules {
     export enum Types {
@@ -46,20 +46,20 @@ export namespace Modules {
         FILE = "file",
         AUDIO = "audio",
         VIDEO = "video",
-        COUNTDOWN = "countdown"
+        COUNTDOWN = "countdown",
     }
     export enum AccessoryModes {
         LEFT = "left",
-        RIGHT = "right"
+        RIGHT = "right",
     }
     export enum CountdownModes {
         DAY = "day",
         HOURS = "hour",
-        SECONDS = "second"
+        SECONDS = "second",
     }
 
     interface Base {
-        type: Types
+        type: Types;
     }
     export interface Text extends Base {
         type: Types.TEXT;
@@ -93,53 +93,48 @@ export namespace Modules {
     }
     export interface Button extends Base {
         type: Types.ACTION_GROUP;
-        elements: [
-            Parts.Button,
-            Parts.Button?,
-            Parts.Button?,
-            Parts.Button?
-        ];
+        elements: [Parts.Button, Parts.Button?, Parts.Button?, Parts.Button?];
     }
     export interface Context extends Base {
-        type: Types.CONTEXT,
-        elements: Array<Parts.Text | Parts.Image>
+        type: Types.CONTEXT;
+        elements: Array<Parts.Text | Parts.Image>;
     }
     export interface File extends Base {
-        type: Types.FILE,
-        title: string,
-        src: string,
-        size: string
+        type: Types.FILE;
+        title: string;
+        src: string;
+        size: string;
     }
     export interface Audio extends Base {
-        type: Types.AUDIO,
-        title: string,
-        src: string,
-        cover: string
+        type: Types.AUDIO;
+        title: string;
+        src: string;
+        cover: string;
     }
     export interface Video extends Base {
-        type: Types.VIDEO,
-        title: string,
-        src: string
+        type: Types.VIDEO;
+        title: string;
+        src: string;
     }
     export interface Countdown extends Base {
-        type: Types.COUNTDOWN,
-        mode: CountdownModes,
-        endTime: number
+        type: Types.COUNTDOWN;
+        mode: CountdownModes;
+        endTime: number;
     }
 }
 export namespace Parts {
     export enum TextType {
-        KMARKDOWN = 'kmarkdown',
-        PLAIN_TEXT = 'plain-text',
-        MULTI_ROW = 'paragraph'
+        KMARKDOWN = "kmarkdown",
+        PLAIN_TEXT = "plain-text",
+        MULTI_ROW = "paragraph",
     }
     export enum ButtonClickType {
         REDIRECT_URL = "link",
-        RETURN_VALUE = 'return-val'
+        RETURN_VALUE = "return-val",
     }
     export enum AccessoryType {
         IMAGE = "image",
-        BUTTON = "button"
+        BUTTON = "button",
     }
     export interface Text {
         type: TextType;
@@ -154,7 +149,7 @@ export namespace Parts {
         type: TextType.KMARKDOWN;
     }
     export interface PlainText extends Text {
-        type: TextType.PLAIN_TEXT
+        type: TextType.PLAIN_TEXT;
     }
     export interface Image {
         type: AccessoryType.IMAGE;

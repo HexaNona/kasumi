@@ -15,9 +15,14 @@ export default class GuildEmoji {
      * @param pageSize Page size
      */
     list(guildId: string, page?: number, pageSize?: number) {
-        return this.rest.multiPageRequest<MultiPageResponse<Emoji>>('/guild-emoji/list', page, pageSize, {
-            guild_id: guildId
-        });
+        return this.rest.multiPageRequest<MultiPageResponse<Emoji>>(
+            "/guild-emoji/list",
+            page,
+            pageSize,
+            {
+                guild_id: guildId,
+            }
+        );
     }
 
     /**
@@ -27,17 +32,22 @@ export default class GuildEmoji {
      * @param emoji Emoji image buffer (must be png)
      * @returns Emoji details
      */
-    create(guildId: string, emoji: Buffer, name?: string, config?: FormData.AppendOptions) {
+    create(
+        guildId: string,
+        emoji: Buffer,
+        name?: string,
+        config?: FormData.AppendOptions
+    ) {
         const form = new FormData();
-        form.append('emoji', emoji, {
-            filename: 'image.png',
-            ...config
+        form.append("emoji", emoji, {
+            filename: "image.png",
+            ...config,
         });
-        form.append('guild_id', guildId);
-        if (name) form.append('name', name);
-        return this.rest.post<Emoji>('/guild-emoji/create', form, {
-            headers: form.getHeaders()
-        })
+        form.append("guild_id", guildId);
+        if (name) form.append("name", name);
+        return this.rest.post<Emoji>("/guild-emoji/create", form, {
+            headers: form.getHeaders(),
+        });
     }
 
     /**
@@ -46,19 +56,19 @@ export default class GuildEmoji {
      * @param name Emoji name
      */
     update(emojiId: string, name: string) {
-        return this.rest.post<void>('/guild-emoji/update', {
+        return this.rest.post<void>("/guild-emoji/update", {
             id: emojiId,
-            name
-        })
+            name,
+        });
     }
 
     /**
-     * Delete a emoji   
+     * Delete a emoji
      * @param emojiId Emoji ID
      */
     delete(emojiId: string) {
-        return this.rest.post<void>('/guild-emoji/delete', {
-            emoji_id: emojiId
-        })
+        return this.rest.post<void>("/guild-emoji/delete", {
+            emoji_id: emojiId,
+        });
     }
 }

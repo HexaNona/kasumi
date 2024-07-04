@@ -15,13 +15,13 @@ export default class Channel {
     }
     private __channel_type_map = {
         text: 1,
-        voice: 2
-    }
+        voice: 2,
+    };
     private __voice_quality_map = {
         LQ: 1,
         NM: 2,
-        HQ: 3
-    }
+        HQ: 3,
+    };
 
     /**
      * Get the channel list of a guild
@@ -30,11 +30,21 @@ export default class Channel {
      * @param page Page number
      * @param pageSize Page size
      */
-    list(guildId: string, type: 'text' | 'voice', page?: number, pageSize?: number) {
-        return this.rest.multiPageRequest<RawChannelListResponse>('/channel/list', page, pageSize, {
-            guild_id: guildId,
-            type: this.__channel_type_map[type]
-        })
+    list(
+        guildId: string,
+        type: "text" | "voice",
+        page?: number,
+        pageSize?: number
+    ) {
+        return this.rest.multiPageRequest<RawChannelListResponse>(
+            "/channel/list",
+            page,
+            pageSize,
+            {
+                guild_id: guildId,
+                type: this.__channel_type_map[type],
+            }
+        );
     }
 
     /**
@@ -43,31 +53,47 @@ export default class Channel {
      * @returns Channel details
      */
     async view(channelId: string): Promise<RequestResponse<FullChannel>> {
-        return this.rest.get('/channel/view', { target_id: channelId })
+        return this.rest.get("/channel/view", { target_id: channelId });
     }
 
-    private async __create({ guildId, name, parentCategoryId, channelDetail, isCategory }: {
-        guildId: string,
-        name: string,
-        parentCategoryId?: string,
-        channelDetail?: {
-            type: 'text'
-        } | {
-            type: 'voice',
-            memberLimit: number,
-            voiceQuality: 'LQ' | 'NM' | 'HQ'
-        },
-        isCategory?: boolean
+    private async __create({
+        guildId,
+        name,
+        parentCategoryId,
+        channelDetail,
+        isCategory,
+    }: {
+        guildId: string;
+        name: string;
+        parentCategoryId?: string;
+        channelDetail?:
+            | {
+                  type: "text";
+              }
+            | {
+                  type: "voice";
+                  memberLimit: number;
+                  voiceQuality: "LQ" | "NM" | "HQ";
+              };
+        isCategory?: boolean;
     }): Promise<RequestResponse<FullChannel>> {
-        return this.rest.post('/channel/create', {
+        return this.rest.post("/channel/create", {
             guildId,
             name,
             parent_id: parentCategoryId,
-            type: channelDetail ? this.__channel_type_map[channelDetail.type] : undefined,
-            limit_amount: channelDetail?.type == 'voice' ? channelDetail.memberLimit : undefined,
-            voice_quality: channelDetail?.type == 'voice' ? this.__voice_quality_map[channelDetail.voiceQuality] : undefined,
-            is_category: isCategory
-        })
+            type: channelDetail
+                ? this.__channel_type_map[channelDetail.type]
+                : undefined,
+            limit_amount:
+                channelDetail?.type == "voice"
+                    ? channelDetail.memberLimit
+                    : undefined,
+            voice_quality:
+                channelDetail?.type == "voice"
+                    ? this.__voice_quality_map[channelDetail.voiceQuality]
+                    : undefined,
+            is_category: isCategory,
+        });
     }
 
     /**
@@ -77,9 +103,15 @@ export default class Channel {
      * @param parentCategoryId Parent category ID
      * @returns Channel details
      */
-    async createTextChannel(guildId: string, name: string, parentCategoryId?: string) {
+    async createTextChannel(
+        guildId: string,
+        name: string,
+        parentCategoryId?: string
+    ) {
         return this.__create({
-            guildId, name, parentCategoryId
+            guildId,
+            name,
+            parentCategoryId,
         });
     }
 
@@ -97,16 +129,18 @@ export default class Channel {
         guildId: string,
         name: string,
         memberLimit: number = 20,
-        voiceQuality: 'LQ' | 'NM' | 'HQ' = 'NM',
-        parentCategoryId?: string,
+        voiceQuality: "LQ" | "NM" | "HQ" = "NM",
+        parentCategoryId?: string
     ) {
         return this.__create({
-            guildId, name, parentCategoryId,
+            guildId,
+            name,
+            parentCategoryId,
             channelDetail: {
-                type: 'voice',
+                type: "voice",
                 memberLimit,
-                voiceQuality
-            }
+                voiceQuality,
+            },
         });
     }
 
@@ -117,7 +151,7 @@ export default class Channel {
      * @returns Category details
      */
     async createCategory(guildId: string, name: string) {
-        return this.__create({ guildId, name, isCategory: true })
+        return this.__create({ guildId, name, isCategory: true });
     }
 
     /**
@@ -132,14 +166,28 @@ export default class Channel {
         channelId: string,
         name?: string,
         topic?: string,
-        slowMode?: 0 | 5000 | 10000 | 15000 | 30000 | 60000 | 120000 | 300000 | 600000 | 900000 | 1800000 | 3600000 | 7200000 | 21600000
+        slowMode?:
+            | 0
+            | 5000
+            | 10000
+            | 15000
+            | 30000
+            | 60000
+            | 120000
+            | 300000
+            | 600000
+            | 900000
+            | 1800000
+            | 3600000
+            | 7200000
+            | 21600000
     ): Promise<RequestResponse<FullChannel>> {
-        return this.rest.post('/channel/update', {
+        return this.rest.post("/channel/update", {
             channel_id: channelId,
             name,
             topic,
-            slow_mode: slowMode
-        })
+            slow_mode: slowMode,
+        });
     }
 
     /**
@@ -147,7 +195,7 @@ export default class Channel {
      * @param channelId Channel ID
      */
     async delete(channelId: string): Promise<RequestResponse<void>> {
-        return this.rest.post('/channel/delete', { channel_id: channelId })
+        return this.rest.post("/channel/delete", { channel_id: channelId });
     }
 
     /**
@@ -155,8 +203,10 @@ export default class Channel {
      * @param channelId Channel ID
      * @returns Array of user in the channel
      */
-    async voiceChannelUserList(channelId: string): Promise<RequestResponse<User[]>> {
-        return this.rest.get('/channel/user-list', { channel_id: channelId })
+    async voiceChannelUserList(
+        channelId: string
+    ): Promise<RequestResponse<User[]>> {
+        return this.rest.get("/channel/user-list", { channel_id: channelId });
     }
 
     /**
@@ -164,10 +214,13 @@ export default class Channel {
      * @param channelId Destination channel ID
      * @param userIds Array of IDs of users to be moved
      */
-    async voiceChannelMoveUser(channelId: string, userIds: string[]): Promise<RequestResponse<void>> {
-        return this.rest.post('/channel/move-user', {
+    async voiceChannelMoveUser(
+        channelId: string,
+        userIds: string[]
+    ): Promise<RequestResponse<void>> {
+        return this.rest.post("/channel/move-user", {
             target_id: channelId,
-            user_ids: userIds
-        })
+            user_ids: userIds,
+        });
     }
 }

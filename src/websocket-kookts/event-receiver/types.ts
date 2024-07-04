@@ -1,5 +1,5 @@
-import { CamelCasedPropertiesDeep } from 'type-fest';
-import { default as unionize, ofType, UnionOf } from 'unionize';
+import { CamelCasedPropertiesDeep } from "type-fest";
+import { default as unionize, ofType, UnionOf } from "unionize";
 
 export interface KaiheilaEncryptPacket {
     encrypt: string;
@@ -24,13 +24,13 @@ export interface KPacket {
 interface KWebhookChallengeRaw {
     verify_token: string;
     type: 255;
-    channel_type: 'WEBHOOK_CHALLENGE';
+    channel_type: "WEBHOOK_CHALLENGE";
     challenge: string;
     msg_id: undefined;
 }
 
 export interface KMessageEventRaw<T = any> {
-    channel_type: 'GROUP' | 'PERSON' | 'BROADCAST';
+    channel_type: "GROUP" | "PERSON" | "BROADCAST";
     type: number;
     target_id: string;
     author_id: string;
@@ -44,7 +44,9 @@ export interface KMessageEventRaw<T = any> {
     [key: string]: any;
 }
 
-export type KMessageEvent<T = any> = CamelCasedPropertiesDeep<KMessageEventRaw<T>>;
+export type KMessageEvent<T = any> = CamelCasedPropertiesDeep<
+    KMessageEventRaw<T>
+>;
 
 /**
  * 信令[1] HELLO
@@ -195,8 +197,8 @@ const Actions = unionize({
 
 type Action = UnionOf<typeof Actions>;
 
-const TimeoutKeys = ['hello', 'gateway', 'ping', 'pong', 'connect'] as const;
-type TimeoutKey = typeof TimeoutKeys[number];
+const TimeoutKeys = ["hello", "gateway", "ping", "pong", "connect"] as const;
+type TimeoutKey = (typeof TimeoutKeys)[number];
 
 const Effects = unionize({
     PULL_GATEWAY: ofType<{ compress: boolean }>(),

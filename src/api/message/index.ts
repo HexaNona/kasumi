@@ -1,6 +1,11 @@
 import Rest from "@ksm/requestor";
-import { MessageType, Message as MessageInterface, User, RequestResponse } from "@ksm/type";
-import { v4 as uuidv4 } from 'uuid';
+import {
+    MessageType,
+    Message as MessageInterface,
+    User,
+    RequestResponse,
+} from "@ksm/type";
+import { v4 as uuidv4 } from "uuid";
 import { NonceDismatchError } from "@ksm/error";
 import { RawMessageListResponse } from "./type";
 import { Card } from "@ksm/card";
@@ -24,15 +29,15 @@ export default class Message {
         pageSize?: number,
         pinned?: 0 | 1,
         messageId?: string,
-        mode?: 'before' | 'around' | 'after'
+        mode?: "before" | "around" | "after"
     ) {
-        return this.rest.get<RawMessageListResponse>('/message/list', {
+        return this.rest.get<RawMessageListResponse>("/message/list", {
             target_id: channelId,
             msg_id: messageId,
             pin: pinned,
             flag: mode,
-            page_size: pageSize
-        })
+            page_size: pageSize,
+        });
     }
 
     /**
@@ -41,9 +46,9 @@ export default class Message {
      * @returns The requested message item
      */
     public async view(messageId: string) {
-        return this.rest.get<MessageInterface>('/message/view', {
-            msg_id: messageId
-        })
+        return this.rest.get<MessageInterface>("/message/view", {
+            msg_id: messageId,
+        });
     }
 
     /**
@@ -65,22 +70,24 @@ export default class Message {
         if (content instanceof Card) content = [content];
         if (content instanceof Array) content = JSON.stringify(content);
         const nonce = uuidv4();
-        return this.rest.post<{
-            msg_id: string,
-            msg_timestamp: number,
-            nonce: string
-        }>('/message/create', {
-            type,
-            target_id: channelId,
-            content,
-            quote,
-            temp_target_id: tempMessageTargetUser,
-            nonce
-        }).then((res) => {
-            if (res.err) return res;
-            else if (res.data.nonce == nonce) return res;
-            else return { err: new NonceDismatchError() };
-        })
+        return this.rest
+            .post<{
+                msg_id: string;
+                msg_timestamp: number;
+                nonce: string;
+            }>("/message/create", {
+                type,
+                target_id: channelId,
+                content,
+                quote,
+                temp_target_id: tempMessageTargetUser,
+                nonce,
+            })
+            .then((res) => {
+                if (res.err) return res;
+                else if (res.data.nonce == nonce) return res;
+                else return { err: new NonceDismatchError() };
+            });
     }
 
     /**
@@ -98,12 +105,12 @@ export default class Message {
     ) {
         if (content instanceof Card) content = [content];
         if (content instanceof Array) content = JSON.stringify(content);
-        return this.rest.post<void>('/message/update', {
+        return this.rest.post<void>("/message/update", {
             msg_id: messageId,
             content,
             quote,
-            temp_target_id: tempUpdateTargetUser
-        })
+            temp_target_id: tempUpdateTargetUser,
+        });
     }
 
     /**
@@ -111,9 +118,9 @@ export default class Message {
      * @param messageId Message ID
      */
     public async delete(messageId: string): Promise<RequestResponse<void>> {
-        return this.rest.post('/message/delete', {
-            msg_id: messageId
-        })
+        return this.rest.post("/message/delete", {
+            msg_id: messageId,
+        });
     }
 
     /**
@@ -123,10 +130,10 @@ export default class Message {
      * @returns User list
      */
     public async reactionUserList(messageId: string, emojiId: string) {
-        return this.rest.get<User[]>('/message/reaction-list', {
+        return this.rest.get<User[]>("/message/reaction-list", {
             msg_id: messageId,
-            emoji: emojiId
-        })
+            emoji: emojiId,
+        });
     }
 
     /**
@@ -135,10 +142,10 @@ export default class Message {
      * @param emojiId Emoji ID
      */
     public async addReaction(messageId: string, emojiId: string) {
-        return this.rest.post<void>('/message/add-reaction', {
+        return this.rest.post<void>("/message/add-reaction", {
             msg_id: messageId,
-            emoji: emojiId
-        })
+            emoji: emojiId,
+        });
     }
 
     /**
@@ -147,11 +154,15 @@ export default class Message {
      * @param emojiId Emoji ID
      * @param userId User ID, do not provide = self
      */
-    public async deleteReaction(messageId: string, emojiId: string, userId?: string) {
-        return this.rest.post<void>('/message/delete-reaction', {
+    public async deleteReaction(
+        messageId: string,
+        emojiId: string,
+        userId?: string
+    ) {
+        return this.rest.post<void>("/message/delete-reaction", {
             msg_id: messageId,
             emoji: emojiId,
-            user_id: userId
-        })
+            user_id: userId,
+        });
     }
 }

@@ -2,7 +2,11 @@ import Rest from "@ksm/requestor";
 import GuildBoost from "./boost";
 import GuildMute from "./mute";
 import { RequestResponse } from "@ksm/type";
-import { RawGuildListResponse, RawGuildUserListResponse, RawGuildViewResponse } from "./type";
+import {
+    RawGuildListResponse,
+    RawGuildUserListResponse,
+    RawGuildViewResponse,
+} from "./type";
 import GuildEmoji from "./emoji";
 import GuildRole from "./role";
 
@@ -26,7 +30,11 @@ export default class Guild {
      * @param pageSize Page size, maximum is 50
      */
     list(page?: number, pageSize?: number) {
-        return this.rest.multiPageRequest<RawGuildListResponse>('/guild/list', page, pageSize);
+        return this.rest.multiPageRequest<RawGuildListResponse>(
+            "/guild/list",
+            page,
+            pageSize
+        );
     }
 
     /**
@@ -34,15 +42,19 @@ export default class Guild {
      * @param guildId Guild ID
      * @returns Details of a guild
      */
-    async view(guildId: string): Promise<RequestResponse<RawGuildViewResponse>> {
-        return this.rest.get('/guild/view', { guild_id: guildId })
+    async view(
+        guildId: string
+    ): Promise<RequestResponse<RawGuildViewResponse>> {
+        return this.rest.get("/guild/view", { guild_id: guildId });
     }
 
     private readonly __desc_asc_map = {
         desc: 0,
-        asc: 1
-    }
-    private __get_desc_asc_map(input: 'desc' | 'asc' | undefined): number | undefined {
+        asc: 1,
+    };
+    private __get_desc_asc_map(
+        input: "desc" | "asc" | undefined
+    ): number | undefined {
         if (input) return this.__desc_asc_map[input];
         else return undefined;
     }
@@ -50,60 +62,81 @@ export default class Guild {
     /**
      * Get a list of users in the guild or channel
      */
-    userList({ guildId, channelId, search, roleId, mobileVerified, lastSeen, joinTime, page, pageSize, userId }: {
+    userList({
+        guildId,
+        channelId,
+        search,
+        roleId,
+        mobileVerified,
+        lastSeen,
+        joinTime,
+        page,
+        pageSize,
+        userId,
+    }: {
         /**
          * Guild ID
          */
-        guildId: string,
+        guildId: string;
         /**
          * Channel Id
          */
-        channelId?: string,
+        channelId?: string;
         /**
          * Keyword to search for a user
          */
-        search?: string,
+        search?: string;
         /**
          * Role ID
          */
-        roleId?: number,
+        roleId?: number;
         /**
          * To get only verified users or unverified users
-         * 
+         *
          * do not provide = both
          */
-        mobileVerified?: boolean,
+        mobileVerified?: boolean;
         /**
          * Sort by last seen time
          */
-        lastSeen?: 'desc' | 'asc',
+        lastSeen?: "desc" | "asc";
         /**
          * Sort by join time
          */
-        joinTime?: 'desc' | 'asc',
+        joinTime?: "desc" | "asc";
         /**
          * Page number
          */
-        page?: number,
+        page?: number;
         /**
          * Page size
          */
-        pageSize?: number,
+        pageSize?: number;
         /**
          * User ID
          */
-        userId?: number
+        userId?: number;
     }) {
-        return this.rest.multiPageRequest<RawGuildUserListResponse>('/guild/user-list', page, pageSize, {
-            guild_id: guildId,
-            channel_id: channelId,
-            search,
-            role_id: roleId,
-            mobile_verified: mobileVerified === undefined ? undefined : (mobileVerified === true ? 1 : 0),
-            active_time: this.__get_desc_asc_map(lastSeen),
-            joined_at: this.__get_desc_asc_map(joinTime),
-            filter_user_id: userId
-        })
+        return this.rest.multiPageRequest<RawGuildUserListResponse>(
+            "/guild/user-list",
+            page,
+            pageSize,
+            {
+                guild_id: guildId,
+                channel_id: channelId,
+                search,
+                role_id: roleId,
+                mobile_verified:
+                    mobileVerified === undefined
+                        ? undefined
+                        : mobileVerified === true
+                          ? 1
+                          : 0,
+                active_time: this.__get_desc_asc_map(lastSeen),
+                joined_at: this.__get_desc_asc_map(joinTime),
+                filter_user_id: userId,
+            }
+        );
     }
 
     /**
@@ -112,22 +145,26 @@ export default class Guild {
      * @param nickname The new nickname. Set to undefined to remove nickname
      * @param userId User ID
      */
-    async nickname(guildId: string, nickname?: string, userId?: string): Promise<RequestResponse<void>> {
-        return this.rest.post('/guild/nickname', {
+    async nickname(
+        guildId: string,
+        nickname?: string,
+        userId?: string
+    ): Promise<RequestResponse<void>> {
+        return this.rest.post("/guild/nickname", {
             guild_id: guildId,
             nickname,
-            user_id: userId
+            user_id: userId,
         });
     }
 
     /**
      * Leave a guild
-     * @param guildId Guild ID 
+     * @param guildId Guild ID
      */
     async leave(guildId: string): Promise<RequestResponse<void>> {
-        return this.rest.post('/guild/leave', {
-            guild_id: guildId
-        })
+        return this.rest.post("/guild/leave", {
+            guild_id: guildId,
+        });
     }
 
     /**
@@ -135,10 +172,13 @@ export default class Guild {
      * @param guildId Guild ID
      * @param userId User ID
      */
-    async kick(guildId: string, userId: string): Promise<RequestResponse<void>> {
-        return this.rest.post('/guild/kickout', {
+    async kick(
+        guildId: string,
+        userId: string
+    ): Promise<RequestResponse<void>> {
+        return this.rest.post("/guild/kickout", {
             guild_id: guildId,
-            target_id: userId
-        })
+            target_id: userId,
+        });
     }
 }

@@ -57,61 +57,70 @@ export class Card {
             type: Modules.Types.TEXT,
             text: {
                 type: Parts.TextType.KMARKDOWN,
-                content
-            }
+                content,
+            },
         });
     }
-    addTextWithImage(content: string, {
-        position = Modules.AccessoryModes.LEFT,
-        url,
-        size = Size.LARGE,
-        circle = false
-    }: {
-        position?: Modules.AccessoryModes,
-        url: string,
-        size?: Size,
-        circle?: boolean
-    }) {
+    addTextWithImage(
+        content: string,
+        {
+            position = Modules.AccessoryModes.LEFT,
+            url,
+            size = Size.LARGE,
+            circle = false,
+        }: {
+            position?: Modules.AccessoryModes;
+            url: string;
+            size?: Size;
+            circle?: boolean;
+        }
+    ) {
         return this.addModule({
             type: Modules.Types.TEXT,
             text: {
                 type: Parts.TextType.KMARKDOWN,
-                content
+                content,
             },
             mode: position,
             accessory: {
                 type: Parts.AccessoryType.IMAGE,
                 src: url,
                 size: size,
-                circle: circle
-            }
+                circle: circle,
+            },
         });
     }
-    addTextWithButton(content: string, {
-        theme = Theme.PRIMARY,
-        buttonContent,
-        value, click
-    }: {
-        buttonContent: string,
-        theme?: Theme,
-        value?: string,
-        click?: Parts.ButtonClickType;
-    }) {
+    addTextWithButton(
+        content: string,
+        {
+            theme = Theme.PRIMARY,
+            buttonContent,
+            value,
+            click,
+        }: {
+            buttonContent: string;
+            theme?: Theme;
+            value?: string;
+            click?: Parts.ButtonClickType;
+        }
+    ) {
         return this.addModule({
             type: Modules.Types.TEXT,
             text: {
                 type: Parts.TextType.KMARKDOWN,
-                content
+                content,
             },
             mode: Modules.AccessoryModes.RIGHT,
             accessory: {
                 type: Parts.AccessoryType.BUTTON,
                 text: {
                     type: Parts.TextType.KMARKDOWN,
-                    content: buttonContent
+                    content: buttonContent,
                 },
-                theme, value, click
-            }
+                theme,
+                value,
+                click,
+            },
         });
     }
     addTitle(content: string) {
@@ -119,58 +128,64 @@ export class Card {
             type: Modules.Types.TITLE,
             text: {
                 type: Parts.TextType.PLAIN_TEXT,
-                content
-            }
-        })
+                content,
+            },
+        });
     }
     addDivider() {
         return this.addModule({
-            type: Modules.Types.DIVIDER
+            type: Modules.Types.DIVIDER,
         });
     }
     addImage(...links: string[]) {
         return this.addModule({
             type: Modules.Types.IMAGE,
-            elements: links.map(v => { return { type: Parts.AccessoryType.IMAGE, src: v } })
+            elements: links.map((v) => {
+                return { type: Parts.AccessoryType.IMAGE, src: v };
+            }),
         });
     }
     addImageGroup(...links: string[]) {
         return this.addModule({
             type: Modules.Types.MULTIPLE_IMAGE,
-            elements: links.map(v => { return { type: Parts.AccessoryType.IMAGE, src: v } })
+            elements: links.map((v) => {
+                return { type: Parts.AccessoryType.IMAGE, src: v };
+            }),
         });
     }
     addContext(...content: string[]) {
         return this.addModule({
             type: Modules.Types.CONTEXT,
-            elements: content.map(v => {
-                if (v.startsWith('https://')) return {
-                    type: Parts.AccessoryType.IMAGE,
-                    src: v
-                }; else return {
-                    type: Parts.TextType.KMARKDOWN,
-                    content: v
-                }
-            })
+            elements: content.map((v) => {
+                if (v.startsWith("https://"))
+                    return {
+                        type: Parts.AccessoryType.IMAGE,
+                        src: v,
+                    };
+                else
+                    return {
+                        type: Parts.TextType.KMARKDOWN,
+                        content: v,
+                    };
+            }),
         });
     }
     addCountDown(endTime: number, mode: Modules.CountdownModes) {
         return this.addModule({
             type: Modules.Types.COUNTDOWN,
             mode,
-            endTime
+            endTime,
         });
     }
     toJSON(): CardType {
         return {
-            type: 'card',
+            type: "card",
             size: this.__size,
             theme: this.__theme,
-            modules: this.__modules
+            modules: this.__modules,
         };
     }
     toString(): string {
         return JSON.stringify(this.toJSON());
     }
-
 }

@@ -1,7 +1,7 @@
-import { Config } from '@ksm/config';
-import Kasumi from '@ksm/client';
-import crypto from 'crypto';
-import { ButtonClickedEvent } from '@ksm/message/type';
+import { Config } from "@ksm/config";
+import Kasumi from "@ksm/client";
+import crypto from "crypto";
+import { ButtonClickedEvent } from "@ksm/message/type";
 
 interface sessionDetail {
     activator: string;
@@ -10,7 +10,6 @@ interface sessionDetail {
 }
 
 export default class Button {
-
     private activatorFunctions: Map<string, Function> = new Map();
 
     private client: Kasumi<any>;
@@ -18,7 +17,7 @@ export default class Button {
     constructor(client: Kasumi<any>) {
         this.client = client;
 
-        this.client.on('event.button', async (event: ButtonClickedEvent) => {
+        this.client.on("event.button", async (event: ButtonClickedEvent) => {
             this.runSession(event);
         });
     }
@@ -29,17 +28,23 @@ export default class Button {
     removeActivator(activator: string) {
         this.activatorFunctions.delete(activator);
     }
-    registerActivator(activator: string, cb: (event: ButtonClickedEvent, data: any) => void | Promise<void>) {
+    registerActivator(
+        activator: string,
+        cb: (event: ButtonClickedEvent, data: any) => void | Promise<void>
+    ) {
         this.activatorFunctions.set(activator, cb);
     }
 
     createSession(activator: string, data: any, once = false) {
         const sessionId = crypto.randomUUID();
-        this.client.config.set(Config.join("kasumi", "events", "button", sessionId), {
-            activator,
-            once,
-            data
-        });
+        this.client.config.set(
+            Config.join("kasumi", "events", "button", sessionId),
+            {
+                activator,
+                once,
+                data,
+            }
+        );
         return sessionId;
     }
 
@@ -48,17 +53,27 @@ export default class Button {
             const data = JSON.parse(event.value);
             if (data.sessionId) {
                 const { sessionId } = data;
-                const sessionDetail = await this.client.config.getOne(Config.join("kasumi", "events", "button", sessionId)) as (sessionDetail | undefined)
+                const sessionDetail = (await this.client.config.getOne(
+                    Config.join("kasumi", "events", "button", sessionId)
+                )) as sessionDetail | undefined;
                 if (sessionDetail) {
                     const cb = this.getActivator(sessionDetail.activator);
                     if (cb) {
                         await cb(event, sessionDetail.data);
                         if (sessionDetail.once) {
-                            this.client.config.delete(Config.join("kasumi", "events", "button", sessionId));
+                            this.client.config.delete(
+                                Config.join(
+                                    "kasumi",
+                                    "events",
+                                    "button",
+                                    sessionId
+                                )
+                            );
                         }
                         return true;
-                    } else return false
-                } return false;
+                    } else return false;
+                }
+                return false;
             } else return false;
         } catch (e) {
             this.client.logger.warn(e);

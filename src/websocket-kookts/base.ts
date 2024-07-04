@@ -1,9 +1,9 @@
-import { default as axios, AxiosInstance, AxiosResponse } from 'axios';
-import { EventEmitter2 } from 'eventemitter2';
-import { BaseReceiver } from './event-receiver/base';
-import { WebsocketReceiver } from './event-receiver/websocket';
-import Logger from 'bunyan';
-import Kasumi from '@ksm/client';
+import { default as axios, AxiosInstance, AxiosResponse } from "axios";
+import { EventEmitter2 } from "eventemitter2";
+import { BaseReceiver } from "./event-receiver/base";
+import { WebsocketReceiver } from "./event-receiver/websocket";
+import Logger from "bunyan";
+import Kasumi from "@ksm/client";
 
 export class BaseClient extends EventEmitter2 {
     axios: AxiosInstance;
@@ -15,12 +15,12 @@ export class BaseClient extends EventEmitter2 {
         super({ wildcard: true });
 
         this.kasumi = client;
-        this.logger = this.kasumi.getLogger('websocket', 'kookts');
+        this.logger = this.kasumi.getLogger("websocket", "kookts");
 
         this.axios = axios.create({
-            baseURL: 'https://www.kookapp.cn/api',
+            baseURL: "https://www.kookapp.cn/api",
             headers: {
-                Authorization: 'Bot ' + this.kasumi.TOKEN,
+                Authorization: "Bot " + this.kasumi.TOKEN,
             },
         });
         this.receiver = new WebsocketReceiver(this);
@@ -29,7 +29,7 @@ export class BaseClient extends EventEmitter2 {
     post(url: string, data: any): Promise<AxiosResponse<any>> {
         return this.axios.post(url, JSON.stringify(data), {
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
             },
         });
     }
