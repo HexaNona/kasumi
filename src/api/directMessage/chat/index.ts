@@ -14,7 +14,11 @@ export default class UserChat {
      * @param pageSize Page size
      */
     list(page?: number, pageSize?: number) {
-        return this.rest.multiPageRequest<MultiPageResponse<BriefChatSession>>('/user-chat/list', page, pageSize);
+        return this.rest.multiPageRequest<MultiPageResponse<BriefChatSession>>(
+            "/user-chat/list",
+            page,
+            pageSize
+        );
     }
 
     /**
@@ -23,9 +27,9 @@ export default class UserChat {
      * @returns Session details
      */
     async view(code: string) {
-        return this.rest.post<FullChatSession>('/user-chat/view', {
-            chat_code: code
-        })
+        return this.rest.post<FullChatSession>("/user-chat/view", {
+            chat_code: code,
+        });
     }
 
     /**
@@ -34,9 +38,9 @@ export default class UserChat {
      * @returns Session details
      */
     async create(userId: string) {
-        return this.rest.post<FullChatSession>('/user-chat/create', {
-            target_id: userId
-        })
+        return this.rest.post<FullChatSession>("/user-chat/create", {
+            target_id: userId,
+        });
     }
 
     /**
@@ -44,8 +48,8 @@ export default class UserChat {
      * @param code Session code
      */
     async delete(code: string) {
-        return this.rest.post<void>('/uset-chat/delete', {
-            chat_code: code
-        })
+        return this.rest.post<void>("/uset-chat/delete", {
+            chat_code: code,
+        });
     }
 }

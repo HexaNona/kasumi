@@ -1,7 +1,9 @@
-import Kasumi from '@ksm/client';
-import { RawEmisions } from './type';
+import Kasumi from "@ksm/client";
+import { RawEmisions } from "./type";
 
-type ReplaceReturnType<T extends (...a: any) => any, TNewReturn> = (...a: Parameters<T>) => TNewReturn;
+type ReplaceReturnType<T extends (...a: any) => any, TNewReturn> = (
+    ...a: Parameters<T>
+) => TNewReturn;
 
 export interface PresistentSession {
     messageId: string;
@@ -9,14 +11,17 @@ export interface PresistentSession {
     args: any[];
 }
 export default class Callback {
-
     private client: Kasumi<any>;
 
     constructor(client: Kasumi<any>) {
         this.client = client;
     }
 
-    createCallback<T extends keyof RawEmisions>(eventName: T, filter: ReplaceReturnType<RawEmisions[T], boolean>, callback: RawEmisions[T]) {
+    createCallback<T extends keyof RawEmisions>(
+        eventName: T,
+        filter: ReplaceReturnType<RawEmisions[T], boolean>,
+        callback: RawEmisions[T]
+    ) {
         this.client.on(eventName, (event: any) => {
             // @ts-ignore
             if (filter(event)) {
@@ -24,7 +29,11 @@ export default class Callback {
             }
         });
     }
-    createSingleCallback<T extends keyof RawEmisions>(eventName: T, filter: ReplaceReturnType<RawEmisions[T], boolean>, callback: RawEmisions[T]) {
+    createSingleCallback<T extends keyof RawEmisions>(
+        eventName: T,
+        filter: ReplaceReturnType<RawEmisions[T], boolean>,
+        callback: RawEmisions[T]
+    ) {
         const cb = (event: any) => {
             // @ts-ignore
             if (filter(event)) {
@@ -32,10 +41,15 @@ export default class Callback {
                 // @ts-ignore
                 callback(event);
             }
-        }
+        };
         this.client.on(eventName, cb);
     }
-    async createAsyncCallback<T extends keyof RawEmisions, K extends any>(eventName: T, filter: ReplaceReturnType<RawEmisions[T], boolean>, callback: ReplaceReturnType<RawEmisions[T], K>, timeout = 30 * 1000): Promise<K> {
+    async createAsyncCallback<T extends keyof RawEmisions, K extends any>(
+        eventName: T,
+        filter: ReplaceReturnType<RawEmisions[T], boolean>,
+        callback: ReplaceReturnType<RawEmisions[T], K>,
+        timeout = 30 * 1000
+    ): Promise<K> {
         return new Promise((resolve, reject) => {
             const cb = (event: any) => {
                 // @ts-ignore
@@ -45,12 +59,11 @@ export default class Callback {
                     // @ts-ignore
                     resolve(callback(event));
                 }
-            }
+            };
             this.client.on(eventName, cb);
             const timer = setTimeout(() => {
-                reject(new Error('Event timed out'));
+                reject(new Error("Event timed out"));
             }, timeout);
         });
-
     }
 }

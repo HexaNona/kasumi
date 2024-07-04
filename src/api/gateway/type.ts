@@ -1,3 +1,3 @@
 export interface RawGatewayResponse {
-    url: string
+    url: string;
 }

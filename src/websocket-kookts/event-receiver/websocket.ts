@@ -1,8 +1,8 @@
-import { Atom, addChangeHandler, deref, swap } from '@libre/atom';
-import { RequestResponse } from '@ksm/type';
-import WebSocket from 'ws';
-import { BaseClient } from '@ksm/websocket-kookts/base';
-import { BaseReceiver } from './base';
+import { Atom, addChangeHandler, deref, swap } from "@libre/atom";
+import { RequestResponse } from "@ksm/type";
+import WebSocket from "ws";
+import { BaseClient } from "@ksm/websocket-kookts/base";
+import { BaseReceiver } from "./base";
 import {
     TimeoutKey,
     TTimeout,
@@ -17,12 +17,12 @@ import {
     KPingPacket,
     KPacket,
     KHelloPacket,
-} from './types';
-import { transform, inflate } from './websocket.helper';
-import { RawGatewayResponse } from '@ksm/api/gateway/type';
+} from "./types";
+import { transform, inflate } from "./websocket.helper";
+import { RawGatewayResponse } from "@ksm/api/gateway/type";
 
 export class WebsocketReceiver extends BaseReceiver {
-    type = 'websocket-fsm';
+    type = "websocket-fsm";
     ws?: WebSocket;
     url?: string;
     sessionId?: string;
@@ -48,11 +48,12 @@ export class WebsocketReceiver extends BaseReceiver {
 
         addChangeHandler(
             this.wsState,
-            'wsStateHandler',
+            "wsStateHandler",
             ({ previous, current }) => {
                 if ((previous as any).tag !== (current as any).tag) {
                     this.client.logger.debug(
-                        `WebSocket state changed: ${(previous as any).tag} -> ${(current as any).tag
+                        `WebSocket state changed: ${(previous as any).tag} -> ${
+                            (current as any).tag
                         }`
                     );
                 }
@@ -74,7 +75,7 @@ export class WebsocketReceiver extends BaseReceiver {
     }
 
     private addEventListener(
-        type: 'open' | 'close' | 'error' | 'message',
+        type: "open" | "close" | "error" | "message",
         handler: (event: unknown) => void
     ) {
         if (this.ws) {
@@ -106,15 +107,23 @@ export class WebsocketReceiver extends BaseReceiver {
         const self = this;
         return Effects.match(e, {
             PULL_GATEWAY: ({ compress }) => {
-                self.client.kasumi.API.gateway.index(compress ? 1 : 0).then(({ err, data }: RequestResponse<RawGatewayResponse>) => {
-                    if (err) throw err;
-                    self.url = data.url;
-                    self.transition(Actions.CONNECT_GATEWAY());
-                }).catch(() => {
-                    this.client.logger.error('Getting gateway error');
-                    self.transition(Actions.CLOSE());
-                    self.transition(Actions.RECONNECT());
-                });
+                self.client.kasumi.API.gateway
+                    .index(compress ? 1 : 0)
+                    .then(
+                        ({
+                            err,
+                            data,
+                        }: RequestResponse<RawGatewayResponse>) => {
+                            if (err) throw err;
+                            self.url = data.url;
+                            self.transition(Actions.CONNECT_GATEWAY());
+                        }
+                    )
+                    .catch(() => {
+                        this.client.logger.error("Getting gateway error");
+                        self.transition(Actions.CLOSE());
+                        self.transition(Actions.RECONNECT());
+                    });
             },
 
             CONNECT_WS: (conn) => {
@@ -131,29 +140,28 @@ export class WebsocketReceiver extends BaseReceiver {
 
                 const sessionIdPart = self.sessionId
                     ? `&resule=1&sessionId=${self.sessionId}&sn=${self.sn}`
-                    : '';
+                    : "";
                 self.ws = new WebSocket(self.url + sessionIdPart);
 
                 const onOpen = () => {
-                    this.client.kasumi.emit('connect.websocket', {
-                        type: 'websocket',
-                        vendor: 'kookts',
+                    this.client.kasumi.emit("connect.websocket", {
+                        type: "websocket",
+                        vendor: "kookts",
                         sessionId: this.sessionId,
-                        bot: structuredClone(this.client.kasumi.me)
-                    })
+                        bot: structuredClone(this.client.kasumi.me),
+                    });
                     return self.transition(Actions.OPEN());
-                }
-                self.addEventListener('open', onOpen);
+                };
+                self.addEventListener("open", onOpen);
 
                 const onClose = () => {
                     self.transition(conn.onClose);
                     self.transition(Actions.RECONNECT());
                 };
-                self.addEventListener('close', onClose);
+                self.addEventListener("close", onClose);
 
                 const onMessage = (ev: unknown) => {
-                    self
-                        .dataParse(ev, conn.compress)
+                    self.dataParse(ev, conn.compress)
                         .then((packet) => {
                             if (packet) {
                                 switch (packet.s) {
@@ -161,10 +169,14 @@ export class WebsocketReceiver extends BaseReceiver {
                                         self.handleHelloPacket(packet);
                                         break;
                                     case KOpcode.EVENT:
-                                        self.onEventArrive(packet as KEventPacket);
+                                        self.onEventArrive(
+                                            packet as KEventPacket
+                                        );
                                         break;
                                     case KOpcode.PING:
-                                        this.client.logger.warn('Receive Wrong Direction Packet!');
+                                        this.client.logger.warn(
+                                            "Receive Wrong Direction Packet!"
+                                        );
                                         break;
                                     case KOpcode.PONG:
                                         self.transition(conn.onPongMessage);
@@ -176,7 +188,8 @@ export class WebsocketReceiver extends BaseReceiver {
                                         self.sessionId = undefined;
                                         self.buffer = [];
                                         this.client.logger.warn(
-                                            'Receive Reconnect Packet : ' + JSON.stringify(packet.d)
+                                            "Receive Reconnect Packet : " +
+                                                JSON.stringify(packet.d)
                                         );
                                         self.transition(Actions.CLOSE());
                                         self.transition(Actions.RECONNECT());
@@ -190,26 +203,35 @@ export class WebsocketReceiver extends BaseReceiver {
                             }
                         })
                         .catch((err) => {
-                            this.client.logger.error('Parsing message error: ', err);
+                            this.client.logger.error(
+                                "Parsing message error: ",
+                                err
+                            );
                             self.transition(Actions.CLOSE());
                             self.transition(Actions.RECONNECT());
                         });
                 };
-                self.addEventListener('message', onMessage);
+                self.addEventListener("message", onMessage);
                 //TODO: handle on error
             },
 
             SCHEDULE_TIMEOUT: (t) => {
                 self.timeouts.set(
                     t.key,
-                    setTimeout(() => self.transition(t.onTimeout), t.timeoutMillis)
+                    setTimeout(
+                        () => self.transition(t.onTimeout),
+                        t.timeoutMillis
+                    )
                 );
             },
 
             SEND_PING: () => {
                 if (self.ws) {
                     self.ws.send(
-                        JSON.stringify({ s: KOpcode.PING, sn: self.sn } as KPingPacket)
+                        JSON.stringify({
+                            s: KOpcode.PING,
+                            sn: self.sn,
+                        } as KPingPacket)
                     );
                 }
             },

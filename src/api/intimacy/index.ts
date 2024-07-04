@@ -13,34 +13,41 @@ export default class Intimacy {
      * @returns Intimacy details
      */
     async get(userId: string) {
-        return this.rest.get<RawIntimacyIndexResponse>('/intimacy/index', {
-            user_id: userId
-        })
+        return this.rest.get<RawIntimacyIndexResponse>("/intimacy/index", {
+            user_id: userId,
+        });
     }
 
     /**
      * Update intimacy details of a user
      * @param userId User ID
      */
-    async update(userId: string, { score, socialInfo, imageId }: {
-        /**
-         * Intimacy score/rating
-         */
-        score?: number,
-        /**
-         * Bio/description of the bot
-         */
-        socialInfo?: string,
-        /**
-         * Protrait image URL
-         */
-        imageId?: string
-    }) {
-        return this.rest.post<void>('/intimacy/update', {
+    async update(
+        userId: string,
+        {
+            score,
+            socialInfo,
+            imageId,
+        }: {
+            /**
+             * Intimacy score/rating
+             */
+            score?: number;
+            /**
+             * Bio/description of the bot
+             */
+            socialInfo?: string;
+            /**
+             * Protrait image URL
+             */
+            imageId?: string;
+        }
+    ) {
+        return this.rest.post<void>("/intimacy/update", {
             score,
             user_id: userId,
             social_info: socialInfo,
-            img_id: imageId
-        })
+            img_id: imageId,
+        });
     }
 }

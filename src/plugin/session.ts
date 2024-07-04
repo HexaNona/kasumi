@@ -1,4 +1,8 @@
-import { PlainTextMessageEvent, MarkdownMessageEvent, ButtonClickedEvent } from "@ksm/message/type";
+import {
+    PlainTextMessageEvent,
+    MarkdownMessageEvent,
+    ButtonClickedEvent,
+} from "@ksm/message/type";
 import Kasumi from "@ksm/client";
 import { GuildType, MessageType } from "@ksm/type";
 import { Card } from "@ksm/card";
@@ -6,7 +10,7 @@ import { User } from "@ksm/type";
 
 export class BaseSession {
     args: string[];
-    event: PlainTextMessageEvent | MarkdownMessageEvent | ButtonClickedEvent
+    event: PlainTextMessageEvent | MarkdownMessageEvent | ButtonClickedEvent;
     client: Kasumi<any>;
 
     guildId?: string;
@@ -17,7 +21,14 @@ export class BaseSession {
     author: User;
 
     channelType: GuildType;
-    constructor(args: string[], event: PlainTextMessageEvent | MarkdownMessageEvent | ButtonClickedEvent, client: Kasumi<any>) {
+    constructor(
+        args: string[],
+        event:
+            | PlainTextMessageEvent
+            | MarkdownMessageEvent
+            | ButtonClickedEvent,
+        client: Kasumi<any>
+    ) {
         this.args = args;
         this.event = event;
         this.client = client;
@@ -29,12 +40,16 @@ export class BaseSession {
         this.guildId = event.guildId;
         this.channelType = event.channelType;
     }
-    private async __send(content: string | Card | Card[], quote: boolean = false, temporary: boolean = false) {
+    private async __send(
+        content: string | Card | Card[],
+        quote: boolean = false,
+        temporary: boolean = false
+    ) {
         let messageType;
         if (content instanceof Card || content instanceof Array) {
             messageType = MessageType.CardMessage;
         } else messageType = MessageType.MarkdownMessage;
-        if (this.channelType == 'GROUP') {
+        if (this.channelType == "GROUP") {
             return this.client.API.message.create(
                 messageType,
                 this.channelId,
@@ -52,8 +67,13 @@ export class BaseSession {
             );
         }
     }
-    private async __update(messageId: string, content: string | Card | Card[], reply?: boolean, temporary?: boolean) {
-        if (this.channelType == 'GROUP') {
+    private async __update(
+        messageId: string,
+        content: string | Card | Card[],
+        reply?: boolean,
+        temporary?: boolean
+    ) {
+        if (this.channelType == "GROUP") {
             return this.client.API.message.update(
                 messageId,
                 content,
@@ -68,10 +88,18 @@ export class BaseSession {
             );
         }
     }
-    async update(messageId: string, content: string | Card | Card[], reply: boolean = false) {
+    async update(
+        messageId: string,
+        content: string | Card | Card[],
+        reply: boolean = false
+    ) {
         return this.__update(messageId, content, reply);
     }
-    async updateTemp(messageId: string, content: string | Card | Card[], reply: boolean = false) {
+    async updateTemp(
+        messageId: string,
+        content: string | Card | Card[],
+        reply: boolean = false
+    ) {
         return this.__update(messageId, content, reply, true);
     }
 
@@ -79,22 +107,30 @@ export class BaseSession {
         if (content instanceof Card || content instanceof Array) {
             return this.__send(content);
         } else {
-            return this.__send(mention ? `(met)${this.authorId}(met) ${content}` : content);
+            return this.__send(
+                mention ? `(met)${this.authorId}(met) ${content}` : content
+            );
         }
     }
     async sendTemp(content: string | Card | Card[], mention?: boolean) {
         if (content instanceof Card || content instanceof Array) {
             return this.__send(content);
         } else {
-            return this.__send(mention ? `(met)${this.authorId}(met) ${content}` : content, false, true);
+            return this.__send(
+                mention ? `(met)${this.authorId}(met) ${content}` : content,
+                false,
+                true
+            );
         }
     }
     async reply(content: string | Card | Card[], mention?: boolean) {
-        if (this.event instanceof ButtonClickedEvent) return this.send(content, mention);
+        if (this.event instanceof ButtonClickedEvent)
+            return this.send(content, mention);
         else return this.__send(content, true);
     }
     async replyTemp(content: string | Card | Card[], mention?: boolean) {
-        if (this.event instanceof ButtonClickedEvent) return this.sendTemp(content, mention);
+        if (this.event instanceof ButtonClickedEvent)
+            return this.sendTemp(content, mention);
         else return this.__send(content, true, true);
     }
 }

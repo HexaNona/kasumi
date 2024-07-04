@@ -1,44 +1,44 @@
 export interface KaiheilaEncryptPacket {
-  encrypt: string
+    encrypt: string;
 }
 
-export type KaiheilaWebhookRequest = KaiheilaEncryptPacket | KHPacket
+export type KaiheilaWebhookRequest = KaiheilaEncryptPacket | KHPacket;
 export enum KHOpcode {
-  EVENT = 0,
-  HELLO = 1,
-  PING = 2,
-  PONG = 3,
-  RECONNECT = 5,
-  RESUME_ACK = 6,
+    EVENT = 0,
+    HELLO = 1,
+    PING = 2,
+    PONG = 3,
+    RECONNECT = 5,
+    RESUME_ACK = 6,
 }
 
 export interface KHPacket {
-  s: KHOpcode
-  d: any
-  sn?: number
+    s: KHOpcode;
+    d: any;
+    sn?: number;
 }
 
 interface KHWebhookChallenge {
-  verify_token: string
-  type: 255
-  channel_type: 'WEBHOOK_CHALLENGE'
-  challenge: string
-  msg_id: undefined
+    verify_token: string;
+    type: 255;
+    channel_type: "WEBHOOK_CHALLENGE";
+    challenge: string;
+    msg_id: undefined;
 }
 
 export interface KHMessageEventBase {
-  channel_type: 'GROUP'
-  type: number
-  target_id: string
-  author_id: string
-  content: string
-  msg_id: string
-  msg_timestamp: number
-  nonce: string
-  verify_token?: string
-  extra: any
+    channel_type: "GROUP";
+    type: number;
+    target_id: string;
+    author_id: string;
+    content: string;
+    msg_id: string;
+    msg_timestamp: number;
+    nonce: string;
+    verify_token?: string;
+    extra: any;
 
-  [key: string]: any
+    [key: string]: any;
 }
 
 /**
@@ -57,11 +57,11 @@ export interface KHMessageEventBase {
  * | 40103 | token过期 | 需要重新连接 |
  */
 export interface KHHelloPacket {
-  s: KHOpcode
-  d: {
-    code: 0 | 40100 | 40101 | 40102 | 40103
-    session_id?: string
-  }
+    s: KHOpcode;
+    d: {
+        code: 0 | 40100 | 40101 | 40102 | 40103;
+        session_id?: string;
+    };
 }
 
 /**
@@ -86,9 +86,9 @@ export interface KHHelloPacket {
  * 5. 消息内容与webhook保持一致
  */
 export interface KHEventPacket<T = any> {
-  s: KHOpcode
-  d: T
-  sn: number
+    s: KHOpcode;
+    d: T;
+    sn: number;
 }
 
 /**
@@ -105,13 +105,13 @@ export interface KHEventPacket<T = any> {
  * | sn   | 客户端目前收到的最新的消息 **sn** | number | Y    |
  */
 export interface KHPingPacket {
-  s: KHOpcode
-  /**
-   * | 参数 | 描述                              | 类型 | 必传 |
-   * | ---- | --------------------------------- | ---- | ---- |
-   * | sn   | 客户端目前收到的最新的消息 **sn** | number | Y    |
-   */
-  sn: number
+    s: KHOpcode;
+    /**
+     * | 参数 | 描述                              | 类型 | 必传 |
+     * | ---- | --------------------------------- | ---- | ---- |
+     * | sn   | 客户端目前收到的最新的消息 **sn** | number | Y    |
+     */
+    sn: number;
 }
 
 /**
@@ -122,7 +122,7 @@ export interface KHPingPacket {
  * **说明：** 回应客户端发出的ping
  */
 export interface KHPongPacket {
-  s: KHOpcode
+    s: KHOpcode;
 }
 
 /**
@@ -143,15 +143,15 @@ export interface KHPongPacket {
  * | 40108        | 无效的 `sn` ,  或 `sn` 已经不存在 (resume 失败, PING的 `sn` 无效) |
  */
 export interface KHReconnectPacket {
-  s: KHOpcode
-  d: {
-    /**
-     * | 状态码 | 描述                                    |
-     * | ------------ | --------------------------------------- |
-     * | 40106        | resume 失败, 缺少参数                   |
-     * | 40107        | 当前 `session` 已过期 (resume 失败, PING的sn无效)      |
-     * | 40108        | 无效的 `sn` ,  或 `sn` 已经不存在 (resume 失败, PING的 `sn` 无效) |
-     */
-    code: 40106 | 40107 | 40108
-  }
+    s: KHOpcode;
+    d: {
+        /**
+         * | 状态码 | 描述                                    |
+         * | ------------ | --------------------------------------- |
+         * | 40106        | resume 失败, 缺少参数                   |
+         * | 40107        | 当前 `session` 已过期 (resume 失败, PING的sn无效)      |
+         * | 40108        | 无效的 `sn` ,  或 `sn` 已经不存在 (resume 失败, PING的 `sn` 无效) |
+         */
+        code: 40106 | 40107 | 40108;
+    };
 }

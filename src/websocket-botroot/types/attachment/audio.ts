@@ -1,8 +1,8 @@
-import { AttachmentBase } from './base'
+import { AttachmentBase } from "./base";
 
 export interface AudioAttachment extends AttachmentBase {
-  type: string
-  mimeType: string
-  voice: string
-  duration: number
+    type: string;
+    mimeType: string;
+    voice: string;
+    duration: number;
 }

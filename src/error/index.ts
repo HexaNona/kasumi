@@ -1,5 +1,10 @@
 export class RestError extends Error {
-    constructor(code: number, message: string, method: string, endpoint: string) {
+    constructor(
+        code: number,
+        message: string,
+        method: string,
+        endpoint: string
+    ) {
         super(`${code} ${method} ${endpoint} ${message}`);
     }
 }
@@ -12,13 +17,13 @@ export class TimeoutError extends Error {
 
 export class NonceDismatchError extends Error {
     constructor() {
-        super("Response nonce does not match request nonce")
+        super("Response nonce does not match request nonce");
     }
 }
 
 export class CommandNameNotPresentErorr extends Error {
     constructor() {
-        super("Name is required in commands and menus")
+        super("Name is required in commands and menus");
     }
 }
 
@@ -29,7 +34,7 @@ export class MethodNotImplementedError extends Error {
 }
 
 export class MethodNotAllowedError extends Error {
-    constructor(detail: string = 'no detail given') {
+    constructor(detail: string = "no detail given") {
         super(`This method is not allowed: ${detail}`);
     }
 }
@@ -42,7 +47,7 @@ export class UnknownInputTypeError extends Error {
 
 class InitializationError extends Error {
     constructor(message: string) {
-        super(`Failed to initialize a Kasumi instance: ${message}`)
+        super(`Failed to initialize a Kasumi instance: ${message}`);
     }
 }
 
@@ -54,13 +59,14 @@ export class TokenNotProvidedError extends InitializationError {
 
 export class WebHookMissingConfigError extends InitializationError {
     constructor() {
-        super("Required config entry(s) is missing for WebHook connection")
+        super("Required config entry(s) is missing for WebHook connection");
     }
 }
 
 export class UnknownConnectionType extends InitializationError {
     constructor(connection?: string) {
-        if (connection) super(`Current connection mode (${connection}) is not supported`);
+        if (connection)
+            super(`Current connection mode (${connection}) is not supported`);
         else super("Missing connection mode");
     }
 }

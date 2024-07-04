@@ -9,17 +9,20 @@ export default class User {
     }
 
     async me(): Promise<RequestResponse<RawUserMeResponse>> {
-        return this.rest.get('/user/me')
+        return this.rest.get("/user/me");
     }
 
-    async view(userId: string, guildId?: string): Promise<RequestResponse<RawUserViewResponse>> {
-        return this.rest.get('/user/view', {
+    async view(
+        userId: string,
+        guildId?: string
+    ): Promise<RequestResponse<RawUserViewResponse>> {
+        return this.rest.get("/user/view", {
             user_id: userId,
-            guild_id: guildId
-        })
+            guild_id: guildId,
+        });
     }
 
     async offline(): Promise<RequestResponse<void>> {
-        return this.rest.post('/user/offline')
+        return this.rest.post("/user/offline");
     }
 }

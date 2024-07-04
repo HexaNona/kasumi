@@ -1,6 +1,6 @@
 {
   "name": "kasumi.js",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "KOOK TypeScript SDK",
   "main": "dist/index.js",
   "repository": {
@@ -16,7 +16,8 @@
   "scripts": {
     "build": "tsc && tsconfig-replace-paths -p tsconfig.json -s ./src -o ./dist",
     "clean": "rimraf dist/*",
-    "make": "npm run clean && npm run build"
+    "make": "npm run clean && npm run lint && npm run build",
+    "lint": "prettier './src/**/*.ts' --write"
   },
   "exports": {
     "require": "./dist/index.js",
@@ -45,6 +46,7 @@
     "lodash": "^4.17.21",
     "mongodb": "^6.3.0",
     "object-hash": "^3.0.0",
+    "prettier": "^3.3.2",
     "type-fest": "^3.7.2",
     "type-plus": "^7.6.0",
     "typescript": "^5.3.2",

@@ -1,5 +1,3 @@
-
-
 export interface RawAssetCreateResponse {
-    url: string
+    url: string;
 }

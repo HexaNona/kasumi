@@ -11,13 +11,15 @@ export default class Blacklist {
     /**
      * Get a list of blacklisted useres
      * @param guildId Guild ID
-     * @param page Page number 
+     * @param page Page number
      * @param pageSize Page size
      */
     list(guildId: string, page?: number, pageSize?: number) {
-        return this.rest.multiPageRequest<MultiPageResponse<RawBlacklistListResponseItem>>('/invite/list', page, pageSize, {
-            guild_id: guildId
-        })
+        return this.rest.multiPageRequest<
+            MultiPageResponse<RawBlacklistListResponseItem>
+        >("/invite/list", page, pageSize, {
+            guild_id: guildId,
+        });
     }
 
     /**
@@ -26,26 +28,31 @@ export default class Blacklist {
      * @param userId User ID
      * @param reason Blacklist reason
      * @param deleteRecentMessages Delete messages from the user in the recent X days. Maximum is 7
-     * @returns 
+     * @returns
      */
-    async create(guildId: string, userId: string, reason?: string, deleteRecentMessages?: number) {
-        return this.rest.post<void>('/blacklist/create', {
+    async create(
+        guildId: string,
+        userId: string,
+        reason?: string,
+        deleteRecentMessages?: number
+    ) {
+        return this.rest.post<void>("/blacklist/create", {
             guild_id: guildId,
             target_id: userId,
             remark: reason,
-            del_msg_days: deleteRecentMessages
+            del_msg_days: deleteRecentMessages,
         });
     }
 
     /**
      * Remove a user from the blacklist
-     * @param guildId Guild ID 
+     * @param guildId Guild ID
      * @param userId User ID
      */
     async delete(guildId: string, userId: string) {
-        return this.rest.post<void>('/invite/delete', {
+        return this.rest.post<void>("/invite/delete", {
             target_id: userId,
-            guild_id: guildId
-        })
+            guild_id: guildId,
+        });
     }
 }
