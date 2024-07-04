@@ -16,7 +16,7 @@
   "scripts": {
     "build": "tsc && tsconfig-replace-paths -p tsconfig.json -s ./src -o ./dist",
     "clean": "rimraf dist/*",
-    "make": "npm run clean && npm run build",
+    "make": "npm run clean && npm run lint && npm run build",
     "lint": "prettier './src/**/*.ts' --write"
   },
   "exports": {
