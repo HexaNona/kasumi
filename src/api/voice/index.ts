@@ -42,8 +42,6 @@ export default class Voice {
     }
 
     async leave(channelId: string) {
-        return this.rest.post<IAudioLeaveResponse>("/voice/leave", {
-            channel_id: channelId,
-        });
+        return this.rest.post<IAudioLeaveResponse>("/voice/leave");
     }
 }
