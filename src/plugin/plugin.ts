@@ -75,9 +75,9 @@ export class Plugin extends BaseMenu {
                 })[0];
             if (targetHierachy) {
                 [trigger, commands] = targetHierachy;
-                content = content.replace(trigger.trim() + " ", "");
+                content = content.replace(trigger.trim(), "").trim();
                 session = new BaseSession(
-                    content.trim().split(" "),
+                    content ? content.split(" ") : [],
                     event,
                     this.client
                 );
