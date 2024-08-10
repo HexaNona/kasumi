@@ -1,5 +1,3 @@
-import { User } from "@ksm/type";
-
 export interface IAudioJoinResponse {
     ip: string;
     port: string;
@@ -18,3 +16,5 @@ export interface IAudioListResponseItem {
 }
 
 export interface IAudioLeaveResponse {}
+
+export interface IAudioKeepAliveResponse {}

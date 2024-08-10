@@ -59,11 +59,13 @@ export default class WebSocket {
             return;
         }
         let gateway = data.url;
-        if (resume && this.sessionId)
-            this.Socket = new ws(
-                `${gateway}?compress=0&resume=1&sessionId=${this.sessionId}&sn=${this.sn}`
-            );
-        else {
+        if (resume && this.sessionId) {
+            let reconnectGateway = new URL(gateway);
+            reconnectGateway.searchParams.append("resume", "1");
+            reconnectGateway.searchParams.append("sessionId", this.sessionId);
+            reconnectGateway.searchParams.append("sn", this.sn.toString());
+            this.Socket = new ws(reconnectGateway.toString());
+        } else {
             this.sn = 0;
             this.messageQueue = {
                 0: [],
@@ -74,7 +76,7 @@ export default class WebSocket {
                 5: [],
                 6: [],
             };
-            this.Socket = new ws(gateway + "?compress=0");
+            this.Socket = new ws(gateway);
         }
         this.Socket.on("open", async () => {
             this.logger.debug("WebSocket connection established");
@@ -107,8 +109,10 @@ export default class WebSocket {
 
             this.getNextItemFromQueue(WebSocketType.SignalType.Hello, 6 * 1000)
                 .then(async (helloPackage) => {
+                    this.logger.trace("Recieved HELLO package");
+                    this.logger.trace(helloPackage);
                     if (helloPackage.d.code == 0) {
-                        this.logger.debug("Recieved HELLO");
+                        this.logger.debug("HELLO successful");
                         this.state = WebSocketType.State.RecievingMessage;
                         this.sessionId = helloPackage.d.session_id;
                         this.client.emit("connect.websocket", {
