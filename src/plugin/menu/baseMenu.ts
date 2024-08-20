@@ -3,7 +3,9 @@ import Kasumi from "@ksm/client";
 import { BaseSession } from "@ksm/plugin/session";
 import { MethodNotAllowedError, UnknownInputTypeError } from "@ksm/error";
 
-export class BaseMenu extends BaseCommand<Kasumi<any>> {
+export class BaseMenu<
+    T extends Kasumi<any> = Kasumi<any>,
+> extends BaseCommand<T> {
     readonly type: "plugin" | "menu" = "menu";
 
     protected get promptSequence() {
@@ -21,7 +23,7 @@ export class BaseMenu extends BaseCommand<Kasumi<any>> {
 
     protected __raw_commands: Array<BaseMenu | BaseCommand<Kasumi<any>>>;
 
-    init(client: Kasumi<any>, loggerSequence: string[]) {
+    init(client: T, loggerSequence: string[]) {
         this.client = client;
         this.loggerSequence = loggerSequence;
         this.logger = this.client.getLogger("plugin", ...this.loggerSequence);
