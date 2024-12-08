@@ -144,6 +144,8 @@ export default class WebSocket {
             // this.logger.trace(data);
             switch (data.s) {
                 case WebSocketType.SignalType.Event: {
+                    // Ignore events with illeagl SN
+                    if (this.sn > 65535 || this.sn < 0) break;
                     this.logger.trace(
                         `Recieved message "${data.d.content}" from ${data.d.author_id}, ID = ${data.d.msg_id}`,
                         {
@@ -181,10 +183,12 @@ export default class WebSocket {
                         )
                             this.messageBuffer.shift();
                     }
-                    this.logger.trace(
-                        `${this.messageBuffer.length} more message(s) in buffer`
-                    );
-                    this.logger.trace(this.messageBuffer.map((v) => v.sn));
+                    if (this.messageBuffer.length) {
+                        this.logger.warn(
+                            `${this.messageBuffer.length} more event(s) still in buffer after processing.`
+                        );
+                        this.logger.trace(this.messageBuffer.map((v) => v.sn));
+                    }
                     break;
                 }
                 case WebSocketType.SignalType.Reconnect: {
