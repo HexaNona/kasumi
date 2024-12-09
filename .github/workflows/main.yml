@@ -1,4 +1,4 @@
-name: Build, Test and maybe Publish
+name: Auto Release
 on:
     push:
         branches:
