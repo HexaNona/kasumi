@@ -151,8 +151,6 @@ export default class WebSocket {
                             msg_sn: data.sn,
                         }
                     );
-                    // Ignore events with illeagl SN
-                    if (this.sn > 65535 || this.sn < 0) break;
                     if (this.client.DISABLE_SN_ORDER_CHECK) {
                         // Disable SN order check per config
                         this.sn = data.sn;
@@ -175,7 +173,7 @@ export default class WebSocket {
                         if (buffer) {
                             this.client.message.recievedMessage(buffer);
                             this.sn = buffer.sn;
-                            if (this.sn >= 65535) this.sn = 0;
+                            // if (this.sn >= 65535) this.sn = 0;
                         }
                         while (
                             this.messageBuffer[0] &&

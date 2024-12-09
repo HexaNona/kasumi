@@ -19,7 +19,7 @@ abstract class BaseReceiver {
         }
         if (packet.sn === this.sn + 1) {
             this.sn += 1;
-            if (this.sn >= 65535) this.sn = 0;
+            // if (this.sn >= 65535) this.sn = 0;
             // this.emit('message', cloneDeep(packet.d));
             this.eventProcess(packet);
             this.buffer.sort((a, b) => a.sn - b.sn);

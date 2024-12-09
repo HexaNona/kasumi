@@ -39,7 +39,7 @@ export class MessageSource extends EventEmitter implements MessageSource {
         }
         if ((packet as KHEventPacket).sn === this.sn + 1) {
             this.sn += 1;
-            if (this.sn >= 65535) this.sn = 0; // Reset sn after 65535 !important
+            // if (this.sn >= 65535) this.sn = 0; // Reset sn after 65535 !important
             this.emit("message", cloneDeep(packet.d));
             this.eventProcess(packet);
             this.buffer.sort((a, b) => a.sn - b.sn);
