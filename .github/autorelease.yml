@@ -30,7 +30,7 @@ jobs:
           cache: npm
           cache-dependency-path: src/package-lock.json
       - name: Build
-        run: cd src && npm install
+        run: cd src && npm run make
       # - name: Test
       #   run: cd src && npm test
       - name: Publish
