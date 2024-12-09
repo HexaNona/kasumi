@@ -1,0 +1,40 @@
+name: Auto Release
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+jobs:
+    test:
+        name: Build & Test
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+              with:
+                  cache: npm
+                  cache-dependency-path: package-lock.json
+            - name: Build
+              run: npm install --save-dev && npm run make
+        # - name: Test
+        #   run: cd src && npm test
+    publish:
+        name: Publish
+        needs: test
+        runs-on: ubuntu-latest
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+              with:
+                  cache: npm
+                  cache-dependency-path: package-lock.json
+            - name: Build
+              run: npm install --save-dev && npm run make
+            # - name: Test
+            #   run: cd src && npm test
+            - name: Publish
+              uses: github-actions-community/merge-release@main
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
