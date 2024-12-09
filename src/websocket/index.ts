@@ -173,7 +173,7 @@ export default class WebSocket {
                         if (buffer) {
                             this.client.message.recievedMessage(buffer);
                             this.sn = buffer.sn;
-                            if (this.sn >= 65535) this.sn = 0;
+                            // if (this.sn >= 65535) this.sn = 0;
                         }
                         while (
                             this.messageBuffer[0] &&
@@ -181,10 +181,12 @@ export default class WebSocket {
                         )
                             this.messageBuffer.shift();
                     }
-                    this.logger.trace(
-                        `${this.messageBuffer.length} more message(s) in buffer`
-                    );
-                    this.logger.trace(this.messageBuffer.map((v) => v.sn));
+                    if (this.messageBuffer.length) {
+                        this.logger.warn(
+                            `${this.messageBuffer.length} more event(s) still in buffer after processing.`
+                        );
+                        this.logger.trace(this.messageBuffer.map((v) => v.sn));
+                    }
                     break;
                 }
                 case WebSocketType.SignalType.Reconnect: {

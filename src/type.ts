@@ -33,6 +33,7 @@ export type NormalMessageType = Exclude<
 export type GuildType = "GROUP" | "PERSON" | "BROADCAST";
 
 export enum ChannelType {
+    Category = 0,
     TextChannel = 1,
     VoiceChannel = 2,
 }
