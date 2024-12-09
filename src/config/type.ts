@@ -19,7 +19,14 @@ export type RequiredKeys<T> = {
 
 export interface DefiniteStorage {
     "kasumi::config.token": string;
-    "kasumi::config.connection": "webhook" | "hexona" | "kookts" | "botroot";
+    "kasumi::config.connection":
+        | "webhook"
+        | "kasumi"
+        | "builtin"
+        | "salt"
+        | "hexona"
+        | "kookts"
+        | "botroot";
     "kasumi::config.webhookVerifyToken"?: string;
     "kasumi::config.webhookEncryptKey"?: string;
     "kasumi::config.webhookPort"?: number;

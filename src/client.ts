@@ -220,6 +220,9 @@ export class Kasumi<CustomStorage extends {} = {}>
                     );
                     await this.websocket.connect();
                     break;
+                case "kasumi":
+                case "builtin":
+                case "salt":
                 case "hexona":
                     this.websocket = new WebSocket(this);
                     break;
