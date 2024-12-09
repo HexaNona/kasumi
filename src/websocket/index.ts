@@ -144,8 +144,6 @@ export default class WebSocket {
             // this.logger.trace(data);
             switch (data.s) {
                 case WebSocketType.SignalType.Event: {
-                    // Ignore events with illeagl SN
-                    if (this.sn > 65535 || this.sn < 0) break;
                     this.logger.trace(
                         `Recieved message "${data.d.content}" from ${data.d.author_id}, ID = ${data.d.msg_id}`,
                         {
@@ -153,6 +151,8 @@ export default class WebSocket {
                             msg_sn: data.sn,
                         }
                     );
+                    // Ignore events with illeagl SN
+                    if (this.sn > 65535 || this.sn < 0) break;
                     if (this.client.DISABLE_SN_ORDER_CHECK) {
                         // Disable SN order check per config
                         this.sn = data.sn;
