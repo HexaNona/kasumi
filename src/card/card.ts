@@ -7,6 +7,9 @@ export class Card {
     public static readonly Parts = Parts;
     public static readonly Modules = Modules;
 
+    public static readonly DEFAULT_IMAGE_FALLBACK_URL =
+        "https://img.kookapp.cn/assets/2024-12/11/xhovfoPyzN0dw0dw.png";
+
     private __theme = Theme.INFO;
     private __size = Size.LARGE;
     private __modules: Modules[] = [];
@@ -93,6 +96,7 @@ export class Card {
             url,
             size = Size.LARGE,
             circle = false,
+            fallbackUrl,
         }: {
             /**
              * The position of the image.
@@ -112,6 +116,11 @@ export class Card {
              * Whether or not the image should be a circle.
              */
             circle?: boolean;
+            /**
+             * A fallback image to replace `src` when it fails to load. Only works with resources already on KOOK, i.e. url on the `kookapp.cn` domain.
+             * @see {@link Parts.Image.fallbackUrl}
+             */
+            fallbackUrl?: string;
         }
     ) {
         return this.addModule({
@@ -124,6 +133,7 @@ export class Card {
             accessory: {
                 type: Parts.AccessoryType.IMAGE,
                 src: url,
+                fallbackUrl: fallbackUrl || Card.DEFAULT_IMAGE_FALLBACK_URL,
                 size: size,
                 circle: circle,
             },
@@ -213,7 +223,11 @@ export class Card {
         return this.addModule({
             type: Modules.Types.IMAGE,
             elements: links.map((v) => {
-                return { type: Parts.AccessoryType.IMAGE, src: v };
+                return {
+                    type: Parts.AccessoryType.IMAGE,
+                    src: v,
+                    fallbackUrl: Card.DEFAULT_IMAGE_FALLBACK_URL,
+                };
             }),
         });
     }
@@ -243,6 +257,7 @@ export class Card {
                     return {
                         type: Parts.AccessoryType.IMAGE,
                         src: v,
+                        fallbackUrl: Card.DEFAULT_IMAGE_FALLBACK_URL,
                     };
                 else
                     return {
