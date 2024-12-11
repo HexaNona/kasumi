@@ -5,6 +5,7 @@ export enum Theme {
     WARNING = "warning",
     DANGER = "danger",
     SUCCESS = "success",
+    INVISIBLE = "invisible",
 }
 export enum Size {
     LARGE = "lg",
@@ -16,6 +17,11 @@ export interface Card {
     theme: Theme;
     size: Size;
     modules: Array<Modules>;
+}
+
+export interface InvisibleCard extends Card {
+    theme: Theme.INVISIBLE;
+    modules: Array<Exclude<Modules.MultiImage, Modules>>;
 }
 export type CardMessage = Array<Card>;
 
@@ -154,6 +160,10 @@ export namespace Parts {
     export interface Image {
         type: AccessoryType.IMAGE;
         src: string;
+        /**
+         * A fallback image to replace `src` when it fails to load. Only works with resources already on KOOK, i.e. url on the `kookapp.cn` domain.
+         */
+        fallbackUrl?: string;
         alt?: string;
     }
     export interface Button {
