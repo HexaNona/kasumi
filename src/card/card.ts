@@ -177,6 +177,72 @@ export class Card {
             endTime,
         });
     }
+    addVerticalTable(
+        ...colums:
+            | [string[]]
+            | [string[], string[]]
+            | [string[], string[], string[]]
+    ) {
+        this.addModule({
+            type: Modules.Types.TEXT,
+            text: {
+                type: Parts.TextType.MULTI_ROW,
+                cols: colums.length,
+                fields: colums.map((v) => {
+                    return {
+                        type: Parts.TextType.KMARKDOWN,
+                        content: v.join("\n"),
+                    };
+                }),
+            },
+        });
+        return this;
+    }
+    addHorizontalTable(
+        ...rows: ([string] | [string, string] | [string, string, string])[]
+    ) {
+        let row1 = [],
+            row2 = [],
+            row3 = [],
+            hasRow2 = false,
+            hasRow3 = false;
+        for (const row of rows) {
+            row1.push(row[0]);
+            if (row[1]) {
+                hasRow2 = true;
+                row2.push(row[1]);
+            } else row2.push("");
+            if (row[2]) {
+                hasRow3 = true;
+                row3.push(row[2]);
+            } else row3.push("");
+        }
+        let module1 = {
+                type: Parts.TextType.KMARKDOWN,
+                content: row1.join("\n"),
+            },
+            module2 = {
+                type: Parts.TextType.KMARKDOWN,
+                content: row2.join("\n"),
+            },
+            module3 = {
+                type: Parts.TextType.KMARKDOWN,
+                content: row3.join("\n"),
+            };
+        this.addModule({
+            type: Modules.Types.TEXT,
+            text: {
+                type: Parts.TextType.MULTI_ROW,
+                cols: hasRow3 ? 3 : hasRow2 ? 2 : 1,
+                fields: hasRow3
+                    ? [module1, module2, module3]
+                    : hasRow2
+                      ? [module1, module2]
+                      : [module1],
+            },
+        });
+        return this;
+    }
     toJSON(): CardType {
         return {
             type: "card",
