@@ -65,7 +65,8 @@ export default class Message {
         channelId: string,
         content: string | Card | Card[],
         quote?: string,
-        tempMessageTargetUser?: string
+        tempMessageTargetUser?: string,
+        templateId?: string
     ) {
         if (content instanceof Card) content = [content];
         if (content instanceof Array) content = JSON.stringify(content);
@@ -82,6 +83,7 @@ export default class Message {
                 quote,
                 temp_target_id: tempMessageTargetUser,
                 nonce,
+                template_id: templateId,
             })
             .then((res) => {
                 if (res.err) return res;
@@ -101,7 +103,8 @@ export default class Message {
         messageId: string,
         content: string | Card | Card[],
         quote?: string,
-        tempUpdateTargetUser?: string
+        tempUpdateTargetUser?: string,
+        templateId?: string
     ) {
         if (content instanceof Card) content = [content];
         if (content instanceof Array) content = JSON.stringify(content);
@@ -110,6 +113,7 @@ export default class Message {
             content,
             quote,
             temp_target_id: tempUpdateTargetUser,
+            template_id: templateId,
         });
     }
 
